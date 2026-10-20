@@ -69,3 +69,15 @@ The original interrupted v0.2 was not recovered. Do not reuse its reported 132 P
 11 web / 7 browser counts or model results. This increment has its own CI evidence.
 No bulk live IGDB import, independent semantic model evaluation, notifications, distributed
 execution or production readiness is claimed. Main changes only after final acceptance.
+
+
+## v0.3 increment (acceptance recorded separately)
+
+Added bounded real IGDB collection code producing review bundles; exact-hash approval before
+applying collected bundles. No live authorization or production directory expansion is implied.
+Added immutable database vector snapshots, incremental reuse, explicit resume, lease fencing,
+CAS activation/compatible rollback and protected deletion. New indexed query path sends only
+one query to the configured model; current default remains BM25. Indexed UI/status API and
+Docker CLI are wired. Optional pinned-model integration probe reports real inference separately
+from synthetic regression tests. See catalog-index-v03.md; test counts and execution evidence
+are recorded against the delivered commit, not inferred from earlier stages.

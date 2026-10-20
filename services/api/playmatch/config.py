@@ -23,9 +23,10 @@ class Settings(BaseSettings):
     max_pending_runs: int = Field(default=24, ge=1, le=100)
     run_timeout_seconds: int = Field(default=90, ge=10, le=300)
 
-    retrieval_mode: Literal["keyword_baseline", "bm25", "hybrid"] = "bm25"
+    retrieval_mode: Literal["keyword_baseline", "bm25", "hybrid", "indexed_hybrid"] = "bm25"
     embedding_base_url: str = ""
     embedding_model: str = ""
+    embedding_revision: str = Field(default="", max_length=128)
     embedding_api_key: str = ""
     embedding_timeout_seconds: float = Field(default=8, ge=0.1, le=20, allow_inf_nan=False)
     semantic_min_score: float = Field(default=0.65, ge=0, le=1, allow_inf_nan=False)

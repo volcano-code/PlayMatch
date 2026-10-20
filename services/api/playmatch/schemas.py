@@ -147,3 +147,15 @@ class WatchItem(BaseModel):
 class FeedbackInput(BaseModel):
     game_id: str = Field(min_length=1, max_length=80)
     kind: Literal["like", "dislike", "owned", "exclude"]
+
+
+class IndexStatus(BaseModel):
+    status: Literal["not_configured", "missing", "ready", "stale", "model_mismatch", "corrupt"]
+    active_index_id: str | None
+    generation: int
+    document_count: int
+    dimensions: int | None
+    catalog_fingerprint: str | None
+    search_method: Literal["exact_cosine"]
+    max_documents: int
+    provider_probed: Literal[False] = False

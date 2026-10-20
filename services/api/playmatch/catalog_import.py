@@ -148,9 +148,13 @@ def normalized(item: ImportItem, observed_at: str) -> dict:
     ).model_dump()
 
 
-def import_catalog(database, raw: dict, key: str, *, dry_run: bool = True) -> dict:
+def import_catalog(
+    database, raw: dict, key: str, *, dry_run: bool = True, review_hash: str | None = None
+) -> dict:
     if not re.fullmatch(r"[A-Za-z0-9_.:-]{1,100}", key):
         raise CatalogImportError("Invalid import key")
+    if review_hash is not None and not re.fullmatch(r"[a-f0-9]{64}", review_hash):
+        raise CatalogImportError("Invalid review digest")
     manifest = ImportManifest.model_validate(raw)
     unique: dict[str, ImportItem] = {}
     steam_ids: dict[int, str] = {}
@@ -185,6 +189,7 @@ def import_catalog(database, raw: dict, key: str, *, dry_run: bool = True) -> di
         for game in games:
             by_steam.setdefault(game.payload["steam_app_id"], []).append(game)
         report = {
+            "review_sha256": review_hash,
             "key": key,
             "content_hash": content_hash,
             "inserted": 0,

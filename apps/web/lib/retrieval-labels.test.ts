@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   catalogLabel,
+  indexStatusLabel,
   fingerprintLabel,
   metadataLabel,
   retrievalLabel,
@@ -43,4 +44,16 @@ test("only valid text fingerprints are abbreviated", () => {
   for (const value of [undefined, 123, {}, "a".repeat(63), "z".repeat(64), "secret"]) {
     assert.equal(fingerprintLabel(value), null);
   }
+});
+
+test("persistent index configuration is not an executed semantic result", () => {
+  assert.equal(retrievalLabel("indexed_hybrid"), "持久索引混合检索（配置目标）");
+  assert.equal(retrievalLabel("indexed_hybrid_rrf"), "词项 + 持久向量索引");
+});
+
+test("ready index is not a model-service health claim", () => {
+  assert.match(indexStatusLabel("ready"), /未探测/);
+  assert.match(indexStatusLabel("stale"), /重建/);
+  assert.match(indexStatusLabel("model_mismatch"), /不一致/);
+  assert.equal(indexStatusLabel("unknown-new-status"), "索引状态待确认");
 });

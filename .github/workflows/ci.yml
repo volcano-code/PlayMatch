@@ -52,6 +52,14 @@ jobs:
         env:
           CATALOG_TEST_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/playmatch_test
         run: uv run pytest services/api/tests/test_catalog_v02.py -q
+      - name: Verify durable indexes on an isolated PostgreSQL database
+        env:
+          PGPASSWORD: ci-only-password
+          INDEX_TEST_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/playmatch_index_test
+          PLAYMATCH_ALLOW_DISPOSABLE_DB: 'yes'
+        run: |
+          psql -h 127.0.0.1 -U playmatch -d playmatch_test -c 'CREATE DATABASE playmatch_index_test'
+          uv run pytest services/api/tests/test_semantic_index.py -q
       - name: Check exported OpenAPI is current
         run: uv run python scripts/check_openapi.py
       - name: Exercise PostgreSQL migrations and account persistence

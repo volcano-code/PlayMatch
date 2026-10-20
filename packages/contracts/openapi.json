@@ -37,6 +37,24 @@
         }
       }
     },
+    "/api/v1/retrieval/index": {
+      "get": {
+        "summary": "Retrieval Index",
+        "operationId": "retrieval_index_api_v1_retrieval_index_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/games": {
       "get": {
         "summary": "Games",
@@ -885,6 +903,90 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "IndexStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "not_configured",
+              "missing",
+              "ready",
+              "stale",
+              "model_mismatch",
+              "corrupt"
+            ],
+            "title": "Status"
+          },
+          "active_index_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Index Id"
+          },
+          "generation": {
+            "type": "integer",
+            "title": "Generation"
+          },
+          "document_count": {
+            "type": "integer",
+            "title": "Document Count"
+          },
+          "dimensions": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimensions"
+          },
+          "catalog_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Catalog Fingerprint"
+          },
+          "search_method": {
+            "type": "string",
+            "const": "exact_cosine",
+            "title": "Search Method"
+          },
+          "max_documents": {
+            "type": "integer",
+            "title": "Max Documents"
+          },
+          "provider_probed": {
+            "type": "boolean",
+            "const": false,
+            "title": "Provider Probed",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "active_index_id",
+          "generation",
+          "document_count",
+          "dimensions",
+          "catalog_fingerprint",
+          "search_method",
+          "max_documents"
+        ],
+        "title": "IndexStatus"
       },
       "Offer": {
         "properties": {

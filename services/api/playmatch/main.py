@@ -40,6 +40,7 @@ from playmatch.schemas import (
     FeedbackInput,
     Game,
     GameList,
+    IndexStatus,
     OfferResponse,
     Run,
     RunCreated,
@@ -59,6 +60,7 @@ from playmatch.security import (
     validate_origin,
     verify_password,
 )
+from playmatch.semantic_index import index_status
 
 
 def get_db(request: Request):
@@ -211,7 +213,8 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
             "retrieval_mode": settings.retrieval_mode,
             "embedding_configured": settings.embedding_enabled,
             "catalog_import": "operator_cli",
-            "semantic_catalog_limit": 128,
+            "semantic_catalog_limit": 5000 if settings.retrieval_mode == "indexed_hybrid" else 128,
+            "catalog_collection": "review_bundle_cli",
             "pricing_provider": "cheapshark",
             "pricing_currency": "USD",
             "supported_price_countries": ["US"],
@@ -226,6 +229,11 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
                 "服务重启时未完成任务会明确失败，需要重试；尚未启用分布式执行。",
             ],
         }
+
+    @app.get("/api/v1/retrieval/index", response_model=IndexStatus)
+    def retrieval_index(request: Request, response: Response):
+        response.headers["Cache-Control"] = "no-store"
+        return index_status(request.app.state.database, settings)
 
     @app.get("/api/v1/games", response_model=GameList)
     def games(

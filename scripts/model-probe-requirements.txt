@@ -1,0 +1,7 @@
+# Optional isolated CPU-model environment, not the application lockfile.
+# Install torch==2.8.0 from https://download.pytorch.org/whl/cpu first.
+sentence-transformers==5.1.1
+transformers==4.56.2
+huggingface-hub==0.35.3
+safetensors==0.6.2
+sentencepiece==0.2.1
