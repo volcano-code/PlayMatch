@@ -1,0 +1,50 @@
+{
+  "status": "integration_passed",
+  "model_id": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "model_revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+  "dimensions": 384,
+  "max_seq_length": 128,
+  "catalog_count": 24,
+  "catalog_fingerprint": "67544d2727f4eec5b3afc9627faaa2e894aed0bdc3c2f1b140848f90c348a083",
+  "cold_build_seconds": 0.424,
+  "unchanged_rebuild_encoded": 0,
+  "unchanged_rebuild_reused": 24,
+  "restart_read": true,
+  "http_stats": {
+    "requests": 26,
+    "texts": 48
+  },
+  "limitations": [
+    "Not a blind or independent quality benchmark; labels are from the existing exploratory set.",
+    "Not a production deployment, external paid provider test, or throughput benchmark.",
+    "Documents longer than model max_seq_length are truncated by the pinned model.",
+    "Quality regression is reported, not hidden by changing labels or thresholds."
+  ],
+  "development_evaluation": [
+    {
+      "mode": "keyword_baseline",
+      "passed": 23,
+      "total": 23
+    },
+    {
+      "mode": "bm25",
+      "passed": 23,
+      "total": 23
+    },
+    {
+      "mode": "indexed_hybrid",
+      "passed": 23,
+      "total": 23
+    }
+  ],
+  "provenance": {
+    "tested_commit": "8226598b0d983d260f79cc86c30fa265401f6f1c",
+    "tested_tree": "5630bdd5806e8d2ae3df339bf42e6854a54af4c2",
+    "workflow_run_id": 39459330192,
+    "artifact_id": 12280894672,
+    "artifact_sha256": "cab76bed8231b0442fd31ccf398ae3de61eed6bdb28f0c45bfe3e37482ce9603",
+    "full_report_sha256": "d19183f2860d1f01eed6ec896a228d1b64985bd7f47df788bfbcf2564b0b29b6",
+    "summary_only": true
+  },
+  "timing_scope": "cold_build_seconds excludes model installation, download, model loading and HTTP server startup; not a throughput result."
+}
