@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=75,<81"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "playmatch"
+version = "0.1.0"
+description = "Evidence-backed game discovery and purchase decision API"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.34,<1",
+  "pydantic>=2.11,<3",
+  "pydantic-settings>=2.8,<3",
+  "sqlalchemy>=2.0,<3",
+  "alembic>=1.15,<2",
+  "httpx>=0.28,<1",
+  "langgraph>=1.0,<2",
+  "argon2-cffi>=25.1,<26",
+  "psycopg[binary]>=3.2,<4",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3,<10", "pytest-asyncio>=1.0,<2", "ruff>=0.11,<1"]
+
+[tool.setuptools.packages.find]
+where = ["services/api"]
+include = ["playmatch*"]
+
+[tool.pytest.ini_options]
+testpaths = ["services/api/tests", "tests/provider"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501", "B008"]

@@ -1,0 +1,621 @@
+import asyncio
+import hmac
+import json
+import re
+import secrets
+import time
+from contextlib import asynccontextmanager
+from uuid import uuid4
+
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Response
+from fastapi.responses import JSONResponse, StreamingResponse
+from sqlalchemy import delete, func, select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
+from playmatch.catalog_seed import load_catalog
+from playmatch.config import Settings, get_settings
+from playmatch.database import Database
+from playmatch.models import (
+    FeedbackRecord,
+    GameRecord,
+    RunEventRecord,
+    RunRecord,
+    SessionRecord,
+    UserRecord,
+    WatchRecord,
+)
+from playmatch.providers.cheapshark import CheapSharkClient
+from playmatch.runs import (
+    TERMINAL,
+    RunExecutor,
+    append_event,
+    now_iso,
+    recover_interrupted,
+    run_payload,
+)
+from playmatch.schemas import (
+    Credentials,
+    FeedbackInput,
+    Game,
+    GameList,
+    OfferResponse,
+    Run,
+    RunCreated,
+    RunInput,
+    User,
+    WatchInput,
+    WatchItem,
+)
+from playmatch.security import (
+    DUMMY_HASH,
+    SESSION_COOKIE,
+    VISITOR_COOKIE,
+    RateLimiter,
+    capability,
+    digest,
+    password_hasher,
+    validate_origin,
+    verify_password,
+)
+
+
+def get_db(request: Request):
+    with request.app.state.database.sessions() as session:
+        yield session
+
+
+def optional_user(request: Request, session: Session) -> UserRecord | None:
+    token = request.cookies.get(SESSION_COOKIE)
+    if not token:
+        return None
+    stored = session.get(SessionRecord, digest(token))
+    if not stored or stored.expires_at < time.time():
+        return None
+    return session.get(UserRecord, stored.user_id)
+
+
+def require_user(request: Request, session: Session) -> UserRecord:
+    user = optional_user(request, session)
+    if not user:
+        raise HTTPException(401, "请先登录")
+    return user
+
+
+def authorize_run(run_id: str, request: Request, session: Session) -> RunRecord:
+    record = session.get(RunRecord, run_id)
+    if not record:
+        raise HTTPException(404, "任务不存在")
+    user = optional_user(request, session)
+    if record.user_id:
+        if not user or user.id != record.user_id:
+            raise HTTPException(404, "任务不存在")
+    else:
+        supplied = request.headers.get("X-Run-Token", "")
+        if (
+            not supplied
+            or not record.capability_hash
+            or not hmac.compare_digest(digest(supplied), record.capability_hash)
+        ):
+            raise HTTPException(404, "任务不存在")
+    return record
+
+
+def game_or_404(session: Session, game_id: str) -> GameRecord:
+    game = session.get(GameRecord, game_id)
+    if not game:
+        raise HTTPException(404, "游戏不存在")
+    return game
+
+
+def set_session(response: Response, session: Session, user_id: str, settings: Settings) -> None:
+    token = secrets.token_urlsafe(32)
+    session.add(
+        SessionRecord(
+            token_hash=digest(token),
+            user_id=user_id,
+            expires_at=time.time() + settings.session_days * 86400,
+        )
+    )
+    session.commit()
+    response.set_cookie(
+        SESSION_COOKIE,
+        token,
+        httponly=True,
+        secure=settings.cookie_secure,
+        samesite="lax",
+        max_age=settings.session_days * 86400,
+        path="/",
+    )
+
+
+def watch_payload(row: WatchRecord, session: Session) -> dict:
+    return {
+        "game": game_or_404(session, row.game_id).payload,
+        "target_minor": row.target_minor,
+        "currency": row.currency,
+        "country": row.country,
+        "monitoring_status": "not_enabled",
+        "created_at": row.created_at,
+    }
+
+
+def create_app(settings: Settings | None = None, *, catalog: list[dict] | None = None) -> FastAPI:
+    settings = settings or get_settings()
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        database = Database(settings.database_url)
+        database.migrate()
+        with database.sessions() as session:
+            for raw in catalog if catalog is not None else load_catalog():
+                game = Game.model_validate(raw)
+                existing = session.get(GameRecord, game.id)
+                if not existing:
+                    session.add(GameRecord(id=game.id, title=game.title, payload=game.model_dump()))
+                else:
+                    existing.title = game.title
+                    existing.payload = game.model_dump()
+            session.commit()
+        recover_interrupted(database)
+        app.state.database = database
+        app.state.executor = RunExecutor(database, settings)
+        try:
+            yield
+        finally:
+            app.state.executor.close()
+            database.close()
+
+    app = FastAPI(title="PlayMatch API", version="0.1.0", lifespan=lifespan)
+    app.state.settings = settings
+    app.state.rate_limiter = RateLimiter()
+
+    @app.middleware("http")
+    async def guard_requests(request: Request, call_next):
+        if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
+            try:
+                validate_origin(request)
+            except HTTPException as error:
+                return JSONResponse({"detail": error.detail}, status_code=error.status_code)
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        if request.url.path.startswith(
+            ("/api/v1/auth", "/api/v1/runs", "/api/v1/watchlist", "/api/v1/feedback")
+        ):
+            response.headers["Cache-Control"] = "no-store"
+        return response
+
+    @app.get("/health")
+    def health(session: Session = Depends(get_db)):
+        return {
+            "status": "ok",
+            "version": "0.1.0",
+            "catalog_count": session.scalar(select(func.count()).select_from(GameRecord)),
+        }
+
+    @app.get("/api/v1/capabilities")
+    def capabilities(session: Session = Depends(get_db)):
+        return {
+            "catalog_mode": "curated_starter",
+            "catalog_count": session.scalar(select(func.count()).select_from(GameRecord)),
+            "agent_mode": "llm" if settings.llm_enabled else "rules",
+            "retrieval_mode": "keyword_baseline",
+            "pricing_provider": "cheapshark",
+            "pricing_currency": "USD",
+            "supported_price_countries": ["US"],
+            "notification_monitoring": "not_enabled",
+            "execution_mode": "single_process_bounded_workers",
+            "limitations": [
+                "当前为人工整理的起步目录，尚未启用全量 IGDB 同步。",
+                "当前检索是关键词与主题规则基线，尚未上线向量检索。",
+                "仅查询 CheapShark US/USD 观测报价，不提供中国区人民币价格。",
+                "版本与地区激活资格未核验的报价不会标记为保证可购买的最低价。",
+                "收藏仅保存目标价格，自动监控和通知尚未启用。",
+                "服务重启时未完成任务会明确失败，需要重试；尚未启用分布式执行。",
+            ],
+        }
+
+    @app.get("/api/v1/games", response_model=GameList)
+    def games(
+        q: str = Query(default="", max_length=200),
+        theme: str = Query(default="", max_length=50),
+        limit: int = Query(default=24, ge=1, le=100),
+        offset: int = Query(default=0, ge=0, le=100000),
+        session: Session = Depends(get_db),
+    ):
+        records = [
+            row.payload for row in session.scalars(select(GameRecord).order_by(GameRecord.title))
+        ]
+        if q.strip():
+            needle = q.strip().casefold()
+            records = [
+                game
+                for game in records
+                if needle
+                in " ".join(
+                    [
+                        game["title"],
+                        game["title_zh"],
+                        game["description"],
+                        *game["themes"],
+                        *game["genres"],
+                    ]
+                ).casefold()
+            ]
+        if theme.strip():
+            records = [
+                game
+                for game in records
+                if theme.strip().casefold() in {item.casefold() for item in game["themes"]}
+            ]
+        return {"items": records[offset : offset + limit], "total": len(records)}
+
+    @app.get("/api/v1/games/{game_id}", response_model=Game)
+    def game(game_id: str, session: Session = Depends(get_db)):
+        return game_or_404(session, game_id).payload
+
+    @app.get("/api/v1/games/{game_id}/offers", response_model=OfferResponse)
+    async def offers(
+        game_id: str,
+        request: Request,
+        country: str = Query(default="US", pattern="^(US|CN)$"),
+        session: Session = Depends(get_db),
+    ):
+        game = game_or_404(session, game_id).payload
+        app.state.rate_limiter.check(
+            "offers:" + (request.client.host if request.client else "unknown"), 30
+        )
+        async with CheapSharkClient() as provider:
+            result = await provider.get_offers(game["steam_app_id"], country)
+        return OfferResponse.model_validate({"game_id": game_id, **result})
+
+    @app.post("/api/v1/auth/register", response_model=User, status_code=201)
+    def register(
+        body: Credentials, request: Request, response: Response, session: Session = Depends(get_db)
+    ):
+        app.state.rate_limiter.check(
+            "register:" + (request.client.host if request.client else "unknown"), 8
+        )
+        user = UserRecord(
+            id=str(uuid4()),
+            email=body.email,
+            password_hash=password_hasher.hash(body.password),
+            created_at=now_iso(),
+        )
+        session.add(user)
+        try:
+            session.commit()
+        except IntegrityError as error:
+            session.rollback()
+            raise HTTPException(409, "该邮箱已注册") from error
+        set_session(response, session, user.id, settings)
+        return {"id": user.id, "email": user.email}
+
+    @app.post("/api/v1/auth/login", response_model=User)
+    def login(
+        body: Credentials, request: Request, response: Response, session: Session = Depends(get_db)
+    ):
+        app.state.rate_limiter.check(
+            "login:" + (request.client.host if request.client else "unknown"), 15
+        )
+        user = session.scalar(select(UserRecord).where(UserRecord.email == body.email))
+        matched = verify_password(user.password_hash if user else DUMMY_HASH, body.password)
+        if not user or not matched:
+            raise HTTPException(401, "邮箱或密码错误")
+        previous = request.cookies.get(SESSION_COOKIE)
+        if previous:
+            session.execute(
+                delete(SessionRecord).where(SessionRecord.token_hash == digest(previous))
+            )
+        set_session(response, session, user.id, settings)
+        return {"id": user.id, "email": user.email}
+
+    @app.post("/api/v1/auth/logout", status_code=204)
+    def logout(request: Request, response: Response, session: Session = Depends(get_db)):
+        token = request.cookies.get(SESSION_COOKIE)
+        if token:
+            session.execute(delete(SessionRecord).where(SessionRecord.token_hash == digest(token)))
+            session.commit()
+        response.delete_cookie(
+            SESSION_COOKIE, path="/", httponly=True, secure=settings.cookie_secure, samesite="lax"
+        )
+
+    @app.get("/api/v1/auth/me", response_model=User)
+    def me(request: Request, session: Session = Depends(get_db)):
+        user = require_user(request, session)
+        return {"id": user.id, "email": user.email}
+
+    @app.post("/api/v1/runs", response_model=RunCreated, status_code=202)
+    def create_run(
+        body: RunInput,
+        request: Request,
+        response: Response,
+        idempotency_key: str = Header(alias="Idempotency-Key", min_length=16, max_length=128),
+        session: Session = Depends(get_db),
+    ):
+        if not re.fullmatch(r"[A-Za-z0-9_-]{16,128}", idempotency_key):
+            raise HTTPException(422, "Idempotency-Key 必须为16至128位安全随机标识")
+        user = optional_user(request, session)
+        visitor = request.cookies.get(VISITOR_COOKIE, "")
+        if not re.fullmatch(r"[A-Za-z0-9_-]{40,64}", visitor):
+            visitor = secrets.token_urlsafe(32)
+        scope = "user:" + user.id if user else "anon:" + digest(visitor)
+        payload_hash = digest(json.dumps(body.model_dump(), sort_keys=True, ensure_ascii=False))
+        key_hash = digest(idempotency_key)
+        existing = session.scalar(
+            select(RunRecord).where(
+                RunRecord.idempotency_scope == scope, RunRecord.idempotency_key_hash == key_hash
+            )
+        )
+
+        def created(record):
+            if not user:
+                response.set_cookie(
+                    VISITOR_COOKIE,
+                    visitor,
+                    httponly=True,
+                    secure=settings.cookie_secure,
+                    samesite="lax",
+                    max_age=30 * 86400,
+                    path="/",
+                )
+            return {
+                "id": record.id,
+                "status": record.status,
+                "access_token": None if user else capability(visitor, record.id),
+            }
+
+        if existing:
+            if existing.payload_hash != payload_hash:
+                raise HTTPException(409, "相同幂等键已用于不同请求")
+            return created(existing)
+        app.state.rate_limiter.check("run:" + scope, 12)
+        app.state.rate_limiter.check(
+            "run-ip:" + (request.client.host if request.client else "unknown"), 40
+        )
+        if not app.state.executor.reserve():
+            raise HTTPException(503, "推荐队列已满，请稍后重试", headers={"Retry-After": "10"})
+        run_id = str(uuid4())
+        record = RunRecord(
+            id=run_id,
+            user_id=user.id if user else None,
+            capability_hash=None if user else digest(capability(visitor, run_id)),
+            idempotency_scope=scope,
+            idempotency_key_hash=key_hash,
+            payload_hash=payload_hash,
+            query=body.query,
+            request_payload=body.model_dump(),
+            status="queued",
+            mode="llm" if settings.llm_enabled else "rules",
+            intent={},
+            results=[],
+            warnings=[],
+            agent_state={},
+            created_at=now_iso(),
+            completed_at=None,
+        )
+        try:
+            session.add(record)
+            session.flush()
+            append_event(
+                session, run_id, "progress", {"stage": "queued", "message": "推荐任务已进入队列"}
+            )
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            app.state.executor.release()
+            existing = session.scalar(
+                select(RunRecord).where(
+                    RunRecord.idempotency_scope == scope, RunRecord.idempotency_key_hash == key_hash
+                )
+            )
+            if not existing or existing.payload_hash != payload_hash:
+                raise HTTPException(409, "幂等请求冲突") from None
+            return created(existing)
+        except Exception:
+            app.state.executor.release()
+            raise
+        app.state.executor.submit_reserved(run_id)
+        return created(record)
+
+    @app.get("/api/v1/runs/{run_id}", response_model=Run)
+    def get_run(run_id: str, request: Request, session: Session = Depends(get_db)):
+        return run_payload(authorize_run(run_id, request, session))
+
+    @app.get("/api/v1/runs/{run_id}/events")
+    async def run_events(
+        run_id: str,
+        request: Request,
+        last_event_id: str | None = Header(default=None, alias="Last-Event-ID"),
+        session: Session = Depends(get_db),
+    ):
+        authorize_run(run_id, request, session)
+        # Yield dependencies can outlive the entire streaming response. Release
+        # this authentication transaction before streaming; each polling read
+        # below opens and closes its own short-lived session.
+        session.close()
+        if last_event_id is not None and (not last_event_id.isdigit() or len(last_event_id) > 12):
+            raise HTTPException(422, "无效的 Last-Event-ID")
+        after = int(last_event_id or 0)
+
+        async def stream():
+            nonlocal after
+            idle = 0
+            while not await request.is_disconnected():
+                with app.state.database.sessions() as fresh:
+                    rows = list(
+                        fresh.scalars(
+                            select(RunEventRecord)
+                            .where(RunEventRecord.run_id == run_id, RunEventRecord.sequence > after)
+                            .order_by(RunEventRecord.sequence)
+                        )
+                    )
+                    status = fresh.get(RunRecord, run_id).status
+                    events = [(row.sequence, row.event, row.payload) for row in rows]
+                for sequence, name, payload in events:
+                    yield f"id: {sequence}\nevent: {name}\ndata: {json.dumps(payload, ensure_ascii=False)}\n\n"
+                    after = sequence
+                if status in TERMINAL:
+                    break
+                idle += 1
+                if idle % 30 == 0:
+                    yield ": ping\n\n"
+                await asyncio.sleep(0.15)
+
+        return StreamingResponse(
+            stream(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+        )
+
+    @app.get("/api/v1/watchlist")
+    def watchlist(request: Request, session: Session = Depends(get_db)):
+        user = require_user(request, session)
+        rows = session.scalars(
+            select(WatchRecord)
+            .where(WatchRecord.user_id == user.id)
+            .order_by(WatchRecord.created_at.desc())
+        )
+        return {"items": [watch_payload(row, session) for row in rows]}
+
+    @app.post("/api/v1/watchlist", response_model=WatchItem)
+    def save_watchlist(body: WatchInput, request: Request, session: Session = Depends(get_db)):
+        user = require_user(request, session)
+        game_or_404(session, body.game_id)
+        row = session.scalar(
+            select(WatchRecord).where(
+                WatchRecord.user_id == user.id, WatchRecord.game_id == body.game_id
+            )
+        )
+        if row:
+            row.target_minor, row.currency, row.country = (
+                body.target_minor,
+                body.currency,
+                body.country,
+            )
+        else:
+            row = WatchRecord(
+                id=str(uuid4()),
+                user_id=user.id,
+                game_id=body.game_id,
+                target_minor=body.target_minor,
+                currency=body.currency,
+                country=body.country,
+                monitoring_enabled=False,
+                created_at=now_iso(),
+            )
+            session.add(row)
+        try:
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            row = session.scalar(
+                select(WatchRecord).where(
+                    WatchRecord.user_id == user.id, WatchRecord.game_id == body.game_id
+                )
+            )
+            row.target_minor, row.currency, row.country = (
+                body.target_minor,
+                body.currency,
+                body.country,
+            )
+            session.commit()
+        return watch_payload(row, session)
+
+    @app.delete("/api/v1/watchlist/{game_id}", status_code=204)
+    def remove_watchlist(game_id: str, request: Request, session: Session = Depends(get_db)):
+        user = require_user(request, session)
+        session.execute(
+            delete(WatchRecord).where(
+                WatchRecord.user_id == user.id, WatchRecord.game_id == game_id
+            )
+        )
+        session.commit()
+
+    @app.get("/api/v1/feedback")
+    def get_feedback(request: Request, session: Session = Depends(get_db)):
+        user = require_user(request, session)
+        return {
+            "items": [
+                {"game_id": row.game_id, "kind": row.kind, "created_at": row.created_at}
+                for row in session.scalars(
+                    select(FeedbackRecord).where(FeedbackRecord.user_id == user.id)
+                )
+            ]
+        }
+
+    @app.post("/api/v1/feedback", status_code=201)
+    def feedback(body: FeedbackInput, request: Request, session: Session = Depends(get_db)):
+        user = require_user(request, session)
+        game_or_404(session, body.game_id)
+        if body.kind in {"like", "dislike"}:
+            opposite = "dislike" if body.kind == "like" else "like"
+            session.execute(
+                delete(FeedbackRecord).where(
+                    FeedbackRecord.user_id == user.id,
+                    FeedbackRecord.game_id == body.game_id,
+                    FeedbackRecord.kind == opposite,
+                )
+            )
+        row = session.scalar(
+            select(FeedbackRecord).where(
+                FeedbackRecord.user_id == user.id,
+                FeedbackRecord.game_id == body.game_id,
+                FeedbackRecord.kind == body.kind,
+            )
+        )
+        if not row:
+            row = FeedbackRecord(
+                id=str(uuid4()),
+                user_id=user.id,
+                game_id=body.game_id,
+                kind=body.kind,
+                created_at=now_iso(),
+            )
+            session.add(row)
+        try:
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+        return {"game_id": body.game_id, "kind": body.kind, "saved": True}
+
+    @app.delete("/api/v1/feedback/{game_id}/{kind}", status_code=204)
+    def delete_feedback(
+        game_id: str, kind: str, request: Request, session: Session = Depends(get_db)
+    ):
+        user = require_user(request, session)
+        session.execute(
+            delete(FeedbackRecord).where(
+                FeedbackRecord.user_id == user.id,
+                FeedbackRecord.game_id == game_id,
+                FeedbackRecord.kind == kind,
+            )
+        )
+        session.commit()
+
+    @app.get("/api/v1/providers/health")
+    def providers_health():
+        return {
+            "cheapshark": {
+                "status": "configured_unprobed",
+                "currency": "USD",
+                "countries": ["US"],
+                "live_probe_performed": False,
+            },
+            "igdb": {
+                "status": "configured_unprobed"
+                if settings.igdb_client_id and settings.igdb_client_secret
+                else "not_configured",
+                "catalog_sync_enabled": False,
+            },
+            "notifications": {"status": "not_enabled"},
+            "limitations": [
+                "健康页不进行外部调用；未把未检查的来源标为健康。",
+                "仅用户触发的报价请求，没有后台价格轮询。",
+            ],
+        }
+
+    return app
+
+
+app = create_app()

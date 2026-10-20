@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'feat/**', 'fix/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Python tests and PostgreSQL
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: playmatch
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: playmatch_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U playmatch -d playmatch_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - run: python -m pip install uv==0.12.23
+      - run: uv sync --frozen --extra dev
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest -q
+      - name: Check exploratory recommendation cases
+        run: uv run python scripts/evaluate_recommendations.py --check
+      - name: Check exported OpenAPI is current
+        run: uv run python scripts/check_openapi.py
+      - name: Exercise PostgreSQL migrations and account persistence
+        env:
+          DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/playmatch_test
+        run: uv run python scripts/smoke_postgres.py
+
+  browser:
+    name: Web build and browser flows
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            apps/web/package-lock.json
+            tests/e2e/package-lock.json
+      - run: python -m pip install uv==0.12.23
+      - run: uv sync --frozen --extra dev
+      - run: npm --prefix apps/web ci
+      - run: npm --prefix apps/web run typecheck
+      - run: npm --prefix apps/web run format:check
+      - run: npm --prefix apps/web test
+      - run: npm --prefix apps/web run build
+      - run: npm --prefix tests/e2e ci
+      - run: npx --prefix tests/e2e playwright install --with-deps chromium
+      - run: npm --prefix tests/e2e test
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: browser-failure-evidence
+          path: tests/e2e/test-results
+          retention-days: 7
+
+  containers:
+    name: Container startup
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: docker compose config --quiet
+      - run: docker compose up --build -d --wait --wait-timeout 120
+      - name: Check same-origin API proxy
+        run: |
+          curl --fail --silent http://127.0.0.1:3000/api/v1/capabilities | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["agent_mode"] == "rules"; assert d["supported_price_countries"] == ["US"]'
+      - name: Container logs on failure
+        if: failure()
+        run: docker compose logs --tail 100
+      - name: Stop containers
+        if: always()
+        run: docker compose down --volumes

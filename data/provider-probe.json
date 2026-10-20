@@ -1,0 +1,44 @@
+{
+  "checked_at": "2026-10-20T08:51:17.501095Z",
+  "live": true,
+  "purpose": "Explicit user-triggered read-only provider validation; no alerts or purchases.",
+  "cheapshark": [
+    {
+      "steam_app_id": 413150,
+      "country": "US",
+      "currency": "USD",
+      "status": "partial",
+      "supported": true,
+      "offer_count": 2,
+      "eligible_for_best_count": 0,
+      "best_offer_id": null,
+      "fetched_at": "2026-10-20T08:51:17.853081Z",
+      "elapsed_ms": 288,
+      "notices": [
+        "以下为 CheapShark 观测到的美元报价；版本与地区激活资格尚未核验，因此不标记保证可购买的最低价。",
+        "购买前请在商店确认版本、适用地区与最终结算价；供应商变更时间不等于本次抓取时间。"
+      ]
+    },
+    {
+      "steam_app_id": 620,
+      "country": "US",
+      "currency": "USD",
+      "status": "partial",
+      "supported": true,
+      "offer_count": 1,
+      "eligible_for_best_count": 0,
+      "best_offer_id": null,
+      "fetched_at": "2026-10-20T08:51:18.101133Z",
+      "elapsed_ms": 177,
+      "notices": [
+        "以下为 CheapShark 观测到的美元报价；版本与地区激活资格尚未核验，因此不标记保证可购买的最低价。",
+        "购买前请在商店确认版本、适用地区与最终结算价；供应商变更时间不等于本次抓取时间。"
+      ]
+    }
+  ],
+  "igdb": {
+    "provider": "igdb",
+    "status": "not_configured",
+    "catalog_import_enabled": false
+  }
+}

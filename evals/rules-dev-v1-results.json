@@ -1,0 +1,471 @@
+{
+  "dataset": "PlayMatch rules exploratory development set v1",
+  "split": "exploratory_development",
+  "evaluated_at": "2026-10-20T09:00:35.061668Z",
+  "mode": "rules",
+  "network": "blocked",
+  "catalog_size": 24,
+  "catalog_sha256": "04b3470ffa38b4082c5d095993f477362a727e16bf0dd55649ed6ebc511e9f10",
+  "limitations": [
+    "Small exploratory development set, manually labeled by the coding agent; not blind or independent.",
+    "Acceptable ids are non-exhaustive positive labels; Hit@k is not precision, satisfaction or generalization.",
+    "This evaluates the keyword baseline only, not LLM, embeddings, live prices or purchase eligibility."
+  ],
+  "summary": {
+    "total_cases": 23,
+    "passed_cases": 23,
+    "discovery_cases": 12,
+    "discovery_hit_at_1": 12,
+    "discovery_hit_at_3": 12,
+    "constraint_cases": 11,
+    "constraint_passed": 11
+  },
+  "cases": [
+    {
+      "id": "d01",
+      "kind": "discovery",
+      "query": "想玩温馨的农场经营游戏，种田放松",
+      "acceptable_ids": [
+        "steam-413150"
+      ],
+      "actual_ids": [
+        "steam-413150",
+        "steam-1868140",
+        "steam-294100",
+        "steam-323190",
+        "steam-427520"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    {
+      "id": "d02",
+      "kind": "discovery",
+      "query": "cozy farming game",
+      "acceptable_ids": [
+        "steam-413150"
+      ],
+      "actual_ids": [
+        "steam-413150",
+        "steam-1868140",
+        "steam-294100",
+        "steam-323190",
+        "steam-427520"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    {
+      "id": "d03",
+      "kind": "discovery",
+      "query": "太空探索，发现不同星球的秘密",
+      "acceptable_ids": [
+        "steam-753640",
+        "steam-275850",
+        "steam-548430"
+      ],
+      "actual_ids": [
+        "steam-275850",
+        "steam-753640",
+        "steam-548430",
+        "steam-105600",
+        "steam-1868140"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    {
+      "id": "d04",
+      "kind": "discovery",
+      "query": "space exploration adventure",
+      "acceptable_ids": [
+        "steam-753640",
+        "steam-275850",
+        "steam-548430"
+      ],
+      "actual_ids": [
+        "steam-275850",
+        "steam-548430",
+        "steam-753640",
+        "steam-105600",
+        "steam-1868140"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    {
+      "id": "d05",
+      "kind": "discovery",
+      "query": "侦探悬疑剧情，调查事件线索",
+      "acceptable_ids": [
+        "steam-632470",
+        "steam-383870"
+      ],
+      "actual_ids": [
+        "steam-632470",
+        "steam-383870",
+        "steam-753640",
+        "steam-1091500",
+        "steam-1426210"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    {
+      "id": "d06",
+      "kind": "discovery",
+      "query": "自动化工厂，设计物流和生产线",
+      "acceptable_ids": [
+        "steam-427520",
+        "steam-526870"
+      ],
+      "actual_ids": [
+        "steam-427520",
+        "steam-526870",
+        "steam-294100"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    {
+      "id": "d07",
+      "kind": "discovery",
+      "query": "卡牌构筑策略，研究组合",
+      "acceptable_ids": [
+        "steam-646570",
+        "steam-2379780"
+      ],
+      "actual_ids": [
+        "steam-2379780",
+        "steam-646570",
+        "steam-1145360",
+        "steam-294100",
+        "steam-323190"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    {
+      "id": "d08",
+      "kind": "discovery",
+      "query": "海洋探索，看看水下世界",
+      "acceptable_ids": [
+        "steam-264710",
+        "steam-384190",
+        "steam-1868140"
+      ],
+      "actual_ids": [
+        "steam-1868140",
+        "steam-264710",
+        "steam-384190",
+        "steam-367520",
+        "steam-105600"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    {
+      "id": "d09",
+      "kind": "discovery",
+      "query": "赛博朋克都市科幻故事",
+      "acceptable_ids": [
+        "steam-1091500"
+      ],
+      "actual_ids": [
+        "steam-1091500",
+        "steam-632470",
+        "steam-294100",
+        "steam-1426210",
+        "steam-383870"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    {
+      "id": "d10",
+      "kind": "discovery",
+      "query": "平台跳跃挑战，想练操作",
+      "acceptable_ids": [
+        "steam-504230",
+        "steam-367520"
+      ],
+      "actual_ids": [
+        "steam-504230",
+        "steam-1426210",
+        "steam-1145360",
+        "steam-367520",
+        "steam-892970"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    {
+      "id": "d11",
+      "kind": "discovery",
+      "query": "sci-fi puzzle adventure",
+      "acceptable_ids": [
+        "steam-620",
+        "steam-753640"
+      ],
+      "actual_ids": [
+        "steam-753640",
+        "steam-620",
+        "steam-264710",
+        "steam-275850",
+        "steam-526870"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    },
+    {
+      "id": "d12",
+      "kind": "discovery",
+      "query": "策略卡牌，排除合作主题",
+      "acceptable_ids": [
+        "steam-646570",
+        "steam-2379780"
+      ],
+      "actual_ids": [
+        "steam-2379780",
+        "steam-646570",
+        "steam-294100",
+        "steam-323190",
+        "steam-427520"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": [
+        "严格筛选已排除 4 款：命中用户明确排除的主题。"
+      ]
+    },
+    {
+      "id": "c01",
+      "kind": "constraint",
+      "query": "要中文界面的农场经营游戏",
+      "acceptable_ids": [
+        "steam-413150"
+      ],
+      "actual_ids": [
+        "steam-413150",
+        "steam-427520"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": [
+        "严格筛选已排除 3 款：中文支持尚未核验或不支持。"
+      ]
+    },
+    {
+      "id": "c02",
+      "kind": "constraint",
+      "query": "在线合作解谜冒险",
+      "acceptable_ids": [
+        "steam-620",
+        "steam-1426210"
+      ],
+      "actual_ids": [
+        "steam-620",
+        "steam-548430",
+        "steam-1426210",
+        "steam-105600",
+        "steam-728880"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": [
+        "严格筛选已排除 8 款：在线合作支持尚未核验或不支持。"
+      ]
+    },
+    {
+      "id": "c03",
+      "kind": "constraint",
+      "query": "想探索，但不要恐怖内容",
+      "acceptable_ids": [],
+      "actual_ids": [],
+      "hit_at_1": null,
+      "hit_at_3": null,
+      "passed": true,
+      "failures": [],
+      "warnings": [
+        "严格筛选已排除 13 款：无法核验是否符合不含恐怖内容。",
+        "当前目录中没有证据足够且符合全部硬条件的游戏。请主动修改条件或扩大目录；系统没有自动放宽条件。"
+      ]
+    },
+    {
+      "id": "c04",
+      "kind": "constraint",
+      "query": "Switch平台的种田游戏",
+      "acceptable_ids": [],
+      "actual_ids": [],
+      "hit_at_1": null,
+      "hit_at_3": null,
+      "passed": true,
+      "failures": [],
+      "warnings": [
+        "严格筛选已排除 7 款：平台不匹配。",
+        "当前目录中没有证据足够且符合全部硬条件的游戏。请主动修改条件或扩大目录；系统没有自动放宽条件。"
+      ]
+    },
+    {
+      "id": "c05",
+      "kind": "constraint",
+      "query": "四人合作冒险游戏",
+      "acceptable_ids": [],
+      "actual_ids": [],
+      "hit_at_1": null,
+      "hit_at_3": null,
+      "passed": true,
+      "failures": [],
+      "warnings": [
+        "严格筛选已排除 8 款：当前目录没有可核验的合作人数上限。",
+        "严格筛选已排除 8 款：在线合作支持尚未核验或不支持。",
+        "当前目录中没有证据足够且符合全部硬条件的游戏。请主动修改条件或扩大目录；系统没有自动放宽条件。"
+      ]
+    },
+    {
+      "id": "c06",
+      "kind": "constraint",
+      "query": "本地合作游戏",
+      "acceptable_ids": [],
+      "actual_ids": [],
+      "hit_at_1": null,
+      "hit_at_3": null,
+      "passed": true,
+      "failures": [],
+      "warnings": [
+        "严格筛选已排除 4 款：本地合作支持尚未核验或不支持。",
+        "当前目录中没有证据足够且符合全部硬条件的游戏。请主动修改条件或扩大目录；系统没有自动放宽条件。"
+      ]
+    },
+    {
+      "id": "c07",
+      "kind": "constraint",
+      "query": "赛车游戏",
+      "acceptable_ids": [],
+      "actual_ids": [],
+      "hit_at_1": null,
+      "hit_at_3": null,
+      "passed": true,
+      "failures": [],
+      "warnings": [
+        "当前目录中没有证据足够且符合全部硬条件的游戏。请主动修改条件或扩大目录；系统没有自动放宽条件。"
+      ]
+    },
+    {
+      "id": "c08",
+      "kind": "constraint",
+      "query": "Stardew Valley",
+      "acceptable_ids": [],
+      "actual_ids": [],
+      "hit_at_1": null,
+      "hit_at_3": null,
+      "passed": true,
+      "failures": [],
+      "warnings": [
+        "严格筛选已排除 1 款：已拥有或明确排除。",
+        "当前目录中没有证据足够且符合全部硬条件的游戏。请主动修改条件或扩大目录；系统没有自动放宽条件。"
+      ]
+    },
+    {
+      "id": "c09",
+      "kind": "constraint",
+      "query": "Cyberpunk 2077",
+      "acceptable_ids": [],
+      "actual_ids": [],
+      "hit_at_1": null,
+      "hit_at_3": null,
+      "passed": true,
+      "failures": [],
+      "warnings": [
+        "严格筛选已排除 1 款：已拥有或明确排除。",
+        "当前目录中没有证据足够且符合全部硬条件的游戏。请主动修改条件或扩大目录；系统没有自动放宽条件。"
+      ]
+    },
+    {
+      "id": "c10",
+      "kind": "constraint",
+      "query": "科幻探索，预算100元",
+      "acceptable_ids": [
+        "steam-264710",
+        "steam-275850",
+        "steam-753640",
+        "steam-526870",
+        "steam-548430"
+      ],
+      "actual_ids": [
+        "steam-264710",
+        "steam-275850",
+        "steam-526870",
+        "steam-548430",
+        "steam-753640"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": [
+        "当前未接入中国区人民币报价；以下仅为主题候选，预算条件尚未核验。"
+      ]
+    },
+    {
+      "id": "c11",
+      "kind": "constraint",
+      "query": "侦探剧情，中文不是必须",
+      "acceptable_ids": [
+        "steam-632470",
+        "steam-383870"
+      ],
+      "actual_ids": [
+        "steam-632470",
+        "steam-383870",
+        "steam-753640",
+        "steam-1091500",
+        "steam-1426210"
+      ],
+      "hit_at_1": true,
+      "hit_at_3": true,
+      "passed": true,
+      "failures": [],
+      "warnings": []
+    }
+  ]
+}

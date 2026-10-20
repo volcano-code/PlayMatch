@@ -1,0 +1,9 @@
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+package-lock.json
+public/
+playwright-report/
+test-results/

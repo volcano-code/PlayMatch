@@ -1,0 +1,313 @@
+{
+  "schema_version": 1,
+  "name": "PlayMatch rules exploratory development set v1",
+  "split": "exploratory_development",
+  "annotation_method": "Coding-agent manual labels from the source-linked starter catalog, fixed before running these cases. Not independent or blind user evaluation. Acceptable ids are non-exhaustive positive labels.",
+  "created_at": "2026-10-20T08:55:57.774465Z",
+  "catalog_sha256_at_annotation": "04b3470ffa38b4082c5d095993f477362a727e16bf0dd55649ed6ebc511e9f10",
+  "cases": [
+    {
+      "id": "d01",
+      "kind": "discovery",
+      "query": "想玩温馨的农场经营游戏，种田放松",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-413150"
+      ],
+      "expect_empty": false,
+      "rationale": "农场与小镇生活是星露谷的直接主题。"
+    },
+    {
+      "id": "d02",
+      "kind": "discovery",
+      "query": "cozy farming game",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-413150"
+      ],
+      "expect_empty": false,
+      "rationale": "英文的温馨种田意图应找到同一个农场主题入口。"
+    },
+    {
+      "id": "d03",
+      "kind": "discovery",
+      "query": "太空探索，发现不同星球的秘密",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-753640",
+        "steam-275850",
+        "steam-548430"
+      ],
+      "expect_empty": false,
+      "rationale": "三者分别提供太阳系解谜、星球旅行或外星洞穴探索。"
+    },
+    {
+      "id": "d04",
+      "kind": "discovery",
+      "query": "space exploration adventure",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-753640",
+        "steam-275850",
+        "steam-548430"
+      ],
+      "expect_empty": false,
+      "rationale": "使用英文描述太空探索，而不是游戏标题搜索。"
+    },
+    {
+      "id": "d05",
+      "kind": "discovery",
+      "query": "侦探悬疑剧情，调查事件线索",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-632470",
+        "steam-383870"
+      ],
+      "expect_empty": false,
+      "rationale": "极乐迪斯科是侦探调查；看火人以对话与环境线索推进悬疑。"
+    },
+    {
+      "id": "d06",
+      "kind": "discovery",
+      "query": "自动化工厂，设计物流和生产线",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-427520",
+        "steam-526870"
+      ],
+      "expect_empty": false,
+      "rationale": "工厂生产与物流是这两款游戏的核心任务。"
+    },
+    {
+      "id": "d07",
+      "kind": "discovery",
+      "query": "卡牌构筑策略，研究组合",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-646570",
+        "steam-2379780"
+      ],
+      "expect_empty": false,
+      "rationale": "杀戮尖塔与小丑牌均围绕牌组/牌型组合构建策略。"
+    },
+    {
+      "id": "d08",
+      "kind": "discovery",
+      "query": "海洋探索，看看水下世界",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-264710",
+        "steam-384190",
+        "steam-1868140"
+      ],
+      "expect_empty": false,
+      "rationale": "三个候选均有明确水下探索主题，不要求无恐怖或无战斗。"
+    },
+    {
+      "id": "d09",
+      "kind": "discovery",
+      "query": "赛博朋克都市科幻故事",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-1091500"
+      ],
+      "expect_empty": false,
+      "rationale": "赛博朋克2077直接符合夜之城都市科技叙事。"
+    },
+    {
+      "id": "d10",
+      "kind": "discovery",
+      "query": "平台跳跃挑战，想练操作",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-504230",
+        "steam-367520"
+      ],
+      "expect_empty": false,
+      "rationale": "蔚蓝以跳跃关卡为核心；空洞骑士包含动作与平台探索。"
+    },
+    {
+      "id": "d11",
+      "kind": "discovery",
+      "query": "sci-fi puzzle adventure",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-620",
+        "steam-753640"
+      ],
+      "expect_empty": false,
+      "rationale": "传送门2与星际拓荒分别是物理解谜和太空谜团探索。"
+    },
+    {
+      "id": "d12",
+      "kind": "discovery",
+      "query": "策略卡牌，排除合作主题",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-646570",
+        "steam-2379780"
+      ],
+      "expect_empty": false,
+      "rationale": "要卡牌策略并明确排除合作标签；不把负向合作词当正向偏好。",
+      "forbidden_themes": [
+        "合作"
+      ]
+    },
+    {
+      "id": "c01",
+      "kind": "constraint",
+      "query": "要中文界面的农场经营游戏",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-413150"
+      ],
+      "expect_empty": false,
+      "rationale": "星露谷商店语言表已核实简中界面。",
+      "require_game_fields": {
+        "chinese_support": "verified"
+      },
+      "intent_equals": {
+        "chinese_required": true
+      }
+    },
+    {
+      "id": "c02",
+      "kind": "constraint",
+      "query": "在线合作解谜冒险",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-620",
+        "steam-1426210"
+      ],
+      "expect_empty": false,
+      "rationale": "两款有官方在线合作与解谜/冒险说明；不宣称跨平台和人数。",
+      "require_game_fields": {
+        "coop": "online"
+      },
+      "intent_equals": {
+        "coop_required": true
+      }
+    },
+    {
+      "id": "c03",
+      "kind": "constraint",
+      "query": "想探索，但不要恐怖内容",
+      "country": "US",
+      "acceptable_ids": [],
+      "expect_empty": true,
+      "rationale": "目录全部horror未知，严格无恐怖需求不能当作满足。"
+    },
+    {
+      "id": "c04",
+      "kind": "constraint",
+      "query": "Switch平台的种田游戏",
+      "country": "US",
+      "acceptable_ids": [],
+      "expect_empty": true,
+      "rationale": "当前目录仅标PC，不能用游戏可能另有主机版代替平台证据。"
+    },
+    {
+      "id": "c05",
+      "kind": "constraint",
+      "query": "四人合作冒险游戏",
+      "country": "US",
+      "acceptable_ids": [],
+      "expect_empty": true,
+      "rationale": "当前合同没有已核验的合作人数上限，不能保证四人。"
+    },
+    {
+      "id": "c06",
+      "kind": "constraint",
+      "query": "本地合作游戏",
+      "country": "US",
+      "acceptable_ids": [],
+      "expect_empty": true,
+      "rationale": "当前coop正向证据只记录online，不能将在线合作等同本地合作。"
+    },
+    {
+      "id": "c07",
+      "kind": "constraint",
+      "query": "赛车游戏",
+      "country": "US",
+      "acceptable_ids": [],
+      "expect_empty": true,
+      "rationale": "人工启动目录没有赛车主题；不能用零相关候选填满卡片。"
+    },
+    {
+      "id": "c08",
+      "kind": "constraint",
+      "query": "Stardew Valley",
+      "country": "US",
+      "acceptable_ids": [],
+      "expect_empty": true,
+      "rationale": "唯一明确标题命中已由用户标为拥有，默认排除。",
+      "feedback": [
+        {
+          "game_id": "steam-413150",
+          "kind": "owned"
+        }
+      ],
+      "forbidden_ids": [
+        "steam-413150"
+      ]
+    },
+    {
+      "id": "c09",
+      "kind": "constraint",
+      "query": "Cyberpunk 2077",
+      "country": "US",
+      "acceptable_ids": [],
+      "expect_empty": true,
+      "rationale": "用户明确排除对应游戏后不应继续推荐。",
+      "feedback": [
+        {
+          "game_id": "steam-1091500",
+          "kind": "exclude"
+        }
+      ],
+      "forbidden_ids": [
+        "steam-1091500"
+      ]
+    },
+    {
+      "id": "c10",
+      "kind": "constraint",
+      "query": "科幻探索，预算100元",
+      "country": "CN",
+      "acceptable_ids": [
+        "steam-264710",
+        "steam-275850",
+        "steam-753640",
+        "steam-526870",
+        "steam-548430"
+      ],
+      "expect_empty": false,
+      "rationale": "CN价格源未接入，可以给主题候选，但必须明确预算尚未核验。",
+      "intent_equals": {
+        "budget_minor": 10000,
+        "currency": "CNY"
+      },
+      "warning_contains_any": [
+        "预算"
+      ],
+      "all_tradeoffs_contain_any": [
+        "预算尚未核验"
+      ]
+    },
+    {
+      "id": "c11",
+      "kind": "constraint",
+      "query": "侦探剧情，中文不是必须",
+      "country": "US",
+      "acceptable_ids": [
+        "steam-632470",
+        "steam-383870"
+      ],
+      "expect_empty": false,
+      "rationale": "中文可选不应误转为中文硬筛选；这两款目录语言仍unknown。",
+      "intent_equals": {
+        "chinese_required": false
+      }
+    }
+  ]
+}
