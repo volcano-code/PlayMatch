@@ -11,6 +11,8 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
     services:
       postgres:
         image: postgres:17-alpine
@@ -32,8 +34,8 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version: '24'
-      - run: python -m pip install uv==0.12.23
-      - run: uv sync --frozen --extra dev
+      - run: python -m pip install -q uv==0.12.23
+      - run: uv sync --frozen --extra dev -q
       - name: Assemble and format candidate
         run: |
           mkdir -p "$RUNNER_TEMP/recovery-evidence"
@@ -59,52 +61,52 @@ jobs:
           npm --prefix apps/web run typecheck
           npm --prefix apps/web test
           npm --prefix apps/web run build
-      - name: Create candidate Git objects without moving any branch
+      - name: Preserve exact tested source and export blob manifest only
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           python - <<'PY'
-          import base64, json, os, subprocess, urllib.request
+          import base64, hashlib, json, os, subprocess, urllib.request
           from pathlib import Path
           repo = 'volcano-code/PlayMatch'
           assert os.environ['GITHUB_REPOSITORY'] == repo
           def git(*args):
               return subprocess.check_output(['git', *args]).decode().strip()
-          def post(endpoint, payload):
-              request = urllib.request.Request('https://api.github.com/repos/' + repo + endpoint,
-                  data=json.dumps(payload).encode(), method='POST', headers={
-                  'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
-                  'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json'})
-              with urllib.request.urlopen(request, timeout=30) as response:
-                  return json.load(response)
-          subprocess.run(['git', 'add', '-A'], check=True)
+          directory = Path(os.environ['RUNNER_TEMP']) / 'recovery-evidence'
+          subprocess.run(['git', 'add', '-u'], check=True)
+          tree = git('write-tree')
+          (directory / 'candidate.patch').write_bytes(subprocess.check_output(['git', 'diff', '--cached', '--binary']))
+          subprocess.run(['git', 'archive', '--format=zip', tree, '-o', str(directory / 'source.zip')], check=True)
+          (directory / 'source.sha256').write_text(hashlib.sha256((directory / 'source.zip').read_bytes()).hexdigest())
           entries = []
-          changed = git('diff', '--cached', '--name-status', '--no-renames').splitlines()
-          for row in changed:
+          for row in git('diff', '--cached', '--name-status', '--no-renames').splitlines():
               status, path = row.split('\t', 1)
-              assert not path.startswith(('.env/', '.state/', 'node_modules/'))
-              assert not path.endswith(('.db', '.sqlite', '.pem'))
+              assert not path.endswith(('.db', '.sqlite', '.pem', '.env'))
+              assert not path.startswith(('.state/', 'node_modules/'))
               if status == 'D':
                   entries.append({'path': path, 'mode': '100644', 'type': 'blob', 'sha': None})
-              else:
-                  blob = post('/git/blobs', {'content': base64.b64encode(Path(path).read_bytes()).decode(), 'encoding': 'base64'})
-                  mode = git('ls-files', '-s', '--', path).split()[0]
-                  entries.append({'path': path, 'mode': mode, 'type': 'blob', 'sha': blob['sha']})
-          parent = git('rev-parse', 'HEAD')
-          tree = post('/git/trees', {'base_tree': git('rev-parse', 'HEAD^{tree}'), 'tree': entries})
-          assert tree['sha'] == git('write-tree')
-          commit = post('/git/commits', {'message': 'feat: add bounded hybrid retrieval and atomic reviewed catalog imports',
-              'tree': tree['sha'], 'parents': [parent]})
-          output = {'candidate_sha': commit['sha'], 'tree_sha': tree['sha'], 'parent_sha': parent}
-          directory = Path(os.environ['RUNNER_TEMP']) / 'recovery-evidence'
+                  continue
+              mode = git('ls-files', '-s', '--', path).split()[0]
+              assert mode in ('100644', '100755')
+              content = Path(path).read_bytes()
+              assert len(content) < 300000
+              request = urllib.request.Request('https://api.github.com/repos/' + repo + '/git/blobs',
+                  data=json.dumps({'content': base64.b64encode(content).decode(), 'encoding': 'base64'}).encode(),
+                  method='POST', headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                  'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json'})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  blob = json.load(response)
+              assert blob['sha'] == git('hash-object', path)
+              entries.append({'path': path, 'mode': mode, 'type': 'blob', 'sha': blob['sha']})
+          output = {'tree_sha': tree, 'parent_sha': git('rev-parse', 'HEAD'),
+                    'base_tree_sha': git('rev-parse', 'HEAD^{tree}'), 'entries': entries}
           (directory / 'candidate.json').write_text(json.dumps(output, indent=2))
-          (directory / 'candidate.patch').write_bytes(subprocess.check_output(['git', 'diff', '--cached', '--binary']))
-          subprocess.run(['git', 'archive', '--format=zip', git('write-tree'), '-o', str(directory / 'source.zip')], check=True)
-          print('CANDIDATE ' + json.dumps(output))
+          print('VALIDATED_MANIFEST ' + json.dumps(output))
+          # No tree, commit or branch writes here. Publish through the user's connector.
           PY
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
           name: recovery-validation-${{ github.sha }}
           path: ${{ runner.temp }}/recovery-evidence/
-          retention-days: 7
+          retention-days: 14
