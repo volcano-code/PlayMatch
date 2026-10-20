@@ -1,0 +1,36 @@
+name: Source snapshot
+
+on:
+  push:
+    branches: [main, 'feat/**', 'fix/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source:
+    name: Commit-bound source archive
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Archive tracked source only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/playmatch-source"
+          git archive --format=zip HEAD -o "$RUNNER_TEMP/playmatch-source/source.zip"
+          git rev-parse HEAD > "$RUNNER_TEMP/playmatch-source/commit.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/playmatch-source/tree-sha.txt"
+          git ls-tree -r HEAD > "$RUNNER_TEMP/playmatch-source/tree.txt"
+          (cd "$RUNNER_TEMP/playmatch-source" && sha256sum source.zip > SHA256SUMS)
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: playmatch-source-${{ github.sha }}
+          path: ${{ runner.temp }}/playmatch-source/
+          if-no-files-found: error
+          retention-days: 14
