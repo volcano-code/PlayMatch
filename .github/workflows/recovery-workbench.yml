@@ -2,9 +2,12 @@ name: One-shot recovery workbench
 on:
   push:
     branches: ['feat/v02-retrieval-recovery']
-    paths: ['scripts/recovery_assemble.py', '.github/workflows/recovery-workbench.yml']
+    paths: ['scripts/recovery_assemble.py', 'scripts/recovery_polish.py', '.github/workflows/recovery-workbench.yml']
 permissions:
   contents: read
+concurrency:
+  group: recovery-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   assemble:
     runs-on: ubuntu-24.04
@@ -40,11 +43,12 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/recovery-evidence"
           python scripts/recovery_assemble.py
+          python scripts/recovery_polish.py
           sed -i 's/str(database.engine.url)/database.engine.url.render_as_string(hide_password=False)/' services/api/tests/test_catalog_v02.py
           uv run ruff check --fix .
           uv run ruff format .
           npm --prefix apps/web ci
-          cd apps/web && npx --no-install prettier --write lib/types.ts
+          cd apps/web && npx --no-install prettier --write lib/types.ts lib/retrieval-labels.ts lib/retrieval-labels.test.ts components/playmatch-app.tsx components/game-card.tsx components/retrieval-status.tsx
       - name: Validate all Python tests
         run: uv run pytest -q --junitxml="$RUNNER_TEMP/recovery-evidence/python.xml"
       - name: Validate PostgreSQL import semantics
@@ -59,8 +63,14 @@ jobs:
       - name: Frontend checks
         run: |
           npm --prefix apps/web run typecheck
+          npm --prefix apps/web run format:check
           npm --prefix apps/web test
           npm --prefix apps/web run build
+      - name: Real browser and UI contract regression
+        run: |
+          npm --prefix tests/e2e ci
+          npx --prefix tests/e2e playwright install --with-deps chromium > "$RUNNER_TEMP/recovery-evidence/browser-install.log" 2>&1
+          npm --prefix tests/e2e test
       - name: Preserve exact tested source and export blob manifest only
         env:
           GH_TOKEN: ${{ github.token }}
@@ -110,3 +120,9 @@ jobs:
           name: recovery-validation-${{ github.sha }}
           path: ${{ runner.temp }}/recovery-evidence/
           retention-days: 14
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: failure()
+        with:
+          name: recovery-browser-failures
+          path: tests/e2e/test-results/
+          retention-days: 7
