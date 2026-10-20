@@ -6,7 +6,7 @@
 
 PlayMatch 是分阶段实现的全栈 Agent 项目。首轮版本提供完整用户流程：中文主题输入 → LangGraph 推荐任务 → 流式进度 → 有依据的候选结果 → 按需查询报价 → 对比、收藏与偏好反馈。
 
-无密钥即可启动。没有模型配置时，产品明确使用规则与关键词检索；有完整模型配置时，才执行真实的结构化意图解析。当前目录为 24 款人工整理的 PC 游戏，不冒充全量游戏索引。
+无密钥即可启动。没有模型配置时，产品明确使用规则解析与 BM25 词项检索；有完整模型配置时，才执行真实的结构化意图解析。当前目录为 24 款人工整理的 PC 游戏，不冒充全量游戏索引。
 
 ![PlayMatch 桌面端实际运行界面](docs/screenshots/discover-desktop.jpg)
 
@@ -17,7 +17,7 @@ PlayMatch 是分阶段实现的全栈 Agent 项目。首轮版本提供完整用
 | 能力 | 已实现行为 |
 | --- | --- |
 | 游戏发现 | 中文界面、主题输入、目录筛选、地区与预算、响应式布局 |
-| 推荐工作流 | LangGraph 解析、检索、约束筛选、按需预算报价、解释；规则基线与可配置模型路径 |
+| 推荐工作流 | LangGraph 解析、检索、约束筛选、按需预算报价、解释；BM25 默认、可选向量融合与模型解析 |
 | 可信约束 | 区分已核验和未知；负向主题、已拥有排除、平台、中文与合作条件；无法证明的条件明确提示 |
 | 任务可靠性 | 数据库持久化 run/event、Idempotency-Key、SSE 与 Last-Event-ID 重放、有界并发与超时 |
 | 购买辅助 | CheapShark 真实 USD 观测报价、整数金额、来源与查询时间、版本/激活不确定性 |
@@ -90,7 +90,7 @@ LLM_MODEL=your-supported-model
 
 服务须支持兼容的 `/chat/completions` 接口与 JSON 对象输出。密钥只保留在后端；超时和结构化输出均有边界。模型失败时返回带提示的规则降级结果，不生成游戏或价格数据。本仓库不含模型密钥，也不声称已在真实模型账户上完成验证。
 
-CheapShark 无需密钥。IGDB 的 client credentials 适配器已实现，尚未自动导入目录；配置凭证不会把人工目录改标为 IGDB 目录。参见 [数据来源说明](docs/data-sources.md)。
+CheapShark 无需密钥。IGDB 的 client credentials 适配器已实现，新增审核后规范化文件的事务性导入；尚未自动同步。配置凭证不会把人工目录改标为 IGDB 目录。参见 [数据来源说明](docs/data-sources.md)。
 
 ## 架构与关键决定
 
@@ -116,7 +116,7 @@ flowchart TD
 - [API 与数据契约](docs/implementation-contract.md)
 - [OpenAPI 规范](packages/contracts/openapi.json)
 
-状态与事件持久化不等同于 LangGraph checkpoint 恢复。首轮 API 使用一个进程；中断的任务在下一次启动时变为明确失败，用户可重新提交。Redis/Celery 分布式投递、跨进程恢复和向量检索尚未启用。
+状态与事件持久化不等同于 LangGraph checkpoint 恢复。首轮 API 使用一个进程；中断的任务在下一次启动时变为明确失败，用户可重新提交。Redis/Celery 分布式投递和跨进程恢复尚未启用。向量检索可显式配置，实际质量与线上可用性仍需验证。
 
 ## 测试与复现
 
@@ -167,4 +167,12 @@ uv run python scripts/probe_providers.py --live --output data/provider-probe.jso
 
 ## 后续阶段
 
-按 [阶段记录](docs/implementation-status.md) 推进目录导入、混合检索、持久队列与 checkpoint 恢复、更大规模评估。价格通知需要先确定允许的来源与用户授权流程。实际实现、验证结果与未接通能力分别记录；规划指标不会作为已实现的简历成绩。
+按 [阶段记录](docs/implementation-status.md) 推进真实 IGDB 同步、更大目录与语义质量评估、持久队列与 checkpoint 恢复。价格通知需要先确定允许的来源与用户授权流程。实际实现、验证结果与未接通能力分别记录；规划指标不会作为已实现的简历成绩。
+
+
+## v0.2 恢复开发增量
+
+默认检索升级为离线 BM25；原关键词模式保留用于对照。显式配置才使用 embedding + RRF，
+失败会报告降级，真实向量质量仍待独立验收。新增审核后 IGDB 规范化记录的事务性 CLI 导入，
+默认仅预演；相同键重复执行不会重复写入，冲突整批回滚，人工记录及已有游戏 ID 不覆盖。
+原首轮说明是历史基线；本阶段行为与限制以 [v0.2 说明](docs/retrieval-import-v02.md) 为准。

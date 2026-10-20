@@ -33,7 +33,5 @@ export function metadataLabel(value: unknown): string {
 }
 
 export function fingerprintLabel(value: unknown): string | null {
-  return typeof value === "string" && /^[a-f0-9]{64}$/.test(value)
-    ? value.slice(0, 12)
-    : null;
+  return typeof value === "string" && /^[a-f0-9]{64}$/.test(value) ? value.slice(0, 12) : null;
 }

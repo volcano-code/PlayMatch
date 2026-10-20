@@ -80,3 +80,25 @@ class FeedbackRecord(Base):
     game_id: Mapped[str] = mapped_column(ForeignKey("games.id"), index=True)
     kind: Mapped[str] = mapped_column(String(16))
     created_at: Mapped[str] = mapped_column(String(40))
+
+
+class CatalogLock(Base):
+    __tablename__ = "catalog_lock"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    revision: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class CatalogSource(Base):
+    __tablename__ = "catalog_sources"
+    provider_id: Mapped[str] = mapped_column(String(40), primary_key=True)
+    game_id: Mapped[str] = mapped_column(ForeignKey("games.id"), unique=True)
+    observed_at: Mapped[str] = mapped_column(String(40))
+    content_hash: Mapped[str] = mapped_column(String(64))
+
+
+class CatalogImport(Base):
+    __tablename__ = "catalog_imports"
+    key: Mapped[str] = mapped_column(String(100), primary_key=True)
+    content_hash: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[str] = mapped_column(String(40))
+    report: Mapped[dict] = mapped_column(JSON)

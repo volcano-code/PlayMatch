@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Literal
 from urllib.parse import urlparse
 
 from pydantic import Field
@@ -21,6 +22,31 @@ class Settings(BaseSettings):
     run_workers: int = Field(default=2, ge=1, le=8)
     max_pending_runs: int = Field(default=24, ge=1, le=100)
     run_timeout_seconds: int = Field(default=90, ge=10, le=300)
+
+    retrieval_mode: Literal["keyword_baseline", "bm25", "hybrid"] = "bm25"
+    embedding_base_url: str = ""
+    embedding_model: str = ""
+    embedding_api_key: str = ""
+    embedding_timeout_seconds: float = Field(default=8, ge=0.1, le=20, allow_inf_nan=False)
+    semantic_min_score: float = Field(default=0.65, ge=0, le=1, allow_inf_nan=False)
+
+    @property
+    def embedding_enabled(self) -> bool:
+        try:
+            parsed = urlparse(self.embedding_base_url)
+            local = parsed.scheme == "http" and parsed.hostname in {"localhost", "127.0.0.1", "::1"}
+            return bool(
+                self.embedding_model
+                and parsed.hostname
+                and (local or (parsed.scheme == "https" and self.embedding_api_key))
+                and not parsed.username
+                and not parsed.password
+                and not parsed.query
+                and not parsed.fragment
+                and (parsed.port is None or 1 <= parsed.port <= 65535)
+            )
+        except ValueError:
+            return False
 
     @property
     def llm_enabled(self) -> bool:

@@ -13,8 +13,27 @@ from functools import lru_cache
 import httpx
 
 STOPWORDS = {
-    "游戏", "推荐", "一个", "给我", "想玩", "可以", "一些", "适合", "什么", "需要", "喜欢",
-    "game", "games", "recommend", "want", "the", "a", "to", "play", "and", "with",
+    "游戏",
+    "推荐",
+    "一个",
+    "给我",
+    "想玩",
+    "可以",
+    "一些",
+    "适合",
+    "什么",
+    "需要",
+    "喜欢",
+    "game",
+    "games",
+    "recommend",
+    "want",
+    "the",
+    "a",
+    "to",
+    "play",
+    "and",
+    "with",
 }
 MAX_SEMANTIC_CATALOG = 128
 
@@ -23,14 +42,20 @@ def tokens(text: str) -> list[str]:
     text = unicodedata.normalize("NFKC", text).casefold()
     terms = re.findall(r"[a-z0-9]+", text)
     for chunk in re.findall(r"[\u4e00-\u9fff]+", text):
-        terms.extend(chunk[i:i + 2] for i in range(max(1, len(chunk) - 1)))
+        terms.extend(chunk[i : i + 2] for i in range(max(1, len(chunk) - 1)))
     return [term for term in terms if term not in STOPWORDS]
 
 
 def document(game: dict) -> str:
-    return " ".join([
-        game["title"], game["title_zh"], *game["themes"], *game["genres"], game["description"],
-    ])[:6000]
+    return " ".join(
+        [
+            game["title"],
+            game["title_zh"],
+            *game["themes"],
+            *game["genres"],
+            game["description"],
+        ]
+    )[:6000]
 
 
 def fingerprint(catalog: list[dict]) -> str:
@@ -101,11 +126,15 @@ class EmbeddingClient:
         headers = {"Authorization": "Bearer " + self.key} if self.key else {}
         try:
             with httpx.Client(
-                timeout=min(remaining, 5), follow_redirects=False,
-                transport=self.transport, trust_env=False,
+                timeout=min(remaining, 5),
+                follow_redirects=False,
+                transport=self.transport,
+                trust_env=False,
             ) as client:
                 with client.stream(
-                    "POST", self.base_url.rstrip("/") + "/embeddings", headers=headers,
+                    "POST",
+                    self.base_url.rstrip("/") + "/embeddings",
+                    headers=headers,
                     json={"model": self.model, "input": texts, "encoding_format": "float"},
                 ) as response:
                     response.raise_for_status()
@@ -145,7 +174,7 @@ class EmbeddingClient:
             missing = list(dict.fromkeys(key for key in keys if key not in staged))
             by_key = dict(zip(keys, docs, strict=True))
             for start in range(0, len(missing), 16):
-                batch = missing[start:start + 16]
+                batch = missing[start : start + 16]
                 vectors = self._request([by_key[key] for key in batch], deadline)
                 staged.update(zip(batch, vectors, strict=True))
             query_vector = self._request([query], deadline)[0]
@@ -181,7 +210,9 @@ def search_catalog(catalog: list[dict], intent: dict, query: str, feedback: list
             if not settings.embedding_enabled or len(catalog) > MAX_SEMANTIC_CATALOG:
                 raise EmbeddingUnavailable("Embedding disabled or catalog exceeds bound")
             vectors = embedding_client(
-                settings.embedding_base_url, settings.embedding_model, settings.embedding_api_key,
+                settings.embedding_base_url,
+                settings.embedding_model,
+                settings.embedding_api_key,
             ).encode([*texts, query[:6000]], settings.embedding_timeout_seconds)
             semantic = [
                 sum(a * b for a, b in zip(vector, vectors[-1], strict=True))
@@ -194,9 +225,13 @@ def search_catalog(catalog: list[dict], intent: dict, query: str, feedback: list
         [i for i, score in enumerate(lexical) if score > 0],
         key=lambda i: (-lexical[i], catalog[i]["id"]),
     )
-    semantic_ids = [] if semantic is None else sorted(
-        [i for i, score in enumerate(semantic) if score >= settings.semantic_min_score],
-        key=lambda i: (-semantic[i], catalog[i]["id"]),
+    semantic_ids = (
+        []
+        if semantic is None
+        else sorted(
+            [i for i, score in enumerate(semantic) if score >= settings.semantic_min_score],
+            key=lambda i: (-semantic[i], catalog[i]["id"]),
+        )
     )
     fused = Counter()
     for ranking in (lexical_ids, semantic_ids):
@@ -206,10 +241,18 @@ def search_catalog(catalog: list[dict], intent: dict, query: str, feedback: list
     disliked = {row["game_id"] for row in feedback if row["kind"] == "dislike"}
     liked_themes = Counter(t for game in catalog if game["id"] in liked for t in game["themes"])
     filter_only = not intent.get("themes") and (
-        any(intent.get(key) for key in (
-            "chinese_required", "coop_required", "exclude_horror", "excluded_themes",
-            "players", "single_player_required",
-        )) or intent.get("platform", "PC") != "PC"
+        any(
+            intent.get(key)
+            for key in (
+                "chinese_required",
+                "coop_required",
+                "exclude_horror",
+                "excluded_themes",
+                "players",
+                "single_player_required",
+            )
+        )
+        or intent.get("platform", "PC") != "PC"
     )
     relevant = set(lexical_ids) | set(semantic_ids)
     rows = []
@@ -218,13 +261,26 @@ def search_catalog(catalog: list[dict], intent: dict, query: str, feedback: list
             continue
         affinity = min(2.0, sum(liked_themes[t] * 0.1 for t in game["themes"]))
         score = fused[i] if semantic is not None else lexical[i]
-        score += affinity + (0.3 if game["id"] in liked else 0) - (0.6 if game["id"] in disliked else 0)
-        rows.append({
-            "game": game, "score": round(score, 6), "matched_themes": matched[i],
-            "query_score": lexical[i], "lexical_score": lexical[i],
-            "semantic_score": None if semantic is None else semantic[i], "retrieval": mode,
-        })
-    return sorted(rows, key=lambda row: (-row["score"], row["game"]["id"])), {
-        "retrieval": mode, "catalog_fingerprint": fingerprint(catalog),
-        "embedding_model": settings.embedding_model if semantic is not None else None,
-    }, warnings
+        score += (
+            affinity + (0.3 if game["id"] in liked else 0) - (0.6 if game["id"] in disliked else 0)
+        )
+        rows.append(
+            {
+                "game": game,
+                "score": round(score, 6),
+                "matched_themes": matched[i],
+                "query_score": lexical[i],
+                "lexical_score": lexical[i],
+                "semantic_score": None if semantic is None else semantic[i],
+                "retrieval": mode,
+            }
+        )
+    return (
+        sorted(rows, key=lambda row: (-row["score"], row["game"]["id"])),
+        {
+            "retrieval": mode,
+            "catalog_fingerprint": fingerprint(catalog),
+            "embedding_model": settings.embedding_model if semantic is not None else None,
+        },
+        warnings,
+    )

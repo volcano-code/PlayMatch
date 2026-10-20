@@ -58,10 +58,10 @@ def assess(case: dict, output: dict) -> tuple[list[str], list[str]]:
     return result_ids, failures
 
 
-def evaluate(dataset: dict) -> dict:
+def evaluate(dataset: dict, retrieval_mode: str = "keyword_baseline") -> dict:
     catalog = load_catalog()
     valid_ids = {row["id"] for row in catalog}
-    settings = Settings(_env_file=None, llm_api_key="", llm_model="")
+    settings = Settings(_env_file=None, llm_api_key="", llm_model="", retrieval_mode=retrieval_mode)
     graph = build_graph(settings, lambda *_: None)
     evaluated = []
     no_network = "Offline evaluation attempted network access"
@@ -118,13 +118,14 @@ def evaluate(dataset: dict) -> dict:
         "split": dataset["split"],
         "evaluated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
         "mode": "rules",
+        "retrieval_mode": retrieval_mode,
         "network": "blocked",
         "catalog_size": len(catalog),
         "catalog_sha256": hashlib.sha256(catalog_path.read_bytes()).hexdigest(),
         "limitations": [
             "Small exploratory development set, manually labeled by the coding agent; not blind or independent.",
             "Acceptable ids are non-exhaustive positive labels; Hit@k is not precision, satisfaction or generalization.",
-            "This evaluates the keyword baseline only, not LLM, embeddings, live prices or purchase eligibility.",
+            "This evaluates the selected lexical ranker only, not LLM, embeddings, live prices or purchase eligibility.",
         ],
         "summary": {
             "total_cases": len(evaluated),
@@ -146,11 +147,12 @@ def main() -> int:
     parser.add_argument(
         "--check", action="store_true", help="Exit nonzero if any frozen case fails"
     )
+    parser.add_argument("--mode", choices=["keyword_baseline", "bm25"], default="keyword_baseline")
     args = parser.parse_args()
     dataset = json.loads(args.dataset.read_text(encoding="utf-8"))
     if dataset.get("schema_version") != 1 or dataset.get("split") != "exploratory_development":
         parser.error("Expected a v1 exploratory development dataset")
-    report = evaluate(dataset)
+    report = evaluate(dataset, args.mode)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

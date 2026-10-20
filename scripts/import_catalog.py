@@ -8,11 +8,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "services/api"))
 
-from sqlalchemy.exc import SQLAlchemyError  # noqa: E402
-
 from playmatch.catalog_import import MAX_FILE_BYTES, import_catalog  # noqa: E402
 from playmatch.config import Settings  # noqa: E402
 from playmatch.database import Database  # noqa: E402
+from sqlalchemy.exc import SQLAlchemyError  # noqa: E402
 
 
 def main():
@@ -34,7 +33,10 @@ def main():
         print(json.dumps(report, ensure_ascii=False, indent=2))
         return 0
     except (ValueError, OSError, SQLAlchemyError):
-        print("Import rejected. Check schema, identities, timestamp and database; no partial batch was committed.", file=sys.stderr)
+        print(
+            "Import rejected. Check schema, identities, timestamp and database; no partial batch was committed.",
+            file=sys.stderr,
+        )
         return 2
     finally:
         if database is not None:

@@ -27,9 +27,15 @@ def source_url(value: str, *, image=False) -> str:
         parsed = urlparse(value)
         hosts = {"images.igdb.com"} if image else {"igdb.com", "www.igdb.com", "api.igdb.com"}
         if (
-            parsed.scheme != "https" or parsed.hostname not in hosts
-            or parsed.username or parsed.password or parsed.query or parsed.fragment
-            or parsed.port not in (None, 443) or "\\" in value or "%" in value
+            parsed.scheme != "https"
+            or parsed.hostname not in hosts
+            or parsed.username
+            or parsed.password
+            or parsed.query
+            or parsed.fragment
+            or parsed.port not in (None, 443)
+            or "\\" in value
+            or "%" in value
             or any(ord(char) < 33 for char in value)
         ):
             raise ValueError
@@ -99,23 +105,47 @@ def digest(value) -> str:
 
 def normalized(item: ImportItem, observed_at: str) -> dict:
     platforms = {
-        "pc (microsoft windows)": "PC", "windows": "PC", "pc": "PC", "mac": "Mac",
-        "linux": "Linux", "nintendo switch": "Switch", "switch": "Switch",
-        "playstation 4": "PlayStation", "playstation 5": "PlayStation",
-        "xbox one": "Xbox", "xbox series x|s": "Xbox",
+        "pc (microsoft windows)": "PC",
+        "windows": "PC",
+        "pc": "PC",
+        "mac": "Mac",
+        "linux": "Linux",
+        "nintendo switch": "Switch",
+        "switch": "Switch",
+        "playstation 4": "PlayStation",
+        "playstation 5": "PlayStation",
+        "xbox one": "Xbox",
+        "xbox series x|s": "Xbox",
     }
-    return Game.model_validate({
-        "id": f"steam-{item.steam_app_id}", "steam_app_id": item.steam_app_id,
-        "title": item.title, "title_zh": item.title, "description": item.description,
-        "themes": item.themes, "genres": item.genres,
-        "platforms": sorted({platforms[p.casefold()] for p in item.platforms if p.casefold() in platforms}),
-        "chinese_support": "unknown", "coop": "unknown", "horror": "unknown",
-        "image_url": item.image_url,
-        "store_url": f"https://store.steampowered.com/app/{item.steam_app_id}/",
-        "evidence": [{"label": "IGDB 元数据（硬条件未核验）", "url": item.source_url,
-                      "field": "metadata", "observed_at": observed_at}],
-        "metadata_status": "provider", "estimated_hours": None,
-    }).model_dump()
+    return Game.model_validate(
+        {
+            "id": f"steam-{item.steam_app_id}",
+            "steam_app_id": item.steam_app_id,
+            "title": item.title,
+            "title_zh": item.title,
+            "description": item.description,
+            "themes": item.themes,
+            "genres": item.genres,
+            "platforms": sorted(
+                {platforms[p.casefold()] for p in item.platforms if p.casefold() in platforms}
+            ),
+            "chinese_support": "unknown",
+            "coop": "unknown",
+            "horror": "unknown",
+            "image_url": item.image_url,
+            "store_url": f"https://store.steampowered.com/app/{item.steam_app_id}/",
+            "evidence": [
+                {
+                    "label": "IGDB 元数据（硬条件未核验）",
+                    "url": item.source_url,
+                    "field": "metadata",
+                    "observed_at": observed_at,
+                }
+            ],
+            "metadata_status": "provider",
+            "estimated_hours": None,
+        }
+    ).model_dump()
 
 
 def import_catalog(database, raw: dict, key: str, *, dry_run: bool = True) -> dict:
@@ -136,9 +166,13 @@ def import_catalog(database, raw: dict, key: str, *, dry_run: bool = True) -> di
     content_hash = digest(canonical)
     with database.sessions() as session, session.begin():
         # All importers and startup seeding take this same transaction lock.
-        locked = session.execute(update(CatalogLock).where(CatalogLock.id == 1).values(
-            revision=CatalogLock.revision,
-        ))
+        locked = session.execute(
+            update(CatalogLock)
+            .where(CatalogLock.id == 1)
+            .values(
+                revision=CatalogLock.revision,
+            )
+        )
         if locked.rowcount != 1:
             raise CatalogImportError("Catalog migration is required")
         existing = session.get(CatalogImport, key)
@@ -151,9 +185,15 @@ def import_catalog(database, raw: dict, key: str, *, dry_run: bool = True) -> di
         for game in games:
             by_steam.setdefault(game.payload["steam_app_id"], []).append(game)
         report = {
-            "key": key, "content_hash": content_hash, "inserted": 0, "updated": 0,
-            "preserved": 0, "unchanged": 0, "deduplicated": len(manifest.items) - len(unique),
-            "replayed": False, "dry_run": dry_run,
+            "key": key,
+            "content_hash": content_hash,
+            "inserted": 0,
+            "updated": 0,
+            "preserved": 0,
+            "unchanged": 0,
+            "deduplicated": len(manifest.items) - len(unique),
+            "replayed": False,
+            "dry_run": dry_run,
         }
         for item in unique.values():
             candidates = by_steam.get(item.steam_app_id, [])
@@ -167,7 +207,9 @@ def import_catalog(database, raw: dict, key: str, *, dry_run: bool = True) -> di
             if source:
                 previous = datetime.fromisoformat(source.observed_at)
                 incoming = datetime.fromisoformat(manifest.observed_at)
-                if incoming < previous or (incoming == previous and item_hash != source.content_hash):
+                if incoming < previous or (
+                    incoming == previous and item_hash != source.content_hash
+                ):
                     raise CatalogImportError("Stale or conflicting observation")
             if record is None:
                 payload = normalized(item, manifest.observed_at)
@@ -190,8 +232,12 @@ def import_catalog(database, raw: dict, key: str, *, dry_run: bool = True) -> di
             if owner and owner.provider_id != item.provider_id:
                 raise CatalogImportError("Game already has another provider identity")
             if source is None:
-                source = CatalogSource(provider_id=item.provider_id, game_id=record.id,
-                                       observed_at=manifest.observed_at, content_hash=item_hash)
+                source = CatalogSource(
+                    provider_id=item.provider_id,
+                    game_id=record.id,
+                    observed_at=manifest.observed_at,
+                    content_hash=item_hash,
+                )
                 session.add(source)
             else:
                 source.observed_at, source.content_hash = manifest.observed_at, item_hash
@@ -200,9 +246,19 @@ def import_catalog(database, raw: dict, key: str, *, dry_run: bool = True) -> di
         if dry_run:
             session.rollback()
             return report
-        session.execute(update(CatalogLock).where(CatalogLock.id == 1).values(
-            revision=CatalogLock.revision + 1,
-        ))
-        session.add(CatalogImport(key=key, content_hash=content_hash,
-                                  created_at=datetime.now(UTC).isoformat(), report=report))
+        session.execute(
+            update(CatalogLock)
+            .where(CatalogLock.id == 1)
+            .values(
+                revision=CatalogLock.revision + 1,
+            )
+        )
+        session.add(
+            CatalogImport(
+                key=key,
+                content_hash=content_hash,
+                created_at=datetime.now(UTC).isoformat(),
+                report=report,
+            )
+        )
         return report

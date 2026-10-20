@@ -3,6 +3,7 @@ import { Bookmark, Check, ChevronRight, Columns3, Gamepad2, ThumbsUp } from "luc
 import { useState } from "react";
 import type { Game, Recommendation, FeedbackKind } from "@/lib/types";
 import { safeExternalUrl } from "@/lib/api";
+import { metadataLabel } from "@/lib/retrieval-labels";
 
 export function GameArtwork({ game, className = "" }: { game: Game; className?: string }) {
   const [failed, setFailed] = useState(false);
@@ -59,7 +60,7 @@ export function GameCard({
         <GameArtwork game={game} />
         <span className="cover-shade" />
         <span className="cover-platform">
-          <Gamepad2 size={12} /> PC
+          <Gamepad2 size={12} /> {game.platforms.join(" / ") || "平台待核验"}
         </span>
         <span className="cover-open">
           <ChevronRight size={18} />
@@ -67,6 +68,7 @@ export function GameCard({
       </button>
       <div className="card-content">
         <div className="card-eyebrow">{game.genres.slice(0, 2).join(" · ") || "探索游戏"}</div>
+        <p className="fine-print">{metadataLabel(game.metadata_status)}</p>
         <button className="card-title-button" onClick={() => onOpen(game)}>
           <h3>{title}</h3>
         </button>
