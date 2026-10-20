@@ -40,7 +40,7 @@ class IGDBClient:
             client_secret if client_secret is not None else os.getenv("IGDB_CLIENT_SECRET", "")
         ).strip()
         self._owned = client is None
-        self._client = client or httpx.AsyncClient(follow_redirects=False)
+        self._client = client or httpx.AsyncClient(follow_redirects=False, trust_env=False)
         self.timeout = max(0.1, min(timeout, 15.0))
         self._sleep = sleep
         self._token = ""
@@ -72,20 +72,39 @@ class IGDBClient:
         if self._owned:
             await self._client.aclose()
 
+    async def _bounded_post(self, url: str, **kwargs) -> httpx.Response:
+        async with self._client.stream(
+            "POST", url, timeout=self.timeout, follow_redirects=False, **kwargs
+        ) as response:
+            body = bytearray()
+            async for chunk in response.aiter_bytes():
+                body.extend(chunk)
+                if len(body) > MAX_RESPONSE_BYTES:
+                    raise ProviderRequestError("response_too_large")
+            return httpx.Response(
+                response.status_code,
+                headers={"Retry-After": response.headers.get("Retry-After", "")},
+                content=bytes(body),
+            )
+
+    async def catalog_page(self, body: str) -> list[dict[str, Any]]:
+        if not self.configured:
+            raise ProviderRequestError("not_configured")
+        # Internal collector constructs the body from bounded integers; not a public endpoint.
+        return await self._query(body)
+
     async def _get_token(self) -> str:
         async with self._token_lock:
             if self._token and time.monotonic() < self._token_expires:
                 return self._token
             try:
-                response = await self._client.post(
+                response = await self._bounded_post(
                     TOKEN_URL,
                     data={
                         "client_id": self._client_id,
                         "client_secret": self._client_secret,
                         "grant_type": "client_credentials",
                     },
-                    timeout=self.timeout,
-                    follow_redirects=False,
                 )
                 if response.status_code != 200 or len(response.content) > MAX_RESPONSE_BYTES:
                     raise ProviderRequestError("authentication_failed")
@@ -124,7 +143,7 @@ class IGDBClient:
             async with self._semaphore:
                 await self._rate_gate()
                 try:
-                    response = await self._client.post(
+                    response = await self._bounded_post(
                         API_URL,
                         content=body.encode("utf-8"),
                         headers={
@@ -133,8 +152,6 @@ class IGDBClient:
                             "Accept": "application/json",
                             "Content-Type": "text/plain",
                         },
-                        timeout=self.timeout,
-                        follow_redirects=False,
                     )
                 except httpx.HTTPError as exc:
                     raise ProviderRequestError("network_unavailable") from exc
@@ -162,9 +179,9 @@ class IGDBClient:
                 rows = response.json()
             except (ValueError, UnicodeDecodeError) as exc:
                 raise ProviderRequestError("invalid_json") from exc
-            if not isinstance(rows, list):
+            if not isinstance(rows, list) or any(not isinstance(row, dict) for row in rows):
                 raise ProviderRequestError("invalid_response")
-            return [row for row in rows if isinstance(row, dict)]
+            return rows
         raise ProviderRequestError("upstream_unavailable")
 
     async def search_games(self, query: str, *, limit: int = 20) -> dict[str, Any]:

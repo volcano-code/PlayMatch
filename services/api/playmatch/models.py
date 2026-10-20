@@ -102,3 +102,40 @@ class CatalogImport(Base):
     content_hash: Mapped[str] = mapped_column(String(64))
     created_at: Mapped[str] = mapped_column(String(40))
     report: Mapped[dict] = mapped_column(JSON)
+
+
+class EmbeddingIndex(Base):
+    __tablename__ = "embedding_indexes"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    identity: Mapped[str] = mapped_column(String(64))
+    catalog_hash: Mapped[str] = mapped_column(String(64))
+    text_version: Mapped[str] = mapped_column(String(40))
+    status: Mapped[str] = mapped_column(String(16))
+    document_count: Mapped[int] = mapped_column(Integer)
+    dimensions: Mapped[int | None] = mapped_column(Integer)
+    reused_count: Mapped[int] = mapped_column(Integer, default=0)
+    encoded_count: Mapped[int] = mapped_column(Integer, default=0)
+    started_generation: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[str] = mapped_column(String(40))
+    completed_at: Mapped[str | None] = mapped_column(String(40))
+    failure_code: Mapped[str | None] = mapped_column(String(50))
+    owner: Mapped[str | None] = mapped_column(String(36))
+    lease_until: Mapped[float] = mapped_column(Float, default=0)
+
+
+class EmbeddingVector(Base):
+    __tablename__ = "embedding_vectors"
+    index_id: Mapped[str] = mapped_column(
+        ForeignKey("embedding_indexes.id", ondelete="CASCADE"), primary_key=True
+    )
+    game_id: Mapped[str] = mapped_column(String(80), primary_key=True)
+    text_hash: Mapped[str] = mapped_column(String(64))
+    vector: Mapped[list] = mapped_column(JSON)
+    vector_hash: Mapped[str] = mapped_column(String(64))
+
+
+class EmbeddingPointer(Base):
+    __tablename__ = "embedding_pointer"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    index_id: Mapped[str | None] = mapped_column(ForeignKey("embedding_indexes.id"))
+    generation: Mapped[int] = mapped_column(Integer, default=0)

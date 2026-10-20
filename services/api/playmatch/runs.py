@@ -9,6 +9,7 @@ from sqlalchemy import func, select
 from playmatch.config import Settings
 from playmatch.database import Database
 from playmatch.models import FeedbackRecord, GameRecord, RunEventRecord, RunRecord
+from playmatch.semantic_index import search_index
 from playmatch.workflow import build_graph
 
 logger = logging.getLogger(__name__)
@@ -123,7 +124,7 @@ class RunExecutor:
                     record.agent_state = {
                         "last_stage": stage,
                         "updated_at": now_iso(),
-                        "workflow_version": "0.2.0-recovery",
+                        "workflow_version": "0.3.0-index",
                     }
                     for key in ("intent", "mode"):
                         if key in updates:
@@ -131,7 +132,13 @@ class RunExecutor:
                     append_event(session, run_id, "progress", {"stage": stage, "message": message})
                     session.commit()
 
-            result = build_graph(self.settings, progress).invoke(
+            result = build_graph(
+                self.settings,
+                progress,
+                semantic_resolver=lambda catalog, query: search_index(
+                    self.database, self.settings, catalog, query
+                ),
+            ).invoke(
                 {"request": request, "catalog": catalog, "feedback": feedback},
                 config={"recursion_limit": 10},
             )
@@ -153,8 +160,9 @@ class RunExecutor:
                     or uncertain_budget
                     or degraded_model
                     or (
-                        self.settings.retrieval_mode == "hybrid"
-                        and record.intent.get("retrieval") != "hybrid_rrf"
+                        self.settings.retrieval_mode in {"hybrid", "indexed_hybrid"}
+                        and record.intent.get("retrieval")
+                        not in {"hybrid_rrf", "indexed_hybrid_rrf"}
                     )
                     else "completed"
                 )

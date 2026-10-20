@@ -346,7 +346,9 @@ async def _prices_for(candidates: list[dict], country: str) -> list[dict]:
         return result
 
 
-def build_graph(settings: Settings, progress: Callable[[str, str, dict], None]):
+def build_graph(
+    settings: Settings, progress: Callable[[str, str, dict], None], *, semantic_resolver=None
+):
     def understand(state: WorkflowState):
         baseline = rule_intent(state["request"])
         warnings = []
@@ -375,6 +377,7 @@ def build_graph(settings: Settings, progress: Callable[[str, str, dict], None]):
                 state["request"]["query"],
                 state["feedback"],
                 settings,
+                semantic_resolver=semantic_resolver,
             )
         actual_intent = {**state["intent"], **metadata}
         progress(

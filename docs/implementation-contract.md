@@ -97,3 +97,16 @@ All hard-condition and pricing constraints still apply after retrieval. Downgrad
 hybrid requests are partial, not successful semantic runs. Import is CLI-only,
 transactional, preview by default, with immutable identities and curated preservation.
 See [implementation and boundaries](retrieval-import-v02.md).
+
+
+## v0.3 extension
+
+GET `/api/v1/retrieval/index` returns typed IndexStatus (no secrets, no probe): status,
+active_index_id, generation, document_count, dimensions, catalog_fingerprint,
+search_method=exact_cosine, max_documents=5000, provider_probed=false.
+Configured retrieval_mode additionally supports `indexed_hybrid`; actual intent may
+be `indexed_hybrid_rrf`, with index_id/index_generation/index_dimensions. Downgraded
+indexed requests are partial. Public Game/Recommendation shapes are unchanged.
+Capabilities includes catalog_collection=review_bundle_cli and mode-dependent semantic bound.
+The new index operations are operator CLI only; no unauthenticated write endpoints.
+See docs/catalog-index-v03.md for review approval, durable batches, leases and CAS semantics.

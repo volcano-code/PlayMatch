@@ -301,7 +301,7 @@ def test_run_timeout_records_terminal_event(client, monkeypatch):
         def invoke(self, *_args, **_kwargs):
             raise TimeoutError("fixture deadline")
 
-    monkeypatch.setattr("playmatch.runs.build_graph", lambda *_args: TimeoutGraph())
+    monkeypatch.setattr("playmatch.runs.build_graph", lambda *_args, **_kwargs: TimeoutGraph())
     created, headers = start_run(client)
     result = wait_run(client, created, headers)
     assert result["status"] == "failed"

@@ -160,6 +160,12 @@ class EmbeddingClient:
         except (httpx.HTTPError, ValueError, KeyError, TypeError, OverflowError) as error:
             raise EmbeddingUnavailable("Embedding service unavailable or invalid") from error
 
+    def encode_documents(self, texts: list[str], timeout: float) -> list[list[float]]:
+        """Bounded offline batch. No implicit query or process-local document cache."""
+        if not texts or len(texts) > 16 or any(not t.strip() or len(t) > 6000 for t in texts):
+            raise EmbeddingUnavailable("Embedding input limit exceeded")
+        return self._request(texts, time.monotonic() + timeout)
+
     def encode(self, texts: list[str], timeout: float) -> list[list[float]]:
         # Last text is the query: it is never retained in the document cache.
         if not texts or len(texts) > 129 or any(not t.strip() or len(t) > 6000 for t in texts):
@@ -197,12 +203,21 @@ def embedding_client(base_url: str, model: str, key: str) -> EmbeddingClient:
     return EmbeddingClient(base_url, model, key)
 
 
-def search_catalog(catalog: list[dict], intent: dict, query: str, feedback: list[dict], settings):
+def search_catalog(
+    catalog: list[dict],
+    intent: dict,
+    query: str,
+    feedback: list[dict],
+    settings,
+    *,
+    semantic_resolver=None,
+):
     texts = [document(game) for game in catalog]
     lexical = BM25(texts).scores(query + " " + " ".join(intent.get("search_terms", [])))
     matched = [sorted(set(intent.get("themes", [])) & set(game["themes"])) for game in catalog]
     lexical = [score + 3 * len(themes) for score, themes in zip(lexical, matched, strict=True)]
     semantic = None
+    index_metadata = {}
     warnings = []
     mode = "bm25"
     if settings.retrieval_mode == "hybrid" and catalog:
@@ -221,6 +236,19 @@ def search_catalog(catalog: list[dict], intent: dict, query: str, feedback: list
             mode = "hybrid_rrf"
         except EmbeddingUnavailable:
             warnings.append("语义检索未配置、超限或暂不可用，已降级为 BM25；没有伪造向量结果。")
+    if settings.retrieval_mode == "indexed_hybrid" and catalog:
+        try:
+            if semantic_resolver is None:
+                raise EmbeddingUnavailable("index_missing")
+            semantic, index_metadata = semantic_resolver(catalog, query)
+            if len(semantic) != len(catalog) or not all(math.isfinite(v) for v in semantic):
+                raise EmbeddingUnavailable("invalid_index_scores")
+            mode = "indexed_hybrid_rrf"
+        except EmbeddingUnavailable:
+            semantic, index_metadata = None, {}
+            warnings.append(
+                "持久向量索引缺失、过期、模型不匹配或服务暂不可用，已降级为 BM25；请检查索引状态。"
+            )
     lexical_ids = sorted(
         [i for i, score in enumerate(lexical) if score > 0],
         key=lambda i: (-lexical[i], catalog[i]["id"]),
@@ -278,6 +306,7 @@ def search_catalog(catalog: list[dict], intent: dict, query: str, feedback: list
     return (
         sorted(rows, key=lambda row: (-row["score"], row["game"]["id"])),
         {
+            **index_metadata,
             "retrieval": mode,
             "catalog_fingerprint": fingerprint(catalog),
             "embedding_model": settings.embedding_model if semantic is not None else None,

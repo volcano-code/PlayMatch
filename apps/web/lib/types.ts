@@ -73,7 +73,7 @@ export interface User {
 }
 export interface Capabilities {
   catalog_mode: "curated_starter" | "igdb" | "mixed";
-  retrieval_mode: "keyword_baseline" | "bm25" | "hybrid";
+  retrieval_mode: "keyword_baseline" | "bm25" | "hybrid" | "indexed_hybrid";
   embedding_configured: boolean;
   catalog_import: "operator_cli";
   semantic_catalog_limit: number;
@@ -92,3 +92,15 @@ export interface WatchItem {
   created_at: string;
 }
 export type FeedbackKind = "like" | "dislike" | "owned" | "exclude";
+
+export interface IndexStatus {
+  status: "not_configured" | "missing" | "ready" | "stale" | "model_mismatch" | "corrupt";
+  active_index_id: string | null;
+  generation: number;
+  document_count: number;
+  dimensions: number | null;
+  catalog_fingerprint: string | null;
+  search_method: "exact_cosine";
+  max_documents: number;
+  provider_probed: false;
+}

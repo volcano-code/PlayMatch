@@ -71,3 +71,28 @@ test('real recommendation reports the actual retrieval mode and text version', a
   await expect(status).toContainText(/检索文本版本：[a-f0-9]{12}/);
   await expect(status).toContainText('排序分数不是匹配概率');
 });
+
+test('index metadata readiness and failed refresh are shown without a false service claim', async ({ page }) => {
+  // UI contract fixture only. Real index storage/API semantics are in the backend suite.
+  await page.route('**/api/v1/capabilities', async route => {
+    const upstream = await route.fetch();
+    const data = await upstream.json();
+    await route.fulfill({ json: { ...data, retrieval_mode: 'indexed_hybrid', embedding_configured: true } });
+  });
+  let failed = false;
+  await page.route('**/api/v1/retrieval/index', async route => {
+    if (failed) return route.fulfill({ status: 503, json: { detail: 'Synthetic unavailable status' } });
+    await route.fulfill({ json: {
+      status: 'stale', active_index_id: 'synthetic-test-index', generation: 3,
+      document_count: 24, dimensions: 384, catalog_fingerprint: 'b'.repeat(64),
+      search_method: 'exact_cosine', max_documents: 5000, provider_probed: false,
+    } });
+  });
+  await page.goto('/');
+  const status = page.getByTestId('index-status');
+  await expect(status.getByText('目录已变更，需要重建索引')).toBeVisible();
+  await expect(status.getByText(/索引文档 24 条/)).toBeVisible();
+  failed = true;
+  await status.getByRole('button', { name: '刷新索引状态' }).click();
+  await expect(status.getByText('索引状态读取失败，不能据此认定服务可用。')).toBeVisible();
+});

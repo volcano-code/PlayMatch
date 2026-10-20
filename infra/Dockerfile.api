@@ -13,6 +13,7 @@ COPY pyproject.toml uv.lock README.md ./
 RUN uv sync --frozen --no-dev --no-install-project
 COPY services ./services
 COPY data ./data
+COPY scripts ./scripts
 RUN uv sync --frozen --no-dev \
     && useradd --create-home --uid 10001 playmatch \
     && mkdir -p /app/.state \
