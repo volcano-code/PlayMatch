@@ -1,0 +1,193 @@
+name: V03 candidate verification
+on:
+  push:
+    branches: ['workbench/v03-validation']
+permissions:
+  contents: read
+concurrency:
+  group: v03-workbench-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  core:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: playmatch
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: playmatch_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U playmatch -d playmatch_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - name: Restore exact locally tested candidate
+        run: |
+          python - <<'PY'
+          import base64, gzip, hashlib, os, subprocess
+          from pathlib import Path
+          output = Path(os.environ['RUNNER_TEMP']) / 'v03-evidence'
+          output.mkdir()
+          encoded = ''.join(p.read_text().strip() for p in sorted(Path('.handoff').glob('part*')))
+          patch = gzip.decompress(base64.b64decode(encoded, validate=True))
+          assert hashlib.sha256(patch).hexdigest() == '8f8a8f4c7bb81c74d7aa4236828ac2381fca590b16f47e49fbf86d30ccfc174f'
+          (output / 'candidate.patch').write_bytes(patch)
+          subprocess.run(['git', 'rm', '-r', '--', '.handoff', '.github/workflows/v03-workbench.yml'], check=True)
+          subprocess.run(['git', 'apply', '--index', '--binary', str(output / 'candidate.patch')], check=True)
+          tree = subprocess.check_output(['git', 'write-tree']).decode().strip()
+          assert tree == '5630bdd5806e8d2ae3df339bf42e6854a54af4c2', tree
+          (output / 'tree-sha.txt').write_text(tree)
+          print('Exact candidate tree:', tree)
+          PY
+      - run: python -m pip install -q uv==0.12.23
+      - run: uv sync --frozen --extra dev
+      - name: Python and unchanged development evaluations
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+          uv run pytest -q --junitxml="$RUNNER_TEMP/v03-evidence/python.xml"
+          uv run python scripts/check_openapi.py
+          uv run python scripts/evaluate_recommendations.py --mode keyword_baseline --check --output "$RUNNER_TEMP/v03-evidence/keyword.json"
+          uv run python scripts/evaluate_recommendations.py --mode bm25 --check --output "$RUNNER_TEMP/v03-evidence/bm25.json"
+      - name: PostgreSQL catalog and account persistence
+        env:
+          CATALOG_TEST_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/playmatch_test
+          DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/playmatch_test
+        run: |
+          uv run pytest services/api/tests/test_catalog_v02.py -q --junitxml="$RUNNER_TEMP/v03-evidence/catalog-postgres.xml"
+          uv run python scripts/smoke_postgres.py
+      - name: PostgreSQL durable index semantics
+        env:
+          PGPASSWORD: ci-only-password
+          INDEX_TEST_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/playmatch_index_test
+          PLAYMATCH_ALLOW_DISPOSABLE_DB: 'yes'
+        run: |
+          psql -h 127.0.0.1 -U playmatch -d postgres -c 'CREATE DATABASE playmatch_index_test'
+          uv run pytest services/api/tests/test_semantic_index.py -q --junitxml="$RUNNER_TEMP/v03-evidence/index-postgres.xml"
+      - name: Frontend build and units
+        run: |
+          npm --prefix apps/web ci
+          npm --prefix apps/web run typecheck
+          npm --prefix apps/web run format:check
+          npm --prefix apps/web test
+          npm --prefix apps/web run build
+      - name: Browser regression
+        run: |
+          npm --prefix tests/e2e ci
+          npx --prefix tests/e2e playwright install --with-deps chromium > "$RUNNER_TEMP/v03-evidence/browser-install.log" 2>&1
+          npm --prefix tests/e2e test
+      - name: Export verified blobs without updating branches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import base64, hashlib, json, os, subprocess, urllib.request
+          from pathlib import Path
+          repo = 'volcano-code/PlayMatch'
+          assert os.environ['GITHUB_REPOSITORY'] == repo
+          def git(*args):
+              return subprocess.check_output(['git', *args]).decode().strip()
+          base = 'b1a1dd07c76a793a0ee70fbd6c18d77a0d9a7e15'
+          subprocess.run(['git', 'diff', '--exit-code'], check=True)
+          tree = git('write-tree')
+          assert tree == '5630bdd5806e8d2ae3df339bf42e6854a54af4c2'
+          directory = Path(os.environ['RUNNER_TEMP']) / 'v03-evidence'
+          subprocess.run(['git', 'archive', '--format=zip', tree, '-o', str(directory/'source.zip')], check=True)
+          (directory/'source.sha256').write_text(hashlib.sha256((directory/'source.zip').read_bytes()).hexdigest())
+          entries = []
+          for row in git('diff', '--cached', '--name-status', '--no-renames', base).splitlines():
+              status, path = row.split('\t', 1)
+              assert not path.startswith(('.handoff/', '.state/', 'node_modules/'))
+              assert not path.endswith(('.db', '.sqlite', '.pem', '.env'))
+              if status == 'D':
+                  entries.append({'path': path, 'mode': '100644', 'type': 'blob', 'sha': None})
+                  continue
+              content = Path(path).read_bytes()
+              assert len(content) < 300000
+              request = urllib.request.Request('https://api.github.com/repos/'+repo+'/git/blobs',
+                  data=json.dumps({'content':base64.b64encode(content).decode(),'encoding':'base64'}).encode(),
+                  method='POST', headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],
+                  'Accept':'application/vnd.github+json','Content-Type':'application/json'})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  blob = json.load(response)
+              assert blob['sha'] == git('hash-object', path)
+              entries.append({'path':path,'mode':git('ls-files','-s','--',path).split()[0],'type':'blob','sha':blob['sha']})
+          manifest = {'tree_sha':tree,'parent_sha':base,'base_tree_sha':'f9ed7400d2372fb0a0cba97f89adee1b3546c758','entries':entries}
+          (directory/'candidate.json').write_text(json.dumps(manifest,indent=2))
+          print('VALIDATED_MANIFEST '+json.dumps(manifest))
+          PY
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: v03-core-${{ github.sha }}
+          path: ${{ runner.temp }}/v03-evidence/
+          retention-days: 14
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: failure()
+        with:
+          name: v03-browser-failure
+          path: tests/e2e/test-results/
+          retention-days: 7
+  real-model:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_XET: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Restore exact candidate
+        run: |
+          python - <<'PY'
+          import base64, gzip, hashlib, os, subprocess
+          from pathlib import Path
+          output = Path(os.environ['RUNNER_TEMP'])/'v03-model'
+          output.mkdir()
+          encoded = ''.join(p.read_text().strip() for p in sorted(Path('.handoff').glob('part*')))
+          patch = gzip.decompress(base64.b64decode(encoded,validate=True))
+          assert hashlib.sha256(patch).hexdigest() == '8f8a8f4c7bb81c74d7aa4236828ac2381fca590b16f47e49fbf86d30ccfc174f'
+          subprocess.run(['git','rm','-r','--','.handoff','.github/workflows/v03-workbench.yml'],check=True)
+          subprocess.run(['git','apply','--index','--binary','-'],input=patch,check=True)
+          tree=subprocess.check_output(['git','write-tree']).decode().strip()
+          assert tree=='5630bdd5806e8d2ae3df339bf42e6854a54af4c2'
+          (output/'tree-sha.txt').write_text(tree)
+          PY
+      - run: python -m pip install -q uv==0.12.23
+      - run: uv sync --frozen --extra dev
+      - name: Isolated pinned CPU model environment
+        run: |
+          python -m venv "$RUNNER_TEMP/model-env"
+          "$RUNNER_TEMP/model-env/bin/pip" install --quiet torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+          "$RUNNER_TEMP/model-env/bin/pip" install --quiet -r scripts/model-probe-requirements.txt
+          "$RUNNER_TEMP/model-env/bin/pip" freeze > "$RUNNER_TEMP/v03-model/requirements-resolved.txt"
+      - name: Genuine model HTTP, durable index, restart and development evaluation
+        run: |
+          uv run python scripts/probe_real_embeddings.py --allow-model-download --model-python "$RUNNER_TEMP/model-env/bin/python" --output "$RUNNER_TEMP/v03-model/report.json"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: v03-real-model-${{ github.sha }}
+          path: ${{ runner.temp }}/v03-model/
+          retention-days: 14
