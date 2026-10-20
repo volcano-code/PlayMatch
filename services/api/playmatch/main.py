@@ -9,7 +9,7 @@ from uuid import uuid4
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -17,6 +17,7 @@ from playmatch.catalog_seed import load_catalog
 from playmatch.config import Settings, get_settings
 from playmatch.database import Database
 from playmatch.models import (
+    CatalogLock,
     FeedbackRecord,
     GameRecord,
     RunEventRecord,
@@ -148,6 +149,9 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
         database = Database(settings.database_url)
         database.migrate()
         with database.sessions() as session:
+            session.execute(
+                update(CatalogLock).where(CatalogLock.id == 1).values(revision=CatalogLock.revision)
+            )
             for raw in catalog if catalog is not None else load_catalog():
                 game = Game.model_validate(raw)
                 existing = session.get(GameRecord, game.id)
@@ -196,18 +200,26 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
     @app.get("/api/v1/capabilities")
     def capabilities(session: Session = Depends(get_db)):
         return {
-            "catalog_mode": "curated_starter",
+            "catalog_mode": "mixed"
+            if any(
+                row.payload.get("metadata_status") == "provider"
+                for row in session.scalars(select(GameRecord))
+            )
+            else "curated_starter",
             "catalog_count": session.scalar(select(func.count()).select_from(GameRecord)),
             "agent_mode": "llm" if settings.llm_enabled else "rules",
-            "retrieval_mode": "keyword_baseline",
+            "retrieval_mode": settings.retrieval_mode,
+            "embedding_configured": settings.embedding_enabled,
+            "catalog_import": "operator_cli",
+            "semantic_catalog_limit": 128,
             "pricing_provider": "cheapshark",
             "pricing_currency": "USD",
             "supported_price_countries": ["US"],
             "notification_monitoring": "not_enabled",
             "execution_mode": "single_process_bounded_workers",
             "limitations": [
-                "当前为人工整理的起步目录，尚未启用全量 IGDB 同步。",
-                "当前检索是关键词与主题规则基线，尚未上线向量检索。",
+                "目录包含人工起步记录及可选的审核导入；尚未启用全量 IGDB 同步。",
+                "默认 BM25；向量融合需显式配置，实际模式与降级原因见每次任务。",
                 "仅查询 CheapShark US/USD 观测报价，不提供中国区人民币价格。",
                 "版本与地区激活资格未核验的报价不会标记为保证可购买的最低价。",
                 "收藏仅保存目标价格，自动监控和通知尚未启用。",

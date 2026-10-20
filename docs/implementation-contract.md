@@ -84,3 +84,16 @@ pytest for money/region/DLC/unknown constraints/timeout/auth ownership/idempoten
 Playwright real frontend+API end-to-end smoke. Contract fixtures in CI, optional small live provider probe separately.
 Provider integration failures must not invent data or block core recommendation.
 No telemetry token/credential capture; redact cookies and secrets.
+
+
+## v0.2 recovery extension
+
+Capabilities adds `retrieval_mode:keyword_baseline|bm25|hybrid` (configured),
+`embedding_configured:bool`, `catalog_import:operator_cli`, `semantic_catalog_limit:128`.
+`catalog_mode` additionally supports `mixed` when provider entries exist. Run intent
+records actual `retrieval:keyword_baseline|bm25|hybrid_rrf` and the retrieval text
+fingerprint. Existing Game/Run/Recommendation public shapes remain unchanged.
+All hard-condition and pricing constraints still apply after retrieval. Downgraded
+hybrid requests are partial, not successful semantic runs. Import is CLI-only,
+transactional, preview by default, with immutable identities and curated preservation.
+See [implementation and boundaries](retrieval-import-v02.md).

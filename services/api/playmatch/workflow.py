@@ -1,7 +1,7 @@
 """A bounded LangGraph workflow with an honest keyword baseline and optional LLM intent.
 
 No model is permitted to invent prices, catalog entries, or purchase eligibility.
-The initial release deliberately does not claim semantic embeddings are deployed.
+BM25 is offline by default; semantic retrieval requires an explicit operator configuration.
 """
 
 import asyncio
@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 
 from playmatch.config import Settings
 from playmatch.providers.cheapshark import CheapSharkClient
+from playmatch.retrieval import search_catalog
 
 THEME_WORDS = {
     "放松": ["放松", "轻松", "治愈", "休闲", "解压", "cozy", "relax", "chill"],
@@ -111,7 +112,10 @@ def rule_intent(request: dict) -> dict:
         "ios": "Mobile",
         "mac": "Mac",
     }.items():
-        if word in query:
+        pattern = re.escape(word)
+        if word.isascii():
+            pattern = r"(?<![a-z0-9])" + pattern + r"(?![a-z0-9])"
+        if re.search(pattern, query):
             platform = target
     excluded = bool(
         re.search(
@@ -359,11 +363,30 @@ def build_graph(settings: Settings, progress: Callable[[str, str, dict], None]):
         return {"intent": baseline, "mode": mode, "warnings": warnings}
 
     def search(state: WorkflowState):
-        candidates = retrieve(
-            state["catalog"], state["intent"], state["request"]["query"], state["feedback"]
+        if settings.retrieval_mode == "keyword_baseline":
+            candidates = retrieve(
+                state["catalog"], state["intent"], state["request"]["query"], state["feedback"]
+            )
+            metadata, warnings = {"retrieval": "keyword_baseline"}, []
+        else:
+            candidates, metadata, warnings = search_catalog(
+                state["catalog"],
+                state["intent"],
+                state["request"]["query"],
+                state["feedback"],
+                settings,
+            )
+        actual_intent = {**state["intent"], **metadata}
+        progress(
+            "retrieve",
+            f"已从 {len(state['catalog'])} 款目录游戏中检索候选",
+            {"intent": actual_intent},
         )
-        progress("retrieve", f"已从 {len(state['catalog'])} 款人工整理游戏中检索候选", {})
-        return {"candidates": candidates}
+        return {
+            "candidates": candidates,
+            "intent": actual_intent,
+            "warnings": state["warnings"] + warnings,
+        }
 
     def constrain(state: WorkflowState):
         candidates, warnings = filter_candidates(
@@ -417,12 +440,15 @@ def build_graph(settings: Settings, progress: Callable[[str, str, dict], None]):
                 reasons.append(
                     "与本轮主题相关："
                     + "、".join(row["matched_themes"])
-                    + "（根据人工整理的主题标签）。"
+                    + "（根据目录主题标签；不代表硬条件已核验）。"
                 )
             else:
-                reasons.append("根据描述关键词与已有偏好提供的候选，建议查看详情再决定。")
+                reasons.append("根据本轮检索与已有偏好提供的候选，建议查看来源再决定。")
+            reasons.append(
+                f"检索方式：{state['intent'].get('retrieval', 'keyword_baseline')}；排序分数不是匹配概率。"
+            )
             reasons.append(game["description"])
-            tradeoffs = ["简介与主题来自人工整理；评分是当前候选排序分数，不是匹配概率。"]
+            tradeoffs = ["简介与主题来自目录记录；请查看来源，供应商记录不等于人工核验。"]
             if game["chinese_support"] == "unknown":
                 tradeoffs.append("中文支持尚未核验。")
             if game["coop"] == "unknown":

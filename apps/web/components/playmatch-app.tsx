@@ -30,6 +30,8 @@ import { AuthDialog } from "./auth-dialog";
 import { CompareDialog } from "./compare-dialog";
 import { GameArtwork, GameCard } from "./game-card";
 import { OfferDrawer } from "./offer-drawer";
+import { RetrievalStatus } from "./retrieval-status";
+import { catalogLabel } from "@/lib/retrieval-labels";
 
 const themes = [
   { label: "太空探索", icon: Telescope, query: "想在太空里探索未知，喜欢有发现感的游戏" },
@@ -47,6 +49,7 @@ export function PlayMatchApp() {
   const [budget, setBudget] = useState("");
   const [excludeOwned, setExcludeOwned] = useState(true);
   const [catalogFilter, setCatalogFilter] = useState("");
+  const [catalogPage, setCatalogPage] = useState(0);
   const [run, setRun] = useState<Run | null>(null);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState<string[]>([]);
@@ -77,10 +80,10 @@ export function PlayMatchApp() {
     refetchOnWindowFocus: true,
   });
   const catalog = useQuery({
-    queryKey: ["games", catalogFilter],
+    queryKey: ["games", catalogFilter, catalogPage],
     queryFn: () =>
       api<{ items: Game[]; total: number }>(
-        `/games?limit=24${catalogFilter ? `&q=${encodeURIComponent(catalogFilter)}` : ""}`,
+        `/games?limit=24&offset=${catalogPage * 24}${catalogFilter ? `&q=${encodeURIComponent(catalogFilter)}` : ""}`,
       ),
   });
   const watchlist = useQuery({
@@ -576,13 +579,12 @@ export function PlayMatchApp() {
                   </button>
                 ) : (
                   <span className="catalog-caption">
-                    {capabilities.data?.catalog_mode === "igdb"
-                      ? "IGDB 游戏资料"
-                      : "人工整理的起始目录"}
+                    {catalogLabel(capabilities.data?.catalog_mode)}
                     <span className="tiny-dot" />
                   </span>
                 )}
               </div>
+              <RetrievalStatus run={run} capabilities={capabilities.data} />
               {busy && (
                 <div className="progress-panel" role="status" aria-live="polite">
                   <div className="progress-orb">
@@ -630,7 +632,10 @@ export function PlayMatchApp() {
                     <button
                       className={catalogFilter === tab.value ? "active" : ""}
                       key={tab.label}
-                      onClick={() => setCatalogFilter(tab.value)}
+                      onClick={() => {
+                        setCatalogFilter(tab.value);
+                        setCatalogPage(0);
+                      }}
                     >
                       {tab.label}
                     </button>
@@ -675,6 +680,7 @@ export function PlayMatchApp() {
                     className="button button-secondary"
                     onClick={() => {
                       setCatalogFilter("");
+                      setCatalogPage(0);
                       searchRef.current?.focus();
                     }}
                   >
@@ -699,10 +705,35 @@ export function PlayMatchApp() {
                   />
                 ))}
               </div>
+              {!run && !busy && ((catalog.data?.total || 0) > 24 || catalogPage > 0) && (
+                <nav className="catalog-tabs" aria-label="目录分页">
+                  <button
+                    className="button button-secondary"
+                    disabled={catalogPage === 0 || catalog.isFetching}
+                    onClick={() => setCatalogPage((page) => Math.max(0, page - 1))}
+                  >
+                    上一页
+                  </button>
+                  <span role="status" aria-live="polite">
+                    第 {catalogPage + 1} 页 · 共 {catalog.data?.total ?? "待加载"} 款
+                  </span>
+                  <button
+                    className="button button-secondary"
+                    disabled={
+                      catalog.isFetching ||
+                      !catalog.data ||
+                      (catalogPage + 1) * 24 >= catalog.data.total
+                    }
+                    onClick={() => setCatalogPage((page) => page + 1)}
+                  >
+                    下一页
+                  </button>
+                </nav>
+              )}
               {!run && games.length > 0 && (
                 <p className="catalog-footnote">
-                  当前展示 {games.length} 款目录游戏 · 目录内容与推荐结果分别标识 ·
-                  图片来自游戏资料来源
+                  当前展示 {games.length} / {catalog.data?.total || 0} 款目录游戏 ·
+                  目录内容与推荐结果分别标识 · 图片来自游戏资料来源
                 </p>
               )}
             </section>

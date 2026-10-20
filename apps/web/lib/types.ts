@@ -72,7 +72,11 @@ export interface User {
   email: string;
 }
 export interface Capabilities {
-  catalog_mode: "curated_starter" | "igdb";
+  catalog_mode: "curated_starter" | "igdb" | "mixed";
+  retrieval_mode: "keyword_baseline" | "bm25" | "hybrid";
+  embedding_configured: boolean;
+  catalog_import: "operator_cli";
+  semantic_catalog_limit: number;
   agent_mode: "rules" | "llm";
   pricing_provider: string;
   pricing_currency: string;

@@ -123,7 +123,7 @@ class RunExecutor:
                     record.agent_state = {
                         "last_stage": stage,
                         "updated_at": now_iso(),
-                        "workflow_version": "0.1.0",
+                        "workflow_version": "0.2.0-recovery",
                     }
                     for key in ("intent", "mode"):
                         if key in updates:
@@ -149,7 +149,13 @@ class RunExecutor:
                 degraded_model = self.settings.llm_enabled and record.mode == "rules"
                 record.status = (
                     "partial"
-                    if not record.results or uncertain_budget or degraded_model
+                    if not record.results
+                    or uncertain_budget
+                    or degraded_model
+                    or (
+                        self.settings.retrieval_mode == "hybrid"
+                        and record.intent.get("retrieval") != "hybrid_rrf"
+                    )
                     else "completed"
                 )
                 record.completed_at = now_iso()

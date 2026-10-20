@@ -55,3 +55,17 @@ PostgreSQL 和 Docker Compose 不在当前本地环境内运行；它们有独�
 5. 在来源使用范围明确后接入新的地区报价与用户主动订阅的价格提醒。
 
 这是完整规划的第一轮工作版本，不是所有后续里程碑已结束的声明。
+
+
+## v0.2 recovery increment
+
+Implemented: BM25 default and preserved lexical baseline; opt-in bounded embedding/RRF
+with explicit degradation; atomic operator-reviewed normalized IGDB import, receipts,
+curated preservation and stale/conflicting identity rejection; UI page navigation,
+per-record metadata source and actual retrieval/fingerprint display; Docker option
+passthrough. Original v0.1 sections above are historical, not the current capability list.
+
+The original interrupted v0.2 was not recovered. Do not reuse its reported 132 Python /
+11 web / 7 browser counts or model results. This increment has its own CI evidence.
+No bulk live IGDB import, independent semantic model evaluation, notifications, distributed
+execution or production readiness is claimed. Main changes only after final acceptance.
