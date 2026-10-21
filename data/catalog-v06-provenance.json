@@ -1,0 +1,463 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-10-21T13:34:55.550089Z",
+  "independent_human_review": false,
+  "entries": [
+    {
+      "game_id": "steam-1086940",
+      "source_url": "https://store.steampowered.com/app/1086940/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "online",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-1245620",
+      "source_url": "https://store.steampowered.com/app/1245620/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "online",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-1446780",
+      "source_url": "https://store.steampowered.com/app/1446780/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "online",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-1142710",
+      "source_url": "https://store.steampowered.com/app/1142710/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "online",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-281990",
+      "source_url": "https://store.steampowered.com/app/281990/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-289070",
+      "source_url": "https://store.steampowered.com/app/289070/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-813780",
+      "source_url": "https://store.steampowered.com/app/813780/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "online",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-1158310",
+      "source_url": "https://store.steampowered.com/app/1158310/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-255710",
+      "source_url": "https://store.steampowered.com/app/255710/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-457140",
+      "source_url": "https://store.steampowered.com/app/457140/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-1366540",
+      "source_url": "https://store.steampowered.com/app/1366540/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-1336490",
+      "source_url": "https://store.steampowered.com/app/1336490/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-653530",
+      "source_url": "https://store.steampowered.com/app/653530/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-1677770",
+      "source_url": "https://store.steampowered.com/app/1677770/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "unknown",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-257510",
+      "source_url": "https://store.steampowered.com/app/257510/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-736260",
+      "source_url": "https://store.steampowered.com/app/736260/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-1135690",
+      "source_url": "https://store.steampowered.com/app/1135690/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-1455840",
+      "source_url": "https://store.steampowered.com/app/1455840/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-1055540",
+      "source_url": "https://store.steampowered.com/app/1055540/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "unknown",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-972660",
+      "source_url": "https://store.steampowered.com/app/972660/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "local",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-1562430",
+      "source_url": "https://store.steampowered.com/app/1562430/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-1092790",
+      "source_url": "https://store.steampowered.com/app/1092790/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "unknown",
+        "horror": "yes"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-632360",
+      "source_url": "https://store.steampowered.com/app/632360/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "online",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    },
+    {
+      "game_id": "steam-322330",
+      "source_url": "https://store.steampowered.com/app/322330/",
+      "checked_at": "2026-10-21T13:34:55.550089Z",
+      "reviewer_kind": "coding_agent",
+      "method": "official_public_store_page_review",
+      "sections": [
+        "product identity",
+        "developer description",
+        "language table",
+        "features"
+      ],
+      "facts": {
+        "simplified_chinese_interface": "verified",
+        "cooperative_mode": "online",
+        "horror": "unknown"
+      },
+      "notes": "Aliases and Chinese synopsis are editorial. Community tags alone do not verify hard constraints. No copied long descriptions, live prices, ratings, hardware, player count or safe-for-children assertions."
+    }
+  ]
+}

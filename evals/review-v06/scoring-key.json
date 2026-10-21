@@ -1,0 +1,961 @@
+{
+  "pack_id": "075901c6c33b3b3dda438abb9705f37f10011217f192016ed92c9d57a548428b",
+  "catalog_sha256": "20a335f6081514026fe56608b59dc993e94d5fae31f62d1431116c819fef6eec",
+  "dataset_sha256": "a8020480f86c039137e9a9a1a8391e6bdd04dfe22aeb406c46829cc312e9bc56",
+  "candidate_games": {
+    "2d24e83c3eb80fe0224919f9": "steam-289070",
+    "bd1071a990d11cb21b8975a1": "steam-367520",
+    "51c2b76482d9462e9dac4604": "steam-632470",
+    "92fc80b93ed898bd43b705ca": "steam-1135690",
+    "d0f037a854381c4a46008c4d": "steam-383870",
+    "cd3b04ec769563e2b6a51fdb": "steam-1086940",
+    "2747d7c1b7db9d6d87304133": "steam-1245620",
+    "ed56eb69fe035e3e4a73beeb": "steam-504230",
+    "80bc42d9ae9249ac0b36a578": "steam-736260",
+    "159562f90f61b91f534f5dd6": "steam-1145360",
+    "8c700814510d79c234a98e8b": "steam-1446780",
+    "851054e5575ea5899c77eac6": "steam-367520",
+    "10c87d600076b9f930768834": "steam-1245620",
+    "7db9356ee4101f9a51ce5c9f": "steam-322330",
+    "ecca32a6d66caf22bcc1992d": "steam-892970",
+    "d1f801e219c609b1c506627b": "steam-264710",
+    "7b5735268d6e24e2ba1058de": "steam-1446780",
+    "0b957ef1943294fa73e12dd7": "steam-632360",
+    "fa1ea07f7b077f75a894a93c": "steam-105600",
+    "8e93f8e395d2447938946c20": "steam-1142710",
+    "1a3b633b451831437724aaae": "steam-813780",
+    "c43e9deb2445bf7adaa158dc": "steam-1086940",
+    "79a685cb0a4c253fa2bd353c": "steam-1145360",
+    "c60d29c9566c01ce84b1162b": "steam-1336490",
+    "7e0d3953842f7f959843695b": "steam-1245620",
+    "7cbb4282c04b98bf5a36b2b7": "steam-548430",
+    "c1b03722c789cc062109a7f4": "steam-281990",
+    "2c84e322f8bfcf31dfcbe948": "steam-457140",
+    "a00e704e685f22bac5b92349": "steam-1366540",
+    "57a02ed68198b9da6aef23d9": "steam-275850",
+    "ede612e31654eef1a43b2ffa": "steam-753640",
+    "c3fa9638d80913939b7396c5": "steam-1091500",
+    "45c3bc1381c6c6556eb003c9": "steam-813780",
+    "e482c2b938a6c73e30f95673": "steam-1158310",
+    "08caa8627c847a197877cead": "steam-1086940",
+    "c314dae2b1226b587611dcf7": "steam-289070",
+    "5d84013d32c122267e852dd3": "steam-323190",
+    "d6e08d1d8a567b3c8058427d": "steam-255710",
+    "a25bcd1703408842c0b87515": "steam-1142710",
+    "6d7b8d25f676238add650bce": "steam-1336490",
+    "7b3c10e9895dbd2587d0f079": "steam-1158310",
+    "ec50dc8f861ebd52b0175a9f": "steam-281990",
+    "32bbcba88e8d8094a8600b25": "steam-813780",
+    "599ff78631ef3b934fec0df9": "steam-1366540",
+    "17dc927495314fa8429e7b3e": "steam-972660",
+    "c52db59af35c656a1a14b2bf": "steam-1336490",
+    "1f0efb4c02d410479f845c10": "steam-1868140",
+    "a3ca49d7c4c118952330a075": "steam-255710",
+    "d1a6286756c274793c27e6fc": "steam-413150",
+    "99af9f763317e57bf3761504": "steam-457140",
+    "e1aba94e0a185cf1efbdcf8c": "steam-1158310",
+    "5a34e86743abe90b3f5c07c3": "steam-620",
+    "de9764b46b63d08047aea23f": "steam-281990",
+    "f8a9dd0b4bf698c99e29a0cf": "steam-255710",
+    "a9dd4bd6e5ef25f11248892a": "steam-289070",
+    "9721e1101391033d9d408667": "steam-323190",
+    "ed6d1a63ab0dfdbffff5b8b3": "steam-1426210",
+    "27bc3443204f813f728b4518": "steam-457140",
+    "b12ab327eb4c373a5c49a267": "steam-1336490",
+    "fde6adf2d1e69983b3db719f": "steam-264710",
+    "2ae8adffe66e30e4c6d21e5b": "steam-294100",
+    "b620138c8f00b0d5538af3a1": "steam-322330",
+    "983f6dd475331a501ce0ef06": "steam-526870",
+    "08837c5b0580767a7ecf2fbd": "steam-275850",
+    "655183601c524f856571764e": "steam-1366540",
+    "2669862353745194c504c2e4": "steam-548430",
+    "283a8391fa6c63156659d0c3": "steam-427520",
+    "55282f7a5937b55e37bf303b": "steam-548430",
+    "ed4b979e77a26f159d7fc558": "steam-1446780",
+    "3a6a1fcb43c38c2ad084c645": "steam-275850",
+    "14e39620b2760ca101127b36": "steam-1142710",
+    "5f2296d3cb96a4b4e7e10711": "steam-1336490",
+    "d275ee59ccb8c96fc60ffa30": "steam-646570",
+    "e93280b3838b8fe561779fe5": "steam-632470",
+    "ad3c82bebbb2ae6c3868afa1": "steam-1562430",
+    "2c1f4da72328ea7f2d556a0f": "steam-653530",
+    "2e87281f1952b78d696923fa": "steam-1677770",
+    "327d04712953a97afd692cfb": "steam-1091500",
+    "8c21c71ab140fb165630d90e": "steam-264710",
+    "0dfa6717ae265785c5f04cd9": "steam-653530",
+    "1ef7d91f3061e4d5a06c3a4c": "steam-1677770",
+    "d6782adf857694a56a862320": "steam-548430",
+    "c1846d5e5cb5071f567f2460": "steam-383870",
+    "9f557f17b7dfe3e868a077b1": "steam-736260",
+    "8a36b132bf8eca54a521b5f8": "steam-1092790",
+    "ebee6c5f9722e82a7fc46bdf": "steam-620",
+    "16dbbcbe73daa50ef808e9c1": "steam-526870",
+    "0f072639d403437b0a2c5bc6": "steam-1135690",
+    "df27e9957b72667e25d481ed": "steam-257510",
+    "e737ceac3afa65eb1df0c2b7": "steam-736260",
+    "2515d165e38e56c204f406dc": "steam-620",
+    "28d92097baf1d3bc36cb65d7": "steam-323190",
+    "97288774cfa74a88d7fd3c45": "steam-504230",
+    "ccf7fcf94c958aa184f9aec3": "steam-1086940",
+    "135e2f46abf7ee7f49a0e818": "steam-632470",
+    "03d05213dca0750e8abfd2c8": "steam-1086940",
+    "29cd513f428b6fe8c2a98f89": "steam-1426210",
+    "d4d82d9ea1ea6ab34eeb043f": "steam-1091500",
+    "9ff591765ce511d1170dc0ca": "steam-383870",
+    "aab5e375e81f42b02af0efa7": "steam-1158310",
+    "ce4371c95486118d81c758a0": "steam-1677770",
+    "553423679522c16a05869d16": "steam-1135690",
+    "6bc9ac58cb597caa5b49f855": "steam-383870",
+    "432640bf2a46e2c90af41e5f": "steam-753640",
+    "d9ea582d2e4959069c0b5e48": "steam-1135690",
+    "cc60b3113842b4e0cbb711ae": "steam-1455840",
+    "945a82575598a2a7cfca0dbb": "steam-1055540",
+    "a5335882c93f56267abe9663": "steam-504230",
+    "5e29463825aaf4d9b3fee725": "steam-413150",
+    "040539c903df153d539ee1e9": "steam-1868140",
+    "67e68eb747eed624b95d8840": "steam-384190",
+    "bf16aac41e011a8518948d25": "steam-105600",
+    "97b9b6331c94617e1700edba": "steam-1562430",
+    "06c405b06be1e393df11e979": "steam-972660",
+    "aa95f5a5ece28f571372a123": "steam-1055540",
+    "ac7373677eb128b7c1cb1778": "steam-653530",
+    "4f73c1a292db23339969302b": "steam-1677770",
+    "ea57f2b006a567c4c5453df8": "steam-632470",
+    "5cee5e8695aeeb5d7bd4d740": "steam-1562430",
+    "a2605b42eaf6c31a4ae898c4": "steam-2379780",
+    "f290b98e4b003d65644dfe15": "steam-753640",
+    "5ea16534ffbbfb5b8bbe2d44": "steam-1092790",
+    "566790a9b5c3a4cb43f03c14": "steam-257510",
+    "1cc2eaf096ac35ed9ba5136d": "steam-620",
+    "48f5d0436791b2683cd5fa45": "steam-1135690",
+    "990d139cd00aa0d729245a3b": "steam-736260",
+    "1e878b8833127e8baf82080a": "steam-367520",
+    "ce1ac8e04d50ffb919ef0ef0": "steam-1446780",
+    "1562cdea98f226625fe0be8c": "steam-1245620",
+    "2f2e53fe7beaa51ac5bb9dd2": "steam-548430",
+    "a6d45975f8d999c47fe608c1": "steam-632360",
+    "974f2f65793caed380e5bc09": "steam-264710",
+    "0b69074f7363323aab40fd5d": "steam-1336490",
+    "aaddf8e7f8ea1a072fb6055f": "steam-294100",
+    "b02664d1c9e0b93137700f13": "steam-322330",
+    "38b02c93e7b9183bc62830ea": "steam-457140",
+    "cf78733b9b09e470ebad5def": "steam-323190",
+    "dea25c639d385e75f4252b03": "steam-1086940",
+    "484eff725b2b439b06679d18": "steam-1245620",
+    "9f71837d733874ffe1763b81": "steam-1446780",
+    "1b5eeb1bfdf3d5d6eaa6f61c": "steam-1142710",
+    "bbfd0a6b0ff33fe5fbac58d5": "steam-289070",
+    "2660bf16d0fcb366d246e5f7": "steam-813780",
+    "a9b253b36d785bfe192209a1": "steam-1158310",
+    "abe3e2fbbe4edab5703dc3f1": "steam-632360"
+  },
+  "rankings": {
+    "discovery-01": {
+      "keyword_baseline": [
+        "steam-1086940",
+        "steam-1245620",
+        "steam-632470",
+        "steam-383870",
+        "steam-1135690"
+      ],
+      "bm25_without_aliases": [
+        "steam-1086940",
+        "steam-1245620",
+        "steam-632470",
+        "steam-367520",
+        "steam-289070"
+      ],
+      "bm25": [
+        "steam-1086940",
+        "steam-1245620",
+        "steam-632470",
+        "steam-367520",
+        "steam-383870"
+      ]
+    },
+    "discovery-02": {
+      "keyword_baseline": [
+        "steam-1245620",
+        "steam-1145360",
+        "steam-1446780",
+        "steam-367520",
+        "steam-504230"
+      ],
+      "bm25_without_aliases": [
+        "steam-1245620",
+        "steam-1145360",
+        "steam-1446780",
+        "steam-504230",
+        "steam-736260"
+      ],
+      "bm25": [
+        "steam-1245620",
+        "steam-1145360",
+        "steam-1446780",
+        "steam-504230",
+        "steam-367520"
+      ]
+    },
+    "discovery-03": {
+      "keyword_baseline": [
+        "steam-1446780",
+        "steam-105600",
+        "steam-632360",
+        "steam-264710",
+        "steam-322330"
+      ],
+      "bm25_without_aliases": [
+        "steam-1446780",
+        "steam-105600",
+        "steam-632360",
+        "steam-322330",
+        "steam-892970"
+      ],
+      "bm25": [
+        "steam-1446780",
+        "steam-105600",
+        "steam-632360",
+        "steam-892970",
+        "steam-264710"
+      ]
+    },
+    "discovery-04": {
+      "keyword_baseline": [
+        "steam-1142710",
+        "steam-813780",
+        "steam-1086940",
+        "steam-1245620",
+        "steam-1336490"
+      ],
+      "bm25_without_aliases": [
+        "steam-1142710",
+        "steam-813780",
+        "steam-1245620",
+        "steam-1086940",
+        "steam-1336490"
+      ],
+      "bm25": [
+        "steam-1142710",
+        "steam-813780",
+        "steam-1245620",
+        "steam-1086940",
+        "steam-1145360"
+      ]
+    },
+    "discovery-05": {
+      "keyword_baseline": [
+        "steam-281990",
+        "steam-548430",
+        "steam-1366540",
+        "steam-753640",
+        "steam-457140"
+      ],
+      "bm25_without_aliases": [
+        "steam-281990",
+        "steam-548430",
+        "steam-1366540",
+        "steam-753640",
+        "steam-457140"
+      ],
+      "bm25": [
+        "steam-281990",
+        "steam-548430",
+        "steam-753640",
+        "steam-1366540",
+        "steam-275850"
+      ]
+    },
+    "discovery-06": {
+      "keyword_baseline": [
+        "steam-289070",
+        "steam-255710",
+        "steam-1086940",
+        "steam-1091500",
+        "steam-1158310"
+      ],
+      "bm25_without_aliases": [
+        "steam-289070",
+        "steam-255710",
+        "steam-323190",
+        "steam-1086940",
+        "steam-813780"
+      ],
+      "bm25": [
+        "steam-289070",
+        "steam-255710",
+        "steam-323190",
+        "steam-1086940",
+        "steam-813780"
+      ]
+    },
+    "discovery-07": {
+      "keyword_baseline": [
+        "steam-813780",
+        "steam-1142710",
+        "steam-1158310",
+        "steam-281990",
+        "steam-1336490"
+      ],
+      "bm25_without_aliases": [
+        "steam-813780",
+        "steam-1142710",
+        "steam-1158310",
+        "steam-281990",
+        "steam-1336490"
+      ],
+      "bm25": [
+        "steam-813780",
+        "steam-1142710",
+        "steam-1158310",
+        "steam-281990",
+        "steam-1336490"
+      ]
+    },
+    "discovery-08": {
+      "keyword_baseline": [
+        "steam-1158310",
+        "steam-1336490",
+        "steam-1366540",
+        "steam-1868140",
+        "steam-255710"
+      ],
+      "bm25_without_aliases": [
+        "steam-1158310",
+        "steam-1868140",
+        "steam-972660",
+        "steam-413150",
+        "steam-457140"
+      ],
+      "bm25": [
+        "steam-1158310",
+        "steam-1868140",
+        "steam-413150",
+        "steam-972660",
+        "steam-457140"
+      ]
+    },
+    "discovery-09": {
+      "keyword_baseline": [
+        "steam-255710",
+        "steam-289070",
+        "steam-1426210",
+        "steam-281990",
+        "steam-620"
+      ],
+      "bm25_without_aliases": [
+        "steam-255710",
+        "steam-289070",
+        "steam-323190",
+        "steam-281990",
+        "steam-620"
+      ],
+      "bm25": [
+        "steam-255710",
+        "steam-289070",
+        "steam-323190",
+        "steam-281990",
+        "steam-620"
+      ]
+    },
+    "discovery-10": {
+      "keyword_baseline": [
+        "steam-457140",
+        "steam-294100",
+        "steam-1336490",
+        "steam-264710",
+        "steam-322330"
+      ],
+      "bm25_without_aliases": [
+        "steam-457140",
+        "steam-294100",
+        "steam-1336490",
+        "steam-322330",
+        "steam-264710"
+      ],
+      "bm25": [
+        "steam-457140",
+        "steam-294100",
+        "steam-1336490",
+        "steam-264710",
+        "steam-322330"
+      ]
+    },
+    "discovery-11": {
+      "keyword_baseline": [
+        "steam-1366540",
+        "steam-427520",
+        "steam-275850",
+        "steam-526870",
+        "steam-548430"
+      ],
+      "bm25_without_aliases": [
+        "steam-1366540",
+        "steam-427520",
+        "steam-275850",
+        "steam-526870",
+        "steam-548430"
+      ],
+      "bm25": [
+        "steam-1366540",
+        "steam-427520",
+        "steam-275850",
+        "steam-526870",
+        "steam-548430"
+      ]
+    },
+    "discovery-12": {
+      "keyword_baseline": [
+        "steam-1336490",
+        "steam-1142710",
+        "steam-275850",
+        "steam-1446780",
+        "steam-548430"
+      ],
+      "bm25_without_aliases": [
+        "steam-1336490",
+        "steam-1142710",
+        "steam-275850",
+        "steam-1446780",
+        "steam-548430"
+      ],
+      "bm25": [
+        "steam-1336490",
+        "steam-1142710",
+        "steam-275850",
+        "steam-548430",
+        "steam-646570"
+      ]
+    },
+    "discovery-13": {
+      "keyword_baseline": [
+        "steam-653530",
+        "steam-1677770",
+        "steam-1091500",
+        "steam-1562430",
+        "steam-632470"
+      ],
+      "bm25_without_aliases": [
+        "steam-653530",
+        "steam-1677770",
+        "steam-1091500",
+        "steam-1562430",
+        "steam-632470"
+      ],
+      "bm25": [
+        "steam-653530",
+        "steam-1677770",
+        "steam-1091500",
+        "steam-1562430",
+        "steam-632470"
+      ]
+    },
+    "discovery-14": {
+      "keyword_baseline": [
+        "steam-1677770",
+        "steam-653530",
+        "steam-264710",
+        "steam-548430",
+        "steam-383870"
+      ],
+      "bm25_without_aliases": [
+        "steam-1677770",
+        "steam-653530",
+        "steam-264710",
+        "steam-548430",
+        "steam-383870"
+      ],
+      "bm25": [
+        "steam-1677770",
+        "steam-653530",
+        "steam-264710",
+        "steam-548430",
+        "steam-383870"
+      ]
+    },
+    "discovery-15": {
+      "keyword_baseline": [
+        "steam-257510",
+        "steam-620",
+        "steam-526870",
+        "steam-1092790",
+        "steam-1135690"
+      ],
+      "bm25_without_aliases": [
+        "steam-257510",
+        "steam-620",
+        "steam-526870",
+        "steam-1092790",
+        "steam-736260"
+      ],
+      "bm25": [
+        "steam-257510",
+        "steam-620",
+        "steam-526870",
+        "steam-1092790",
+        "steam-736260"
+      ]
+    },
+    "discovery-16": {
+      "keyword_baseline": [
+        "steam-736260",
+        "steam-1086940",
+        "steam-504230",
+        "steam-323190",
+        "steam-620"
+      ],
+      "bm25_without_aliases": [
+        "steam-736260",
+        "steam-504230",
+        "steam-1086940",
+        "steam-323190",
+        "steam-620"
+      ],
+      "bm25": [
+        "steam-736260",
+        "steam-504230",
+        "steam-1086940",
+        "steam-323190",
+        "steam-620"
+      ]
+    },
+    "discovery-17": {
+      "keyword_baseline": [
+        "steam-1135690",
+        "steam-1086940",
+        "steam-632470",
+        "steam-1091500",
+        "steam-1158310"
+      ],
+      "bm25_without_aliases": [
+        "steam-1135690",
+        "steam-632470",
+        "steam-1086940",
+        "steam-383870",
+        "steam-1677770"
+      ],
+      "bm25": [
+        "steam-1135690",
+        "steam-632470",
+        "steam-1086940",
+        "steam-383870",
+        "steam-1426210"
+      ]
+    },
+    "discovery-18": {
+      "keyword_baseline": [
+        "steam-1455840",
+        "steam-1135690",
+        "steam-383870",
+        "steam-753640"
+      ],
+      "bm25_without_aliases": [
+        "steam-1455840",
+        "steam-383870",
+        "steam-1135690",
+        "steam-753640"
+      ],
+      "bm25": [
+        "steam-1455840",
+        "steam-383870",
+        "steam-753640",
+        "steam-1135690"
+      ]
+    },
+    "discovery-19": {
+      "keyword_baseline": [
+        "steam-1055540",
+        "steam-504230"
+      ],
+      "bm25_without_aliases": [
+        "steam-1055540",
+        "steam-504230"
+      ],
+      "bm25": [
+        "steam-1055540",
+        "steam-504230"
+      ]
+    },
+    "discovery-20": {
+      "keyword_baseline": [
+        "steam-972660",
+        "steam-1868140",
+        "steam-413150",
+        "steam-1055540",
+        "steam-105600"
+      ],
+      "bm25_without_aliases": [
+        "steam-972660",
+        "steam-1868140",
+        "steam-413150",
+        "steam-1055540",
+        "steam-1562430"
+      ],
+      "bm25": [
+        "steam-972660",
+        "steam-1868140",
+        "steam-413150",
+        "steam-1055540",
+        "steam-384190"
+      ]
+    },
+    "discovery-21": {
+      "keyword_baseline": [
+        "steam-1562430",
+        "steam-2379780",
+        "steam-753640",
+        "steam-1677770",
+        "steam-632470"
+      ],
+      "bm25_without_aliases": [
+        "steam-1562430",
+        "steam-653530",
+        "steam-2379780",
+        "steam-753640",
+        "steam-1677770"
+      ],
+      "bm25": [
+        "steam-1562430",
+        "steam-2379780",
+        "steam-653530",
+        "steam-753640",
+        "steam-632470"
+      ]
+    },
+    "discovery-22": {
+      "keyword_baseline": [
+        "steam-1092790",
+        "steam-257510",
+        "steam-620",
+        "steam-736260",
+        "steam-1135690"
+      ],
+      "bm25_without_aliases": [
+        "steam-1092790",
+        "steam-620",
+        "steam-257510",
+        "steam-736260",
+        "steam-1135690"
+      ],
+      "bm25": [
+        "steam-1092790",
+        "steam-620",
+        "steam-257510",
+        "steam-736260",
+        "steam-1135690"
+      ]
+    },
+    "discovery-23": {
+      "keyword_baseline": [
+        "steam-632360",
+        "steam-548430",
+        "steam-1446780",
+        "steam-1245620",
+        "steam-367520"
+      ],
+      "bm25_without_aliases": [
+        "steam-632360",
+        "steam-1446780",
+        "steam-548430",
+        "steam-1245620",
+        "steam-367520"
+      ],
+      "bm25": [
+        "steam-632360",
+        "steam-1446780",
+        "steam-548430",
+        "steam-1245620",
+        "steam-367520"
+      ]
+    },
+    "discovery-24": {
+      "keyword_baseline": [
+        "steam-322330",
+        "steam-294100",
+        "steam-1336490",
+        "steam-264710",
+        "steam-323190"
+      ],
+      "bm25_without_aliases": [
+        "steam-322330",
+        "steam-294100",
+        "steam-1336490",
+        "steam-264710",
+        "steam-457140"
+      ],
+      "bm25": [
+        "steam-322330",
+        "steam-294100",
+        "steam-1336490",
+        "steam-264710",
+        "steam-457140"
+      ]
+    },
+    "alias-01": {
+      "keyword_baseline": [],
+      "bm25_without_aliases": [],
+      "bm25": [
+        "steam-1086940"
+      ]
+    },
+    "alias-02": {
+      "keyword_baseline": [],
+      "bm25_without_aliases": [],
+      "bm25": [
+        "steam-1245620"
+      ]
+    },
+    "alias-03": {
+      "keyword_baseline": [],
+      "bm25_without_aliases": [],
+      "bm25": [
+        "steam-1446780"
+      ]
+    },
+    "alias-04": {
+      "keyword_baseline": [],
+      "bm25_without_aliases": [],
+      "bm25": [
+        "steam-1142710"
+      ]
+    },
+    "alias-05": {
+      "keyword_baseline": [],
+      "bm25_without_aliases": [],
+      "bm25": [
+        "steam-289070"
+      ]
+    },
+    "alias-06": {
+      "keyword_baseline": [],
+      "bm25_without_aliases": [],
+      "bm25": [
+        "steam-813780"
+      ]
+    },
+    "alias-07": {
+      "keyword_baseline": [],
+      "bm25_without_aliases": [],
+      "bm25": [
+        "steam-1158310"
+      ]
+    },
+    "alias-08": {
+      "keyword_baseline": [],
+      "bm25_without_aliases": [],
+      "bm25": [
+        "steam-632360"
+      ]
+    }
+  },
+  "expected_tasks": {
+    "discovery-13": [
+      "e93280b3838b8fe561779fe5",
+      "ad3c82bebbb2ae6c3868afa1",
+      "2c1f4da72328ea7f2d556a0f",
+      "2e87281f1952b78d696923fa",
+      "327d04712953a97afd692cfb"
+    ],
+    "discovery-08": [
+      "599ff78631ef3b934fec0df9",
+      "17dc927495314fa8429e7b3e",
+      "c52db59af35c656a1a14b2bf",
+      "1f0efb4c02d410479f845c10",
+      "a3ca49d7c4c118952330a075",
+      "d1a6286756c274793c27e6fc",
+      "99af9f763317e57bf3761504",
+      "e1aba94e0a185cf1efbdcf8c"
+    ],
+    "discovery-15": [
+      "9f557f17b7dfe3e868a077b1",
+      "8a36b132bf8eca54a521b5f8",
+      "ebee6c5f9722e82a7fc46bdf",
+      "16dbbcbe73daa50ef808e9c1",
+      "0f072639d403437b0a2c5bc6",
+      "df27e9957b72667e25d481ed"
+    ],
+    "alias-03": [
+      "9f71837d733874ffe1763b81"
+    ],
+    "discovery-01": [
+      "2d24e83c3eb80fe0224919f9",
+      "bd1071a990d11cb21b8975a1",
+      "51c2b76482d9462e9dac4604",
+      "92fc80b93ed898bd43b705ca",
+      "d0f037a854381c4a46008c4d",
+      "cd3b04ec769563e2b6a51fdb",
+      "2747d7c1b7db9d6d87304133"
+    ],
+    "discovery-20": [
+      "5e29463825aaf4d9b3fee725",
+      "040539c903df153d539ee1e9",
+      "67e68eb747eed624b95d8840",
+      "bf16aac41e011a8518948d25",
+      "97b9b6331c94617e1700edba",
+      "06c405b06be1e393df11e979",
+      "aa95f5a5ece28f571372a123"
+    ],
+    "discovery-16": [
+      "e737ceac3afa65eb1df0c2b7",
+      "2515d165e38e56c204f406dc",
+      "28d92097baf1d3bc36cb65d7",
+      "97288774cfa74a88d7fd3c45",
+      "ccf7fcf94c958aa184f9aec3"
+    ],
+    "alias-04": [
+      "1b5eeb1bfdf3d5d6eaa6f61c"
+    ],
+    "alias-08": [
+      "abe3e2fbbe4edab5703dc3f1"
+    ],
+    "discovery-19": [
+      "945a82575598a2a7cfca0dbb",
+      "a5335882c93f56267abe9663"
+    ],
+    "discovery-04": [
+      "8e93f8e395d2447938946c20",
+      "1a3b633b451831437724aaae",
+      "c43e9deb2445bf7adaa158dc",
+      "79a685cb0a4c253fa2bd353c",
+      "c60d29c9566c01ce84b1162b",
+      "7e0d3953842f7f959843695b"
+    ],
+    "discovery-22": [
+      "5ea16534ffbbfb5b8bbe2d44",
+      "566790a9b5c3a4cb43f03c14",
+      "1cc2eaf096ac35ed9ba5136d",
+      "48f5d0436791b2683cd5fa45",
+      "990d139cd00aa0d729245a3b"
+    ],
+    "alias-02": [
+      "484eff725b2b439b06679d18"
+    ],
+    "discovery-09": [
+      "5a34e86743abe90b3f5c07c3",
+      "de9764b46b63d08047aea23f",
+      "f8a9dd0b4bf698c99e29a0cf",
+      "a9dd4bd6e5ef25f11248892a",
+      "9721e1101391033d9d408667",
+      "ed6d1a63ab0dfdbffff5b8b3"
+    ],
+    "alias-01": [
+      "dea25c639d385e75f4252b03"
+    ],
+    "discovery-17": [
+      "135e2f46abf7ee7f49a0e818",
+      "03d05213dca0750e8abfd2c8",
+      "29cd513f428b6fe8c2a98f89",
+      "d4d82d9ea1ea6ab34eeb043f",
+      "9ff591765ce511d1170dc0ca",
+      "aab5e375e81f42b02af0efa7",
+      "ce4371c95486118d81c758a0",
+      "553423679522c16a05869d16"
+    ],
+    "discovery-21": [
+      "ac7373677eb128b7c1cb1778",
+      "4f73c1a292db23339969302b",
+      "ea57f2b006a567c4c5453df8",
+      "5cee5e8695aeeb5d7bd4d740",
+      "a2605b42eaf6c31a4ae898c4",
+      "f290b98e4b003d65644dfe15"
+    ],
+    "discovery-02": [
+      "ed56eb69fe035e3e4a73beeb",
+      "80bc42d9ae9249ac0b36a578",
+      "159562f90f61b91f534f5dd6",
+      "8c700814510d79c234a98e8b",
+      "851054e5575ea5899c77eac6",
+      "10c87d600076b9f930768834"
+    ],
+    "discovery-03": [
+      "7db9356ee4101f9a51ce5c9f",
+      "ecca32a6d66caf22bcc1992d",
+      "d1f801e219c609b1c506627b",
+      "7b5735268d6e24e2ba1058de",
+      "0b957ef1943294fa73e12dd7",
+      "fa1ea07f7b077f75a894a93c"
+    ],
+    "alias-05": [
+      "bbfd0a6b0ff33fe5fbac58d5"
+    ],
+    "alias-06": [
+      "2660bf16d0fcb366d246e5f7"
+    ],
+    "discovery-05": [
+      "7cbb4282c04b98bf5a36b2b7",
+      "c1b03722c789cc062109a7f4",
+      "2c84e322f8bfcf31dfcbe948",
+      "a00e704e685f22bac5b92349",
+      "57a02ed68198b9da6aef23d9",
+      "ede612e31654eef1a43b2ffa"
+    ],
+    "alias-07": [
+      "a9b253b36d785bfe192209a1"
+    ],
+    "discovery-24": [
+      "974f2f65793caed380e5bc09",
+      "0b69074f7363323aab40fd5d",
+      "aaddf8e7f8ea1a072fb6055f",
+      "b02664d1c9e0b93137700f13",
+      "38b02c93e7b9183bc62830ea",
+      "cf78733b9b09e470ebad5def"
+    ],
+    "discovery-07": [
+      "a25bcd1703408842c0b87515",
+      "6d7b8d25f676238add650bce",
+      "7b3c10e9895dbd2587d0f079",
+      "ec50dc8f861ebd52b0175a9f",
+      "32bbcba88e8d8094a8600b25"
+    ],
+    "discovery-18": [
+      "6bc9ac58cb597caa5b49f855",
+      "432640bf2a46e2c90af41e5f",
+      "d9ea582d2e4959069c0b5e48",
+      "cc60b3113842b4e0cbb711ae"
+    ],
+    "discovery-14": [
+      "8c21c71ab140fb165630d90e",
+      "0dfa6717ae265785c5f04cd9",
+      "1ef7d91f3061e4d5a06c3a4c",
+      "d6782adf857694a56a862320",
+      "c1846d5e5cb5071f567f2460"
+    ],
+    "discovery-06": [
+      "c3fa9638d80913939b7396c5",
+      "45c3bc1381c6c6556eb003c9",
+      "e482c2b938a6c73e30f95673",
+      "08caa8627c847a197877cead",
+      "c314dae2b1226b587611dcf7",
+      "5d84013d32c122267e852dd3",
+      "d6e08d1d8a567b3c8058427d"
+    ],
+    "discovery-11": [
+      "983f6dd475331a501ce0ef06",
+      "08837c5b0580767a7ecf2fbd",
+      "655183601c524f856571764e",
+      "2669862353745194c504c2e4",
+      "283a8391fa6c63156659d0c3"
+    ],
+    "discovery-12": [
+      "55282f7a5937b55e37bf303b",
+      "ed4b979e77a26f159d7fc558",
+      "3a6a1fcb43c38c2ad084c645",
+      "14e39620b2760ca101127b36",
+      "5f2296d3cb96a4b4e7e10711",
+      "d275ee59ccb8c96fc60ffa30"
+    ],
+    "discovery-23": [
+      "1e878b8833127e8baf82080a",
+      "ce1ac8e04d50ffb919ef0ef0",
+      "1562cdea98f226625fe0be8c",
+      "2f2e53fe7beaa51ac5bb9dd2",
+      "a6d45975f8d999c47fe608c1"
+    ],
+    "discovery-10": [
+      "27bc3443204f813f728b4518",
+      "b12ab327eb4c373a5c49a267",
+      "fde6adf2d1e69983b3db719f",
+      "2ae8adffe66e30e4c6d21e5b",
+      "b620138c8f00b0d5538af3a1"
+    ]
+  }
+}

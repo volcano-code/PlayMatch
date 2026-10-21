@@ -129,3 +129,13 @@ are embedded in that diagnostic report; later live results may differ.
 Live-probe failures remain failures in the report. Network reachability in one
 environment does not establish production availability, supplier SLAs or region
 activation rights. Do not manufacture successful quotes for demonstrations.
+
+
+## v0.6 public-source addition (2026-10-21)
+
+24 additional distinct Steam product pages were read directly via web retrieval,
+without invoking IGDB credentials or implementing a store scraper. Original
+Chinese summaries and editorial aliases are source-linked, not independently
+human-reviewed. Language/features evidence is separate from community tags and
+not a guarantee about future availability. No prices or reviews are copied into
+the catalog. See data/catalog-v06-provenance.json and docs/catalog-evaluation-v06.md.

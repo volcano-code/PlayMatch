@@ -13,7 +13,7 @@ from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from playmatch.catalog_seed import load_catalog
+from playmatch.catalog_seed import catalog_coverage, load_catalog
 from playmatch.config import Settings, get_settings
 from playmatch.database import Database
 from playmatch.models import (
@@ -48,6 +48,7 @@ from playmatch.runs import (
 from playmatch.schemas import (
     AlertInput,
     AlertState,
+    CatalogCoverage,
     Credentials,
     FeedbackInput,
     Game,
@@ -258,7 +259,7 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
             "execution_mode": "durable_sql_" + settings.run_execution_mode,
             "run_max_attempts": settings.run_max_attempts,
             "limitations": [
-                "目录包含人工起步记录及可选的审核导入；尚未启用全量 IGDB 同步。",
+                "目录包含来源整理记录及可选的审核导入；尚未启用全量 IGDB 同步。",
                 "默认 BM25；向量融合需显式配置，实际模式与降级原因见每次任务。",
                 "仅查询 CheapShark US/USD 观测报价，不提供中国区人民币价格。",
                 "版本与地区激活资格未核验的报价不会标记为保证可购买的最低价。",
@@ -271,6 +272,11 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
     def retrieval_index(request: Request, response: Response):
         response.headers["Cache-Control"] = "no-store"
         return index_status(request.app.state.database, settings)
+
+    @app.get("/api/v1/catalog/coverage", response_model=CatalogCoverage)
+    def coverage(response: Response, session: Session = Depends(get_db)):
+        response.headers["Cache-Control"] = "no-store"
+        return catalog_coverage([row.payload for row in session.scalars(select(GameRecord))])
 
     @app.get("/api/v1/games", response_model=GameList)
     def games(
@@ -293,6 +299,7 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
                     [
                         game["title"],
                         game["title_zh"],
+                        *game.get("aliases", []),
                         game["description"],
                         *game["themes"],
                         *game["genres"],

@@ -10,6 +10,7 @@ export interface Game {
   steam_app_id: number;
   title: string;
   title_zh: string;
+  aliases?: string[];
   description: string;
   themes: string[];
   genres: string[];
@@ -140,4 +141,17 @@ export interface NotificationList {
   items: NotificationItem[];
   total: number;
   unread: number;
+}
+
+export interface CatalogCoverage {
+  total_games: number;
+  source_linked_games: number;
+  description_observed: number;
+  chinese_interface_verified: number;
+  online_coop_verified: number;
+  local_coop_verified: number;
+  horror_unknown: number;
+  with_aliases: number;
+  automatic_sync: boolean;
+  notes: string[];
 }

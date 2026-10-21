@@ -16,6 +16,7 @@ class Game(BaseModel):
     steam_app_id: int
     title: str
     title_zh: str
+    aliases: list[str] = Field(default_factory=list, max_length=20)
     description: str
     themes: list[str]
     genres: list[str]
@@ -28,6 +29,26 @@ class Game(BaseModel):
     evidence: list[Evidence]
     metadata_status: Literal["curated", "provider"]
     estimated_hours: float | None = None
+
+    @field_validator("aliases")
+    @classmethod
+    def bounded_aliases(cls, values: list[str]) -> list[str]:
+        if any(not value.strip() or len(value) > 80 or not value.isprintable() for value in values):
+            raise ValueError("Aliases must be 1..80 printable characters")
+        return list(dict.fromkeys(value.strip() for value in values))
+
+
+class CatalogCoverage(BaseModel):
+    total_games: int
+    source_linked_games: int
+    description_observed: int
+    chinese_interface_verified: int
+    online_coop_verified: int
+    local_coop_verified: int
+    horror_unknown: int
+    with_aliases: int
+    automatic_sync: bool
+    notes: list[str]
 
 
 class GameList(BaseModel):

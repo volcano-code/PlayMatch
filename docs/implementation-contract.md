@@ -143,3 +143,24 @@ GET `/notifications?limit=&offset=` returns NotificationList(items,total,unread)
 POST `/notifications/{id}/read` returns owner-scoped NotificationItem.
 DELETE `/notifications/{id}` deletes only owner history, not the dedupe event.
 See docs/price-alerts-v05.md for states, freshness, leases, fixtures and boundaries.
+
+
+## v0.6 catalog release and measurement
+
+Game adds `aliases:string[]` (default empty, at most 20 printable strings of 1..80
+characters). Editorial aliases do not attest official localization. BM25 and
+catalog q search include aliases; keyword_baseline is unchanged. Bundled release
+is two SHA-256-bound parts, 48 games, preserving original 24-game JSON bytes.
+
+GET `/api/v1/catalog/coverage` returns typed CatalogCoverage with actual stored
+counts: total_games, source_linked_games, description_observed,
+chinese_interface_verified, online_coop_verified, local_coop_verified,
+horror_unknown, with_aliases; automatic_sync=false and notes:string[]. No-store.
+Counts are not model availability, full metadata verification or price coverage.
+
+Historical 23-case evaluation defaults to the original data/catalog.json;
+40-case v0.6 development challenge binds all 48 complete records and runs
+keyword/BM25-no-alias/BM25 ablations offline. Partial positives do not support
+precision/recall/nDCG. Ranker-blind review templates remain ungraded; scoring
+requires two complete self-attested humans and reports only pooled nDCG.
+See docs/catalog-evaluation-v06.md for provenance and all limitations.

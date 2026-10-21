@@ -1,0 +1,1816 @@
+{
+  "schema_version": 1,
+  "dataset": "catalog-challenge-v06",
+  "dataset_sha256": "a8020480f86c039137e9a9a1a8391e6bdd04dfe22aeb406c46829cc312e9bc56",
+  "catalog_sha256": "20a335f6081514026fe56608b59dc993e94d5fae31f62d1431116c819fef6eec",
+  "retrieval_text_sha256": "fd2a717007d8f916fcbd0a14af72856ca35cb78ce7b749a94563e68f19333d6d",
+  "catalog_size": 48,
+  "label_origin": "coding_agent_provisional",
+  "independent_human_review": false,
+  "network": "blocked",
+  "quality_gate": "hard_constraints_only",
+  "ndcg_at_5": null,
+  "limitations": [
+    "Coding-agent provisional, non-exhaustive positives; not independent, blind or a user-satisfaction measure.",
+    "Unjudged games are NOT negatives; precision/recall/nDCG withheld.",
+    "Same catalog and rules parser for all modes; aliases ablation changes only document aliases.",
+    "No live prices, paid LLM, embedding benchmark or performance conclusion."
+  ],
+  "modes": {
+    "keyword_baseline": {
+      "summary": {
+        "cases": 40,
+        "positive_labeled_cases": 32,
+        "hit_at_1_count": 24,
+        "hit_at_5_count": 24,
+        "mrr_at_5": 0.75,
+        "hard_violation_cases": 0,
+        "slices": {
+          "discovery": {
+            "cases": 24,
+            "hit_at_5_count": 24
+          },
+          "alias": {
+            "cases": 8,
+            "hit_at_5_count": 0
+          }
+        }
+      },
+      "cases": [
+        {
+          "id": "discovery-01",
+          "kind": "discovery",
+          "family": "fantasy-party",
+          "ranked_ids": [
+            "steam-1086940",
+            "steam-1245620",
+            "steam-632470",
+            "steam-383870",
+            "steam-1135690"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-02",
+          "kind": "discovery",
+          "family": "souls-action",
+          "ranked_ids": [
+            "steam-1245620",
+            "steam-1145360",
+            "steam-1446780",
+            "steam-367520",
+            "steam-504230"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-03",
+          "kind": "discovery",
+          "family": "hunting-coop",
+          "ranked_ids": [
+            "steam-1446780",
+            "steam-105600",
+            "steam-632360",
+            "steam-264710",
+            "steam-322330"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-04",
+          "kind": "discovery",
+          "family": "fantasy-war",
+          "ranked_ids": [
+            "steam-1142710",
+            "steam-813780",
+            "steam-1086940",
+            "steam-1245620",
+            "steam-1336490"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-05",
+          "kind": "discovery",
+          "family": "space-empire",
+          "ranked_ids": [
+            "steam-281990",
+            "steam-548430",
+            "steam-1366540",
+            "steam-753640",
+            "steam-457140"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-06",
+          "kind": "discovery",
+          "family": "historical-4x",
+          "ranked_ids": [
+            "steam-289070",
+            "steam-255710",
+            "steam-1086940",
+            "steam-1091500",
+            "steam-1158310"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-07",
+          "kind": "discovery",
+          "family": "historical-rts",
+          "ranked_ids": [
+            "steam-813780",
+            "steam-1142710",
+            "steam-1158310",
+            "steam-281990",
+            "steam-1336490"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-08",
+          "kind": "discovery",
+          "family": "dynasty",
+          "ranked_ids": [
+            "steam-1158310",
+            "steam-1336490",
+            "steam-1366540",
+            "steam-1868140",
+            "steam-255710"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-09",
+          "kind": "discovery",
+          "family": "city",
+          "ranked_ids": [
+            "steam-255710",
+            "steam-289070",
+            "steam-1426210",
+            "steam-281990",
+            "steam-620"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-10",
+          "kind": "discovery",
+          "family": "colony",
+          "ranked_ids": [
+            "steam-457140",
+            "steam-294100",
+            "steam-1336490",
+            "steam-264710",
+            "steam-322330"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-11",
+          "kind": "discovery",
+          "family": "factory-space",
+          "ranked_ids": [
+            "steam-1366540",
+            "steam-427520",
+            "steam-275850",
+            "steam-526870",
+            "steam-548430"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-12",
+          "kind": "discovery",
+          "family": "storm-city",
+          "ranked_ids": [
+            "steam-1336490",
+            "steam-1142710",
+            "steam-275850",
+            "steam-1446780",
+            "steam-548430"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-13",
+          "kind": "discovery",
+          "family": "ship-mystery",
+          "ranked_ids": [
+            "steam-653530",
+            "steam-1677770",
+            "steam-1091500",
+            "steam-1562430",
+            "steam-632470"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-14",
+          "kind": "discovery",
+          "family": "detective",
+          "ranked_ids": [
+            "steam-1677770",
+            "steam-653530",
+            "steam-264710",
+            "steam-548430",
+            "steam-383870"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-15",
+          "kind": "discovery",
+          "family": "philosophy-puzzle",
+          "ranked_ids": [
+            "steam-257510",
+            "steam-620",
+            "steam-526870",
+            "steam-1092790",
+            "steam-1135690"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-16",
+          "kind": "discovery",
+          "family": "rule-puzzle",
+          "ranked_ids": [
+            "steam-736260",
+            "steam-1086940",
+            "steam-504230",
+            "steam-323190",
+            "steam-620"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-17",
+          "kind": "discovery",
+          "family": "unpacking",
+          "ranked_ids": [
+            "steam-1135690",
+            "steam-1086940",
+            "steam-632470",
+            "steam-1091500",
+            "steam-1158310"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-18",
+          "kind": "discovery",
+          "family": "tile-landscape",
+          "ranked_ids": [
+            "steam-1455840",
+            "steam-1135690",
+            "steam-383870",
+            "steam-753640"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-19",
+          "kind": "discovery",
+          "family": "hiking",
+          "ranked_ids": [
+            "steam-1055540",
+            "steam-504230"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-20",
+          "kind": "discovery",
+          "family": "spirit-boat",
+          "ranked_ids": [
+            "steam-972660",
+            "steam-1868140",
+            "steam-413150",
+            "steam-1055540",
+            "steam-105600"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-21",
+          "kind": "discovery",
+          "family": "fishing-mystery",
+          "ranked_ids": [
+            "steam-1562430",
+            "steam-2379780",
+            "steam-753640",
+            "steam-1677770",
+            "steam-632470"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-22",
+          "kind": "discovery",
+          "family": "card-horror",
+          "ranked_ids": [
+            "steam-1092790",
+            "steam-257510",
+            "steam-620",
+            "steam-736260",
+            "steam-1135690"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-23",
+          "kind": "discovery",
+          "family": "alien-shooter",
+          "ranked_ids": [
+            "steam-632360",
+            "steam-548430",
+            "steam-1446780",
+            "steam-1245620",
+            "steam-367520"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-24",
+          "kind": "discovery",
+          "family": "wilderness-coop",
+          "ranked_ids": [
+            "steam-322330",
+            "steam-294100",
+            "steam-1336490",
+            "steam-264710",
+            "steam-323190"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-01",
+          "kind": "alias",
+          "family": "fantasy-party",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-02",
+          "kind": "alias",
+          "family": "souls-action",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-03",
+          "kind": "alias",
+          "family": "hunting-coop",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-04",
+          "kind": "alias",
+          "family": "fantasy-war",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-05",
+          "kind": "alias",
+          "family": "historical-4x",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-06",
+          "kind": "alias",
+          "family": "historical-rts",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-07",
+          "kind": "alias",
+          "family": "dynasty",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-08",
+          "kind": "alias",
+          "family": "alien-shooter",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-01",
+          "kind": "constraint",
+          "family": "hard-1",
+          "ranked_ids": [
+            "steam-281990",
+            "steam-548430",
+            "steam-1366540",
+            "steam-457140",
+            "steam-105600"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-02",
+          "kind": "constraint",
+          "family": "hard-2",
+          "ranked_ids": [
+            "steam-1446780",
+            "steam-632360",
+            "steam-1426210",
+            "steam-548430",
+            "steam-728880"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-03",
+          "kind": "constraint",
+          "family": "hard-3",
+          "ranked_ids": [
+            "steam-972660"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-04",
+          "kind": "constraint",
+          "family": "hard-4",
+          "ranked_ids": [],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-05",
+          "kind": "constraint",
+          "family": "hard-5",
+          "ranked_ids": [],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-06",
+          "kind": "constraint",
+          "family": "hard-6",
+          "ranked_ids": [
+            "steam-1366540",
+            "steam-1868140",
+            "steam-255710",
+            "steam-289070",
+            "steam-413150"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-07",
+          "kind": "constraint",
+          "family": "hard-7",
+          "ranked_ids": [
+            "steam-1086940",
+            "steam-1092790",
+            "steam-1158310",
+            "steam-1336490",
+            "steam-1455840"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-08",
+          "kind": "constraint",
+          "family": "hard-8",
+          "ranked_ids": [
+            "steam-1366540",
+            "steam-281990",
+            "steam-457140",
+            "steam-548430"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        }
+      ]
+    },
+    "bm25_without_aliases": {
+      "summary": {
+        "cases": 40,
+        "positive_labeled_cases": 32,
+        "hit_at_1_count": 24,
+        "hit_at_5_count": 24,
+        "mrr_at_5": 0.75,
+        "hard_violation_cases": 0,
+        "slices": {
+          "discovery": {
+            "cases": 24,
+            "hit_at_5_count": 24
+          },
+          "alias": {
+            "cases": 8,
+            "hit_at_5_count": 0
+          }
+        }
+      },
+      "cases": [
+        {
+          "id": "discovery-01",
+          "kind": "discovery",
+          "family": "fantasy-party",
+          "ranked_ids": [
+            "steam-1086940",
+            "steam-1245620",
+            "steam-632470",
+            "steam-367520",
+            "steam-289070"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-02",
+          "kind": "discovery",
+          "family": "souls-action",
+          "ranked_ids": [
+            "steam-1245620",
+            "steam-1145360",
+            "steam-1446780",
+            "steam-504230",
+            "steam-736260"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-03",
+          "kind": "discovery",
+          "family": "hunting-coop",
+          "ranked_ids": [
+            "steam-1446780",
+            "steam-105600",
+            "steam-632360",
+            "steam-322330",
+            "steam-892970"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-04",
+          "kind": "discovery",
+          "family": "fantasy-war",
+          "ranked_ids": [
+            "steam-1142710",
+            "steam-813780",
+            "steam-1245620",
+            "steam-1086940",
+            "steam-1336490"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-05",
+          "kind": "discovery",
+          "family": "space-empire",
+          "ranked_ids": [
+            "steam-281990",
+            "steam-548430",
+            "steam-1366540",
+            "steam-753640",
+            "steam-457140"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-06",
+          "kind": "discovery",
+          "family": "historical-4x",
+          "ranked_ids": [
+            "steam-289070",
+            "steam-255710",
+            "steam-323190",
+            "steam-1086940",
+            "steam-813780"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-07",
+          "kind": "discovery",
+          "family": "historical-rts",
+          "ranked_ids": [
+            "steam-813780",
+            "steam-1142710",
+            "steam-1158310",
+            "steam-281990",
+            "steam-1336490"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-08",
+          "kind": "discovery",
+          "family": "dynasty",
+          "ranked_ids": [
+            "steam-1158310",
+            "steam-1868140",
+            "steam-972660",
+            "steam-413150",
+            "steam-457140"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-09",
+          "kind": "discovery",
+          "family": "city",
+          "ranked_ids": [
+            "steam-255710",
+            "steam-289070",
+            "steam-323190",
+            "steam-281990",
+            "steam-620"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-10",
+          "kind": "discovery",
+          "family": "colony",
+          "ranked_ids": [
+            "steam-457140",
+            "steam-294100",
+            "steam-1336490",
+            "steam-322330",
+            "steam-264710"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-11",
+          "kind": "discovery",
+          "family": "factory-space",
+          "ranked_ids": [
+            "steam-1366540",
+            "steam-427520",
+            "steam-275850",
+            "steam-526870",
+            "steam-548430"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-12",
+          "kind": "discovery",
+          "family": "storm-city",
+          "ranked_ids": [
+            "steam-1336490",
+            "steam-1142710",
+            "steam-275850",
+            "steam-1446780",
+            "steam-548430"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-13",
+          "kind": "discovery",
+          "family": "ship-mystery",
+          "ranked_ids": [
+            "steam-653530",
+            "steam-1677770",
+            "steam-1091500",
+            "steam-1562430",
+            "steam-632470"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-14",
+          "kind": "discovery",
+          "family": "detective",
+          "ranked_ids": [
+            "steam-1677770",
+            "steam-653530",
+            "steam-264710",
+            "steam-548430",
+            "steam-383870"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-15",
+          "kind": "discovery",
+          "family": "philosophy-puzzle",
+          "ranked_ids": [
+            "steam-257510",
+            "steam-620",
+            "steam-526870",
+            "steam-1092790",
+            "steam-736260"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-16",
+          "kind": "discovery",
+          "family": "rule-puzzle",
+          "ranked_ids": [
+            "steam-736260",
+            "steam-504230",
+            "steam-1086940",
+            "steam-323190",
+            "steam-620"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-17",
+          "kind": "discovery",
+          "family": "unpacking",
+          "ranked_ids": [
+            "steam-1135690",
+            "steam-632470",
+            "steam-1086940",
+            "steam-383870",
+            "steam-1677770"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-18",
+          "kind": "discovery",
+          "family": "tile-landscape",
+          "ranked_ids": [
+            "steam-1455840",
+            "steam-383870",
+            "steam-1135690",
+            "steam-753640"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-19",
+          "kind": "discovery",
+          "family": "hiking",
+          "ranked_ids": [
+            "steam-1055540",
+            "steam-504230"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-20",
+          "kind": "discovery",
+          "family": "spirit-boat",
+          "ranked_ids": [
+            "steam-972660",
+            "steam-1868140",
+            "steam-413150",
+            "steam-1055540",
+            "steam-1562430"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-21",
+          "kind": "discovery",
+          "family": "fishing-mystery",
+          "ranked_ids": [
+            "steam-1562430",
+            "steam-653530",
+            "steam-2379780",
+            "steam-753640",
+            "steam-1677770"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-22",
+          "kind": "discovery",
+          "family": "card-horror",
+          "ranked_ids": [
+            "steam-1092790",
+            "steam-620",
+            "steam-257510",
+            "steam-736260",
+            "steam-1135690"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-23",
+          "kind": "discovery",
+          "family": "alien-shooter",
+          "ranked_ids": [
+            "steam-632360",
+            "steam-1446780",
+            "steam-548430",
+            "steam-1245620",
+            "steam-367520"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-24",
+          "kind": "discovery",
+          "family": "wilderness-coop",
+          "ranked_ids": [
+            "steam-322330",
+            "steam-294100",
+            "steam-1336490",
+            "steam-264710",
+            "steam-457140"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-01",
+          "kind": "alias",
+          "family": "fantasy-party",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-02",
+          "kind": "alias",
+          "family": "souls-action",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-03",
+          "kind": "alias",
+          "family": "hunting-coop",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-04",
+          "kind": "alias",
+          "family": "fantasy-war",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-05",
+          "kind": "alias",
+          "family": "historical-4x",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-06",
+          "kind": "alias",
+          "family": "historical-rts",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-07",
+          "kind": "alias",
+          "family": "dynasty",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-08",
+          "kind": "alias",
+          "family": "alien-shooter",
+          "ranked_ids": [],
+          "hit_at_1": false,
+          "hit_at_5": false,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-01",
+          "kind": "constraint",
+          "family": "hard-1",
+          "ranked_ids": [
+            "steam-281990",
+            "steam-548430",
+            "steam-457140",
+            "steam-1366540",
+            "steam-1562430"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-02",
+          "kind": "constraint",
+          "family": "hard-2",
+          "ranked_ids": [
+            "steam-1446780",
+            "steam-632360",
+            "steam-548430",
+            "steam-728880",
+            "steam-1426210"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-03",
+          "kind": "constraint",
+          "family": "hard-3",
+          "ranked_ids": [
+            "steam-972660"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-04",
+          "kind": "constraint",
+          "family": "hard-4",
+          "ranked_ids": [],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-05",
+          "kind": "constraint",
+          "family": "hard-5",
+          "ranked_ids": [],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-06",
+          "kind": "constraint",
+          "family": "hard-6",
+          "ranked_ids": [
+            "steam-1868140",
+            "steam-972660",
+            "steam-413150",
+            "steam-427520",
+            "steam-255710"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-07",
+          "kind": "constraint",
+          "family": "hard-7",
+          "ranked_ids": [
+            "steam-2379780",
+            "steam-646570",
+            "steam-281990",
+            "steam-1092790",
+            "steam-1455840"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-08",
+          "kind": "constraint",
+          "family": "hard-8",
+          "ranked_ids": [
+            "steam-281990",
+            "steam-457140",
+            "steam-548430",
+            "steam-1366540"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        }
+      ]
+    },
+    "bm25": {
+      "summary": {
+        "cases": 40,
+        "positive_labeled_cases": 32,
+        "hit_at_1_count": 32,
+        "hit_at_5_count": 32,
+        "mrr_at_5": 1.0,
+        "hard_violation_cases": 0,
+        "slices": {
+          "discovery": {
+            "cases": 24,
+            "hit_at_5_count": 24
+          },
+          "alias": {
+            "cases": 8,
+            "hit_at_5_count": 8
+          }
+        }
+      },
+      "cases": [
+        {
+          "id": "discovery-01",
+          "kind": "discovery",
+          "family": "fantasy-party",
+          "ranked_ids": [
+            "steam-1086940",
+            "steam-1245620",
+            "steam-632470",
+            "steam-367520",
+            "steam-383870"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-02",
+          "kind": "discovery",
+          "family": "souls-action",
+          "ranked_ids": [
+            "steam-1245620",
+            "steam-1145360",
+            "steam-1446780",
+            "steam-504230",
+            "steam-367520"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-03",
+          "kind": "discovery",
+          "family": "hunting-coop",
+          "ranked_ids": [
+            "steam-1446780",
+            "steam-105600",
+            "steam-632360",
+            "steam-892970",
+            "steam-264710"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-04",
+          "kind": "discovery",
+          "family": "fantasy-war",
+          "ranked_ids": [
+            "steam-1142710",
+            "steam-813780",
+            "steam-1245620",
+            "steam-1086940",
+            "steam-1145360"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-05",
+          "kind": "discovery",
+          "family": "space-empire",
+          "ranked_ids": [
+            "steam-281990",
+            "steam-548430",
+            "steam-753640",
+            "steam-1366540",
+            "steam-275850"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-06",
+          "kind": "discovery",
+          "family": "historical-4x",
+          "ranked_ids": [
+            "steam-289070",
+            "steam-255710",
+            "steam-323190",
+            "steam-1086940",
+            "steam-813780"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-07",
+          "kind": "discovery",
+          "family": "historical-rts",
+          "ranked_ids": [
+            "steam-813780",
+            "steam-1142710",
+            "steam-1158310",
+            "steam-281990",
+            "steam-1336490"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-08",
+          "kind": "discovery",
+          "family": "dynasty",
+          "ranked_ids": [
+            "steam-1158310",
+            "steam-1868140",
+            "steam-413150",
+            "steam-972660",
+            "steam-457140"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-09",
+          "kind": "discovery",
+          "family": "city",
+          "ranked_ids": [
+            "steam-255710",
+            "steam-289070",
+            "steam-323190",
+            "steam-281990",
+            "steam-620"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-10",
+          "kind": "discovery",
+          "family": "colony",
+          "ranked_ids": [
+            "steam-457140",
+            "steam-294100",
+            "steam-1336490",
+            "steam-264710",
+            "steam-322330"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-11",
+          "kind": "discovery",
+          "family": "factory-space",
+          "ranked_ids": [
+            "steam-1366540",
+            "steam-427520",
+            "steam-275850",
+            "steam-526870",
+            "steam-548430"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-12",
+          "kind": "discovery",
+          "family": "storm-city",
+          "ranked_ids": [
+            "steam-1336490",
+            "steam-1142710",
+            "steam-275850",
+            "steam-548430",
+            "steam-646570"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-13",
+          "kind": "discovery",
+          "family": "ship-mystery",
+          "ranked_ids": [
+            "steam-653530",
+            "steam-1677770",
+            "steam-1091500",
+            "steam-1562430",
+            "steam-632470"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-14",
+          "kind": "discovery",
+          "family": "detective",
+          "ranked_ids": [
+            "steam-1677770",
+            "steam-653530",
+            "steam-264710",
+            "steam-548430",
+            "steam-383870"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-15",
+          "kind": "discovery",
+          "family": "philosophy-puzzle",
+          "ranked_ids": [
+            "steam-257510",
+            "steam-620",
+            "steam-526870",
+            "steam-1092790",
+            "steam-736260"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-16",
+          "kind": "discovery",
+          "family": "rule-puzzle",
+          "ranked_ids": [
+            "steam-736260",
+            "steam-504230",
+            "steam-1086940",
+            "steam-323190",
+            "steam-620"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-17",
+          "kind": "discovery",
+          "family": "unpacking",
+          "ranked_ids": [
+            "steam-1135690",
+            "steam-632470",
+            "steam-1086940",
+            "steam-383870",
+            "steam-1426210"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-18",
+          "kind": "discovery",
+          "family": "tile-landscape",
+          "ranked_ids": [
+            "steam-1455840",
+            "steam-383870",
+            "steam-753640",
+            "steam-1135690"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-19",
+          "kind": "discovery",
+          "family": "hiking",
+          "ranked_ids": [
+            "steam-1055540",
+            "steam-504230"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-20",
+          "kind": "discovery",
+          "family": "spirit-boat",
+          "ranked_ids": [
+            "steam-972660",
+            "steam-1868140",
+            "steam-413150",
+            "steam-1055540",
+            "steam-384190"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-21",
+          "kind": "discovery",
+          "family": "fishing-mystery",
+          "ranked_ids": [
+            "steam-1562430",
+            "steam-2379780",
+            "steam-653530",
+            "steam-753640",
+            "steam-632470"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-22",
+          "kind": "discovery",
+          "family": "card-horror",
+          "ranked_ids": [
+            "steam-1092790",
+            "steam-620",
+            "steam-257510",
+            "steam-736260",
+            "steam-1135690"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-23",
+          "kind": "discovery",
+          "family": "alien-shooter",
+          "ranked_ids": [
+            "steam-632360",
+            "steam-1446780",
+            "steam-548430",
+            "steam-1245620",
+            "steam-367520"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "discovery-24",
+          "kind": "discovery",
+          "family": "wilderness-coop",
+          "ranked_ids": [
+            "steam-322330",
+            "steam-294100",
+            "steam-1336490",
+            "steam-264710",
+            "steam-457140"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-01",
+          "kind": "alias",
+          "family": "fantasy-party",
+          "ranked_ids": [
+            "steam-1086940"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-02",
+          "kind": "alias",
+          "family": "souls-action",
+          "ranked_ids": [
+            "steam-1245620"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-03",
+          "kind": "alias",
+          "family": "hunting-coop",
+          "ranked_ids": [
+            "steam-1446780"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-04",
+          "kind": "alias",
+          "family": "fantasy-war",
+          "ranked_ids": [
+            "steam-1142710"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-05",
+          "kind": "alias",
+          "family": "historical-4x",
+          "ranked_ids": [
+            "steam-289070"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-06",
+          "kind": "alias",
+          "family": "historical-rts",
+          "ranked_ids": [
+            "steam-813780"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-07",
+          "kind": "alias",
+          "family": "dynasty",
+          "ranked_ids": [
+            "steam-1158310"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "alias-08",
+          "kind": "alias",
+          "family": "alien-shooter",
+          "ranked_ids": [
+            "steam-632360"
+          ],
+          "hit_at_1": true,
+          "hit_at_5": true,
+          "reciprocal_rank_at_5": 1.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-01",
+          "kind": "constraint",
+          "family": "hard-1",
+          "ranked_ids": [
+            "steam-281990",
+            "steam-548430",
+            "steam-457140",
+            "steam-1366540",
+            "steam-1562430"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-02",
+          "kind": "constraint",
+          "family": "hard-2",
+          "ranked_ids": [
+            "steam-1446780",
+            "steam-632360",
+            "steam-548430",
+            "steam-728880",
+            "steam-1426210"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-03",
+          "kind": "constraint",
+          "family": "hard-3",
+          "ranked_ids": [
+            "steam-972660"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-04",
+          "kind": "constraint",
+          "family": "hard-4",
+          "ranked_ids": [],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-05",
+          "kind": "constraint",
+          "family": "hard-5",
+          "ranked_ids": [],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-06",
+          "kind": "constraint",
+          "family": "hard-6",
+          "ranked_ids": [
+            "steam-1868140",
+            "steam-413150",
+            "steam-972660",
+            "steam-427520",
+            "steam-289070"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-07",
+          "kind": "constraint",
+          "family": "hard-7",
+          "ranked_ids": [
+            "steam-2379780",
+            "steam-646570",
+            "steam-281990",
+            "steam-1092790",
+            "steam-1455840"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        },
+        {
+          "id": "constraint-08",
+          "kind": "constraint",
+          "family": "hard-8",
+          "ranked_ids": [
+            "steam-281990",
+            "steam-457140",
+            "steam-548430",
+            "steam-1366540"
+          ],
+          "hit_at_1": null,
+          "hit_at_5": null,
+          "reciprocal_rank_at_5": 0.0,
+          "hard_violations": []
+        }
+      ]
+    }
+  }
+}
