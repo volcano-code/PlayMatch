@@ -36,6 +36,12 @@ services:
       EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:-}
       EMBEDDING_TIMEOUT_SECONDS: ${EMBEDDING_TIMEOUT_SECONDS:-8}
       SEMANTIC_MIN_SCORE: ${SEMANTIC_MIN_SCORE:-0.65}
+      STEAM_WEB_API_KEY: ${STEAM_WEB_API_KEY:-}
+      STEAM_SYNC_ENABLED: ${STEAM_SYNC_ENABLED:-false}
+      STEAM_SYNC_INTERVAL_SECONDS: ${STEAM_SYNC_INTERVAL_SECONDS:-600}
+      STEAM_FULL_SYNC_SECONDS: ${STEAM_FULL_SYNC_SECONDS:-604800}
+      STEAM_SYNC_DAILY_REQUESTS: ${STEAM_SYNC_DAILY_REQUESTS:-1000}
+      STEAM_SYNC_PAGE_SIZE: ${STEAM_SYNC_PAGE_SIZE:-5000}
       RUN_WORKERS: 2
       RUN_EXECUTION_MODE: external
       RUN_LEASE_SECONDS: ${RUN_LEASE_SECONDS:-15}
@@ -63,6 +69,26 @@ services:
       start_period: 15s
       retries: 5
     stop_grace_period: 10s
+    restart: unless-stopped
+
+  catalog-sync:
+    profiles: ["catalog-sync"]
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.api
+    command: ["python", "-m", "playmatch.steam_worker"]
+    environment:
+      <<: *api-environment
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-m", "playmatch.steam_worker", "--health"]
+      interval: 20s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    stop_grace_period: 35s
     restart: unless-stopped
 
   web:

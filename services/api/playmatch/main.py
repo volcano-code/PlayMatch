@@ -13,6 +13,7 @@ from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
+from playmatch.catalog_search import metadata_page
 from playmatch.catalog_seed import catalog_coverage, load_catalog
 from playmatch.config import Settings, get_settings
 from playmatch.database import Database
@@ -60,6 +61,8 @@ from playmatch.schemas import (
     Run,
     RunCreated,
     RunInput,
+    SteamDirectoryPage,
+    SteamDirectoryStatus,
     User,
     WatchInput,
     WatchItem,
@@ -76,6 +79,7 @@ from playmatch.security import (
     verify_password,
 )
 from playmatch.semantic_index import index_status
+from playmatch.steam_sync import directory_page, sync_status
 
 
 def get_db(request: Request):
@@ -232,10 +236,12 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
     def capabilities(session: Session = Depends(get_db)):
         return {
             "catalog_mode": "mixed"
-            if any(
-                row.payload.get("metadata_status") == "provider"
-                for row in session.scalars(select(GameRecord))
+            if session.scalar(
+                select(GameRecord.id)
+                .where(GameRecord.payload["metadata_status"].as_string() == "provider")
+                .limit(1)
             )
+            is not None
             else "curated_starter",
             "catalog_count": session.scalar(select(func.count()).select_from(GameRecord)),
             "agent_mode": "llm" if settings.llm_enabled else "rules",
@@ -244,6 +250,11 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
             "catalog_import": "operator_cli",
             "semantic_catalog_limit": 5000 if settings.retrieval_mode == "indexed_hybrid" else 128,
             "catalog_collection": "review_bundle_cli",
+            "steam_directory": {
+                "status_url": "/api/v1/catalog/steam/status",
+                "browse_url": "/api/v1/catalog/steam/games",
+                "metadata_separate": True,
+            },
             "pricing_provider": "cheapshark",
             "pricing_currency": "USD",
             "supported_price_countries": ["US"],
@@ -278,6 +289,22 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
         response.headers["Cache-Control"] = "no-store"
         return catalog_coverage([row.payload for row in session.scalars(select(GameRecord))])
 
+    @app.get("/api/v1/catalog/steam/status", response_model=SteamDirectoryStatus)
+    def steam_status(response: Response, session: Session = Depends(get_db)):
+        response.headers["Cache-Control"] = "no-store"
+        return sync_status(session, settings)
+
+    @app.get("/api/v1/catalog/steam/games", response_model=SteamDirectoryPage)
+    def steam_games(
+        response: Response,
+        q: str = Query(default="", max_length=100),
+        after_appid: int = Query(default=0, ge=0, le=4294967295),
+        limit: int = Query(default=24, ge=1, le=100),
+        session: Session = Depends(get_db),
+    ):
+        response.headers["Cache-Control"] = "no-store"
+        return directory_page(session, q=q, after_appid=after_appid, limit=limit)
+
     @app.get("/api/v1/games", response_model=GameList)
     def games(
         q: str = Query(default="", max_length=200),
@@ -286,33 +313,7 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
         offset: int = Query(default=0, ge=0, le=100000),
         session: Session = Depends(get_db),
     ):
-        records = [
-            row.payload for row in session.scalars(select(GameRecord).order_by(GameRecord.title))
-        ]
-        if q.strip():
-            needle = q.strip().casefold()
-            records = [
-                game
-                for game in records
-                if needle
-                in " ".join(
-                    [
-                        game["title"],
-                        game["title_zh"],
-                        *game.get("aliases", []),
-                        game["description"],
-                        *game["themes"],
-                        *game["genres"],
-                    ]
-                ).casefold()
-            ]
-        if theme.strip():
-            records = [
-                game
-                for game in records
-                if theme.strip().casefold() in {item.casefold() for item in game["themes"]}
-            ]
-        return {"items": records[offset : offset + limit], "total": len(records)}
+        return metadata_page(session, q=q, theme=theme, limit=limit, offset=offset)
 
     @app.get("/api/v1/games/{game_id}", response_model=Game)
     def game(game_id: str, session: Session = Depends(get_db)):

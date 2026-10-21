@@ -2615,3 +2615,60 @@ a {
   flex-wrap: wrap;
   gap: 0.8rem;
 }
+
+.steam-directory {
+  margin: 1rem 0;
+  padding: 1.2rem;
+  border: 1px solid var(--line, #334155);
+  border-radius: 16px;
+  background: var(--panel, #111827);
+}
+.steam-directory p {
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--muted, #94a3b8);
+}
+.steam-directory-heading,
+.steam-directory-metrics,
+.steam-directory-search {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+.steam-directory-heading {
+  justify-content: space-between;
+}
+.steam-directory-metrics span {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--line, #334155);
+}
+.steam-directory-search {
+  margin: 1rem 0;
+}
+.steam-directory-search input {
+  min-width: 0;
+  width: min(100%, 20rem);
+  padding: 0.6rem;
+  border-radius: 8px;
+}
+.steam-directory-list {
+  padding: 0;
+  list-style: none;
+}
+.steam-directory-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--line, #334155);
+}
+.steam-directory-list small {
+  display: block;
+  color: var(--muted, #94a3b8);
+  margin-top: 0.25rem;
+}
+.steam-directory-list a {
+  flex-shrink: 0;
+}

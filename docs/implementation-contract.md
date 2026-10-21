@@ -164,3 +164,20 @@ keyword/BM25-no-alias/BM25 ablations offline. Partial positives do not support
 precision/recall/nDCG. Ranker-blind review templates remain ungraded; scoring
 requires two complete self-attested humans and reports only pooled nDCG.
 See docs/catalog-evaluation-v06.md for provenance and all limitations.
+
+## v0.7 Steam discovery directory
+
+Migration 0006 adds `steam_directory_apps`, a singleton durable page cursor/lease,
+completed-cycle receipts and derived SQL search columns on `games`. Identity discovery
+is separate from recommendation Game: no synthetic descriptions or verified languages.
+GET `/catalog/steam/status` returns SteamDirectoryStatus; enabled/configured/heartbeat
+and recent completed-cycle time are distinct. Counts are actual SQL counts. No secrets.
+GET `/catalog/steam/games?q=&after_appid=&limit=` returns SteamDirectoryPage, ascending
+AppID keyset pagination; name-prefix or exact numeric AppID, max100 items. No public writes.
+Existing `/games` retains GameList contract, now filters/pages in SQL. The Steam
+identity table has no 5,000-record cap; existing metadata/semantic limits remain.
+Only explicitly enabled independent `playmatch.steam_worker` consumes the official
+GetAppList API. First full, overlapping incremental, periodic full, failure replay,
+rate/backoff/budget and token-fenced atomic page commits. Missing in a full scan is
+not deletion. See docs/steam-directory-v07.md; no real all-Steam coverage claim until
+credentialed deployed traversal has actually completed.

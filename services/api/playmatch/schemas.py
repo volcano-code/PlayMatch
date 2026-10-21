@@ -277,3 +277,56 @@ class NotificationList(BaseModel):
     items: list[NotificationItem]
     total: int
     unread: int
+
+
+class SteamDirectoryItem(BaseModel):
+    appid: int
+    name: str
+    store_url: str
+    source_modified: int | None
+    observed_at: float
+    metadata_status: Literal["available", "pending"]
+    game_id: str | None
+
+
+class SteamDirectoryPage(BaseModel):
+    items: list[SteamDirectoryItem]
+    next_appid: int | None
+    search_mode: Literal["name_prefix_or_exact_appid"]
+
+
+class SteamDirectoryStatus(BaseModel):
+    status: Literal[
+        "disabled",
+        "not_configured",
+        "worker_not_running",
+        "backoff",
+        "syncing",
+        "never_synced",
+        "stale",
+        "up_to_date",
+    ]
+    enabled: bool
+    configured: bool
+    worker_recent: bool
+    source: Literal["steam_istoreservice_games"]
+    discovered_games: int
+    with_recommendation_metadata: int
+    metadata_pending: int
+    not_seen_in_last_full: int
+    last_success_at: float | None
+    last_full_success_at: float | None
+    cycle_mode: str
+    cycle_in_progress: bool
+    pages_committed: int
+    rows_seen_in_cycle: int
+    cursor: int
+    watermark: int
+    next_due_at: float
+    last_error: str | None
+    requests_today: int
+    request_budget: int
+    poll_interval_seconds: int
+    automatic_metadata_enrichment: Literal[False] = False
+    automatic_price_polling: Literal[False] = False
+    notes: list[str]

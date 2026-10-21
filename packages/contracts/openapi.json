@@ -73,6 +73,89 @@
         }
       }
     },
+    "/api/v1/catalog/steam/status": {
+      "get": {
+        "summary": "Steam Status",
+        "operationId": "steam_status_api_v1_catalog_steam_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SteamDirectoryStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/catalog/steam/games": {
+      "get": {
+        "summary": "Steam Games",
+        "operationId": "steam_games_api_v1_catalog_steam_games_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 100,
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "after_appid",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 4294967295,
+              "minimum": 0,
+              "default": 0,
+              "title": "After Appid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 24,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SteamDirectoryPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/games": {
       "get": {
         "summary": "Games",
@@ -1966,6 +2049,271 @@
           "query"
         ],
         "title": "RunInput"
+      },
+      "SteamDirectoryItem": {
+        "properties": {
+          "appid": {
+            "type": "integer",
+            "title": "Appid"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "store_url": {
+            "type": "string",
+            "title": "Store Url"
+          },
+          "source_modified": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Modified"
+          },
+          "observed_at": {
+            "type": "number",
+            "title": "Observed At"
+          },
+          "metadata_status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "pending"
+            ],
+            "title": "Metadata Status"
+          },
+          "game_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Game Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "appid",
+          "name",
+          "store_url",
+          "source_modified",
+          "observed_at",
+          "metadata_status",
+          "game_id"
+        ],
+        "title": "SteamDirectoryItem"
+      },
+      "SteamDirectoryPage": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SteamDirectoryItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "next_appid": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Appid"
+          },
+          "search_mode": {
+            "type": "string",
+            "const": "name_prefix_or_exact_appid",
+            "title": "Search Mode"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "next_appid",
+          "search_mode"
+        ],
+        "title": "SteamDirectoryPage"
+      },
+      "SteamDirectoryStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "disabled",
+              "not_configured",
+              "worker_not_running",
+              "backoff",
+              "syncing",
+              "never_synced",
+              "stale",
+              "up_to_date"
+            ],
+            "title": "Status"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "configured": {
+            "type": "boolean",
+            "title": "Configured"
+          },
+          "worker_recent": {
+            "type": "boolean",
+            "title": "Worker Recent"
+          },
+          "source": {
+            "type": "string",
+            "const": "steam_istoreservice_games",
+            "title": "Source"
+          },
+          "discovered_games": {
+            "type": "integer",
+            "title": "Discovered Games"
+          },
+          "with_recommendation_metadata": {
+            "type": "integer",
+            "title": "With Recommendation Metadata"
+          },
+          "metadata_pending": {
+            "type": "integer",
+            "title": "Metadata Pending"
+          },
+          "not_seen_in_last_full": {
+            "type": "integer",
+            "title": "Not Seen In Last Full"
+          },
+          "last_success_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Success At"
+          },
+          "last_full_success_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Full Success At"
+          },
+          "cycle_mode": {
+            "type": "string",
+            "title": "Cycle Mode"
+          },
+          "cycle_in_progress": {
+            "type": "boolean",
+            "title": "Cycle In Progress"
+          },
+          "pages_committed": {
+            "type": "integer",
+            "title": "Pages Committed"
+          },
+          "rows_seen_in_cycle": {
+            "type": "integer",
+            "title": "Rows Seen In Cycle"
+          },
+          "cursor": {
+            "type": "integer",
+            "title": "Cursor"
+          },
+          "watermark": {
+            "type": "integer",
+            "title": "Watermark"
+          },
+          "next_due_at": {
+            "type": "number",
+            "title": "Next Due At"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "requests_today": {
+            "type": "integer",
+            "title": "Requests Today"
+          },
+          "request_budget": {
+            "type": "integer",
+            "title": "Request Budget"
+          },
+          "poll_interval_seconds": {
+            "type": "integer",
+            "title": "Poll Interval Seconds"
+          },
+          "automatic_metadata_enrichment": {
+            "type": "boolean",
+            "const": false,
+            "title": "Automatic Metadata Enrichment",
+            "default": false
+          },
+          "automatic_price_polling": {
+            "type": "boolean",
+            "const": false,
+            "title": "Automatic Price Polling",
+            "default": false
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "enabled",
+          "configured",
+          "worker_recent",
+          "source",
+          "discovered_games",
+          "with_recommendation_metadata",
+          "metadata_pending",
+          "not_seen_in_last_full",
+          "last_success_at",
+          "last_full_success_at",
+          "cycle_mode",
+          "cycle_in_progress",
+          "pages_committed",
+          "rows_seen_in_cycle",
+          "cursor",
+          "watermark",
+          "next_due_at",
+          "last_error",
+          "requests_today",
+          "request_budget",
+          "poll_interval_seconds",
+          "notes"
+        ],
+        "title": "SteamDirectoryStatus"
       },
       "User": {
         "properties": {
