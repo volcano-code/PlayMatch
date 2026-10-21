@@ -16,6 +16,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from playmatch.config import Settings
 from playmatch.database import Database
+from playmatch.notifications import NotificationOutbox
 from playmatch.run_queue import Claim, RunQueue
 from playmatch.runs import execute_claim
 
@@ -88,6 +89,7 @@ def main() -> int:
     try:
         while not stop.is_set():
             try:
+                NotificationOutbox(database).process_one()
                 claim = queue.claim()
                 HEALTH_PATH.touch(mode=0o600, exist_ok=True)
                 if claim:

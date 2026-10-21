@@ -124,3 +124,22 @@ Migration 0004 adds leases, deadline and shared admission lock. The database is 
 queue truth. Stage snapshots are application-level, not LangGraph native checkpoints.
 Only safe committed stages resume; budget is refreshed. Interrupted read-only external
 calls may repeat. See docs/durable-runs-v04.md for process, retry and privacy boundaries.
+
+## v0.5 query-triggered price alerts
+
+Scheduled `notification_monitoring` remains not_enabled. New capabilities.price_alerts:
+mode=own_query_observation, channel=in_app, consent_version=observed-usd-inapp-v1,
+automatic_price_polling=false, external_email=false, supported_price_countries=[US].
+WatchItem adds `alert:{state:off|armed|pending|notified|failed, version:int,
+consent_version:string|null, mode:own_query_observation, automatic_price_polling:false,
+external_email:false}`. Saving/changing/deleting a watch never silently consents.
+
+PUT `/watchlist/{game_id}/alert` accepts enabled:boolean, expected_version:int and
+explicit consent_version when enabling, returns AlertState; stale CAS commands 409.
+POST `/watchlist/{game_id}/check` accepts no client quote, returns OfferResponse plus
+alert_evaluation; only this explicit action evaluates the signed-in user's rule.
+Ordinary GET /offers remains free of notification side effects.
+GET `/notifications?limit=&offset=` returns NotificationList(items,total,unread).
+POST `/notifications/{id}/read` returns owner-scoped NotificationItem.
+DELETE `/notifications/{id}` deletes only owner history, not the dedupe event.
+See docs/price-alerts-v05.md for states, freshness, leases, fixtures and boundaries.

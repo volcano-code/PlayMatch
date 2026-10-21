@@ -28,7 +28,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'uv run uvicorn playmatch.main:app --host 127.0.0.1 --port 8100',
+      command: 'uv run uvicorn scripts.e2e_app:app --host 127.0.0.1 --port 8100',
       cwd: root,
       url: 'http://127.0.0.1:8100/health',
       reuseExistingServer: !process.env.CI,
@@ -37,6 +37,7 @@ export default defineConfig({
         DATABASE_URL: 'sqlite:///./.state/e2e.db',
         ALLOWED_ORIGINS: 'http://127.0.0.1:3100',
         COOKIE_SECURE: 'false',
+        PLAYMATCH_E2E_FIXTURES: '1',
         LLM_API_KEY: '',
         LLM_MODEL: '',
         LLM_BASE_URL: '',

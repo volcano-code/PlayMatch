@@ -61,6 +61,18 @@ class OfferResponse(BaseModel):
     fetched_at: str | None
     status: Literal["ok", "partial", "unsupported", "unavailable"]
     notices: list[str]
+    alert_evaluation: Literal[
+        "not_requested",
+        "disabled",
+        "above_target",
+        "queued",
+        "already_triggered",
+        "unavailable",
+        "unsupported",
+        "stale",
+        "no_qualifying_offers",
+        "save_failed",
+    ] = "not_requested"
 
 
 class Recommendation(BaseModel):
@@ -137,12 +149,35 @@ class WatchInput(BaseModel):
         return self
 
 
+class AlertInput(BaseModel):
+    model_config = {"extra": "forbid", "strict": True}
+    enabled: bool
+    expected_version: int = Field(ge=0, le=2_000_000_000)
+    consent_version: Literal["observed-usd-inapp-v1"] | None = None
+
+    @model_validator(mode="after")
+    def explicit_consent(self):
+        if self.enabled and self.consent_version != "observed-usd-inapp-v1":
+            raise ValueError("开启前必须明确同意查价触发、仅 USD、版本和激活资格未核验的提醒范围")
+        return self
+
+
+class AlertState(BaseModel):
+    state: Literal["off", "armed", "pending", "notified", "failed"]
+    version: int
+    consent_version: str | None
+    mode: Literal["own_query_observation"] = "own_query_observation"
+    automatic_price_polling: Literal[False] = False
+    external_email: Literal[False] = False
+
+
 class WatchItem(BaseModel):
     game: Game
     target_minor: int | None
     currency: str
     country: str
     monitoring_status: Literal["not_enabled"] = "not_enabled"
+    alert: AlertState
     created_at: str
 
 
@@ -161,3 +196,63 @@ class IndexStatus(BaseModel):
     search_method: Literal["exact_cosine"]
     max_documents: int
     provider_probed: Literal[False] = False
+
+
+class NotificationPayload(BaseModel):
+    model_config = {"extra": "forbid", "strict": True}
+    kind: Literal["observed_target_price"] = "observed_target_price"
+    game_id: str = Field(min_length=1, max_length=80)
+    game_title: str = Field(min_length=1, max_length=300)
+    price_minor: int = Field(ge=0, le=1_000_000)
+    target_minor: int = Field(ge=0, le=1_000_000)
+    currency: Literal["USD"] = "USD"
+    country: Literal["US"] = "US"
+    store: str = Field(min_length=1, max_length=120)
+    offer_url: str = Field(min_length=1, max_length=8192)
+    observed_at: str = Field(max_length=40)
+    source_updated_at: str | None = Field(default=None, max_length=40)
+    purchase_eligibility: Literal["not_verified"] = "not_verified"
+
+    @field_validator("observed_at", "source_updated_at")
+    @classmethod
+    def timestamp_with_timezone(cls, value):
+        from datetime import datetime
+
+        if value is not None:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            if parsed.tzinfo is None:
+                raise ValueError("Observation timestamp requires timezone")
+        return value
+
+    @field_validator("offer_url")
+    @classmethod
+    def safe_deal_link(cls, value):
+        from urllib.parse import parse_qs, urlsplit
+
+        parsed = urlsplit(value)
+        query = parse_qs(parsed.query, strict_parsing=True)
+        if (
+            parsed.scheme != "https"
+            or parsed.netloc != "www.cheapshark.com"
+            or parsed.path != "/redirect"
+            or parsed.fragment
+            or set(query) != {"dealID"}
+            or len(query["dealID"]) != 1
+            or not query["dealID"][0]
+            or any(ord(char) < 33 for char in value)
+        ):
+            raise ValueError("Invalid offer link")
+        return value
+
+
+class NotificationItem(BaseModel):
+    id: str
+    payload: NotificationPayload
+    created_at: str
+    read_at: str | None
+
+
+class NotificationList(BaseModel):
+    items: list[NotificationItem]
+    total: int
+    unread: int

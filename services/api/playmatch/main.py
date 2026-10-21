@@ -10,7 +10,7 @@ from uuid import uuid4
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy import delete, func, select, update
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from playmatch.catalog_seed import load_catalog
@@ -20,11 +20,21 @@ from playmatch.models import (
     CatalogLock,
     FeedbackRecord,
     GameRecord,
+    NotificationRecord,
     RunEventRecord,
     RunRecord,
     SessionRecord,
     UserRecord,
     WatchRecord,
+)
+from playmatch.notifications import (
+    CONSENT_VERSION,
+    NotificationConsumer,
+    alert_payload,
+    configure_alert,
+    invalidate_alert,
+    lock_alerts,
+    record_observation,
 )
 from playmatch.providers.cheapshark import CheapSharkClient
 from playmatch.run_queue import RunQueue, database_now, lock_queue
@@ -36,11 +46,15 @@ from playmatch.runs import (
     run_payload,
 )
 from playmatch.schemas import (
+    AlertInput,
+    AlertState,
     Credentials,
     FeedbackInput,
     Game,
     GameList,
     IndexStatus,
+    NotificationItem,
+    NotificationList,
     OfferResponse,
     Run,
     RunCreated,
@@ -139,6 +153,7 @@ def watch_payload(row: WatchRecord, session: Session) -> dict:
         "currency": row.currency,
         "country": row.country,
         "monitoring_status": "not_enabled",
+        "alert": alert_payload(row),
         "created_at": row.created_at,
     }
 
@@ -167,9 +182,14 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
         app.state.executor = (
             RunExecutor(database, settings) if settings.run_execution_mode == "embedded" else None
         )
+        app.state.notification_consumer = (
+            NotificationConsumer(database) if settings.run_execution_mode == "embedded" else None
+        )
         try:
             yield
         finally:
+            if app.state.notification_consumer is not None:
+                app.state.notification_consumer.close()
             if app.state.executor is not None:
                 app.state.executor.close()
             database.close()
@@ -188,7 +208,13 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
         response = await call_next(request)
         response.headers["X-Content-Type-Options"] = "nosniff"
         if request.url.path.startswith(
-            ("/api/v1/auth", "/api/v1/runs", "/api/v1/watchlist", "/api/v1/feedback")
+            (
+                "/api/v1/auth",
+                "/api/v1/runs",
+                "/api/v1/watchlist",
+                "/api/v1/feedback",
+                "/api/v1/notifications",
+            )
         ):
             response.headers["Cache-Control"] = "no-store"
         return response
@@ -221,6 +247,14 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
             "pricing_currency": "USD",
             "supported_price_countries": ["US"],
             "notification_monitoring": "not_enabled",
+            "price_alerts": {
+                "mode": "own_query_observation",
+                "channel": "in_app",
+                "consent_version": CONSENT_VERSION,
+                "automatic_price_polling": False,
+                "external_email": False,
+                "supported_price_countries": ["US"],
+            },
             "execution_mode": "durable_sql_" + settings.run_execution_mode,
             "run_max_attempts": settings.run_max_attempts,
             "limitations": [
@@ -228,7 +262,7 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
                 "默认 BM25；向量融合需显式配置，实际模式与降级原因见每次任务。",
                 "仅查询 CheapShark US/USD 观测报价，不提供中国区人民币价格。",
                 "版本与地区激活资格未核验的报价不会标记为保证可购买的最低价。",
-                "收藏仅保存目标价格，自动监控和通知尚未启用。",
+                "收藏不自动开启提醒；可明确开启主动查价站内提醒，无后台抓价和邮件发送。",
                 "推荐任务持久入队；工作进程中断后在租约到期时接续安全阶段，外部只读调用可能重试。",
             ],
         }
@@ -517,12 +551,19 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
     def save_watchlist(body: WatchInput, request: Request, session: Session = Depends(get_db)):
         user = require_user(request, session)
         game_or_404(session, body.game_id)
+        lock_alerts(session)
         row = session.scalar(
             select(WatchRecord).where(
                 WatchRecord.user_id == user.id, WatchRecord.game_id == body.game_id
             )
         )
         if row:
+            if (row.target_minor, row.currency, row.country) != (
+                body.target_minor,
+                body.currency,
+                body.country,
+            ):
+                invalidate_alert(session, row)
             row.target_minor, row.currency, row.country = (
                 body.target_minor,
                 body.currency,
@@ -540,32 +581,164 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
                 created_at=now_iso(),
             )
             session.add(row)
-        try:
-            session.commit()
-        except IntegrityError:
-            session.rollback()
-            row = session.scalar(
-                select(WatchRecord).where(
-                    WatchRecord.user_id == user.id, WatchRecord.game_id == body.game_id
-                )
-            )
-            row.target_minor, row.currency, row.country = (
-                body.target_minor,
-                body.currency,
-                body.country,
-            )
-            session.commit()
+        session.commit()
         return watch_payload(row, session)
 
     @app.delete("/api/v1/watchlist/{game_id}", status_code=204)
     def remove_watchlist(game_id: str, request: Request, session: Session = Depends(get_db)):
         user = require_user(request, session)
-        session.execute(
-            delete(WatchRecord).where(
-                WatchRecord.user_id == user.id, WatchRecord.game_id == game_id
+        lock_alerts(session)
+        row = session.scalar(
+            select(WatchRecord).where(
+                WatchRecord.user_id == user.id,
+                WatchRecord.game_id == game_id,
             )
         )
+        if row is not None:
+            invalidate_alert(session, row)
+            session.delete(row)
         session.commit()
+
+    @app.put("/api/v1/watchlist/{game_id}/alert", response_model=AlertState)
+    def set_price_alert(
+        game_id: str, body: AlertInput, request: Request, session: Session = Depends(get_db)
+    ):
+        user = require_user(request, session)
+        app.state.rate_limiter.check("alert-config:" + user.id, 30)
+        watch = configure_alert(session, user.id, game_id, body)
+        session.commit()
+        return alert_payload(watch)
+
+    @app.post("/api/v1/watchlist/{game_id}/check", response_model=OfferResponse)
+    async def check_price_alert(game_id: str, request: Request, session: Session = Depends(get_db)):
+        user = require_user(request, session)
+        user_id = user.id
+        app.state.rate_limiter.check("alert-check:" + user_id, 5)
+        watch = session.scalar(
+            select(WatchRecord).where(
+                WatchRecord.user_id == user_id,
+                WatchRecord.game_id == game_id,
+            )
+        )
+        if watch is None:
+            raise HTTPException(404, "收藏不存在")
+        if watch.alert_state != "armed":
+            raise HTTPException(409, "请先开启查价提醒；每次开启只生成一条通知")
+        game = dict(game_or_404(session, game_id).payload)
+        version = watch.alert_version
+        started = database_now(session)
+        session.rollback()  # Never hold a connection/transaction during provider HTTP.
+        async with CheapSharkClient() as provider:
+            raw = await provider.get_offers(game["steam_app_id"], "US")
+        result = OfferResponse.model_validate({"game_id": game_id, **raw})
+        try:
+            with request.app.state.database.sessions() as fresh, fresh.begin():
+                current_user = optional_user(request, fresh)
+                if current_user is None or current_user.id != user_id:
+                    raise HTTPException(401, "会话已失效，未写入提醒")
+                lock_alerts(fresh)
+                current_watch = fresh.scalar(
+                    select(WatchRecord).where(
+                        WatchRecord.user_id == user_id,
+                        WatchRecord.game_id == game_id,
+                    )
+                )
+                if current_watch is None or current_watch.alert_version != version:
+                    result.alert_evaluation = "stale"
+                else:
+                    result.alert_evaluation = record_observation(
+                        fresh,
+                        user_id,
+                        game,
+                        result.model_dump(),
+                        started,
+                    )
+        except SQLAlchemyError:
+            result.alert_evaluation = "save_failed"
+        return result
+
+    @app.get("/api/v1/notifications", response_model=NotificationList)
+    def notifications(
+        request: Request,
+        limit: int = Query(20, ge=1, le=100),
+        offset: int = Query(0, ge=0, le=100000),
+        session: Session = Depends(get_db),
+    ):
+        user = require_user(request, session)
+        query = select(NotificationRecord).where(NotificationRecord.user_id == user.id)
+        rows = session.scalars(
+            query.order_by(
+                NotificationRecord.created_at.desc(),
+                NotificationRecord.id.desc(),
+            )
+            .offset(offset)
+            .limit(limit)
+        )
+
+        def payload(row):
+            return {
+                "id": row.id,
+                "payload": row.payload,
+                "created_at": row.created_at,
+                "read_at": row.read_at,
+            }
+
+        return {
+            "items": [payload(row) for row in rows],
+            "total": session.scalar(
+                select(func.count())
+                .select_from(NotificationRecord)
+                .where(NotificationRecord.user_id == user.id)
+            ),
+            "unread": session.scalar(
+                select(func.count())
+                .select_from(NotificationRecord)
+                .where(NotificationRecord.user_id == user.id, NotificationRecord.read_at.is_(None))
+            ),
+        }
+
+    @app.post("/api/v1/notifications/{notification_id}/read", response_model=NotificationItem)
+    def read_notification(
+        notification_id: str, request: Request, session: Session = Depends(get_db)
+    ):
+        user = require_user(request, session)
+        session.execute(
+            update(NotificationRecord)
+            .where(
+                NotificationRecord.id == notification_id,
+                NotificationRecord.user_id == user.id,
+                NotificationRecord.read_at.is_(None),
+            )
+            .values(read_at=now_iso())
+        )
+        row = session.scalar(
+            select(NotificationRecord).where(
+                NotificationRecord.id == notification_id,
+                NotificationRecord.user_id == user.id,
+            )
+        )
+        if row is None:
+            raise HTTPException(404, "通知不存在")
+        session.commit()
+        return {
+            "id": row.id,
+            "payload": row.payload,
+            "created_at": row.created_at,
+            "read_at": row.read_at,
+        }
+
+    @app.delete("/api/v1/notifications/{notification_id}", status_code=204)
+    def delete_notification(
+        notification_id: str, request: Request, session: Session = Depends(get_db)
+    ):
+        user = require_user(request, session)
+        session.execute(
+            delete(NotificationRecord).where(
+                NotificationRecord.id == notification_id,
+                NotificationRecord.user_id == user.id,
+            )
+        )
+        session.commit()  # Deleting inbox history does not rearm its subscription.
 
     @app.get("/api/v1/feedback")
     def get_feedback(request: Request, session: Session = Depends(get_db)):
@@ -643,7 +816,12 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
                 else "not_configured",
                 "catalog_sync_enabled": False,
             },
-            "notifications": {"status": "not_enabled"},
+            "notifications": {
+                "status": "in_app_outbox",
+                "trigger": "explicit_own_query",
+                "external_email": False,
+                "automatic_price_polling": False,
+            },
             "limitations": [
                 "健康页不进行外部调用；未把未检查的来源标为健康。",
                 "仅用户触发的报价请求，没有后台价格轮询。",
