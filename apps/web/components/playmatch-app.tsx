@@ -25,6 +25,12 @@ import {
 } from "lucide-react";
 import { api, ApiError, formatMoney, moneyToMinor } from "@/lib/api";
 import { streamRun } from "@/lib/sse";
+import {
+  readRunReference,
+  RUN_REFERENCE_KEY,
+  terminalRun,
+  type RunReference,
+} from "@/lib/run-reference";
 import type { Capabilities, Country, FeedbackKind, Game, Run, User, WatchItem } from "@/lib/types";
 import { AuthDialog } from "./auth-dialog";
 import { CompareDialog } from "./compare-dialog";
@@ -52,6 +58,8 @@ export function PlayMatchApp() {
   const [catalogPage, setCatalogPage] = useState(0);
   const [run, setRun] = useState<Run | null>(null);
   const [busy, setBusy] = useState(false);
+  const [activeRun, setActiveRun] = useState<RunReference | null>(null);
+  const [cancelling, setCancelling] = useState(false);
   const [progress, setProgress] = useState<string[]>([]);
   const [runError, setRunError] = useState("");
   const [authOpen, setAuthOpen] = useState(false);
@@ -116,7 +124,22 @@ export function PlayMatchApp() {
   useEffect(() => {
     if (me.isPending) return;
     const id = me.data?.id || null;
-    if (priorUser.current && priorUser.current !== id) {
+    if (priorUser.current === undefined) {
+      try {
+        const stored = readRunReference(sessionStorage.getItem(RUN_REFERENCE_KEY), id);
+        setActiveRun(stored);
+        if (!stored) sessionStorage.removeItem(RUN_REFERENCE_KEY);
+      } catch {
+        /* Per-tab recovery is optional when browser storage is disabled. */
+      }
+    }
+    if (priorUser.current !== undefined && priorUser.current !== id) {
+      setActiveRun(null);
+      try {
+        sessionStorage.removeItem(RUN_REFERENCE_KEY);
+      } catch {
+        /* unavailable storage */
+      }
       abortRef.current?.abort();
       setRun(null);
       setProgress([]);
@@ -221,6 +244,12 @@ export function PlayMatchApp() {
       setDrawer(null);
       setCompareOpen(false);
       setCompareGames([]);
+      setActiveRun(null);
+      try {
+        sessionStorage.removeItem(RUN_REFERENCE_KEY);
+      } catch {
+        /* unavailable storage */
+      }
       client.setQueryData(["me"], null);
       client.removeQueries({ queryKey: ["watchlist"] });
       client.removeQueries({ queryKey: ["feedback"] });
@@ -270,47 +299,19 @@ export function PlayMatchApp() {
           signal: controller.signal,
         },
       );
+      if (controller.signal.aborted || abortRef.current !== controller) return;
+      const reference: RunReference = {
+        ...created,
+        owner: me.data?.id || null,
+        saved_at: Date.now(),
+      };
+      setActiveRun(reference);
       try {
-        await streamRun(
-          created.id,
-          created.access_token,
-          (event) => {
-            let data: Record<string, unknown>;
-            try {
-              data = JSON.parse(event.data) as Record<string, unknown>;
-            } catch {
-              return;
-            }
-            if (event.event === "progress" && typeof data.message === "string")
-              setProgress((old) =>
-                old.at(-1) === data.message ? old : [...old.slice(-3), data.message as string],
-              );
-            if (event.event === "result" && data.run) setRun(data.run as Run);
-            if (event.event === "error" && typeof data.message === "string")
-              setProgress((old) => [...old.slice(-3), data.message as string]);
-          },
-          controller.signal,
-        );
-      } catch (error) {
-        if (controller.signal.aborted) throw error;
-        setProgress((old) => [...old.slice(-3), "进度连接中断，正在读取结果…"]);
+        sessionStorage.setItem(RUN_REFERENCE_KEY, JSON.stringify(reference));
+      } catch {
+        /* unavailable storage */
       }
-      for (let attempt = 0; attempt < 12; attempt++) {
-        const latest = await api<Run>(`/runs/${encodeURIComponent(created.id)}`, {
-          headers: created.access_token ? { "X-Run-Token": created.access_token } : {},
-          signal: controller.signal,
-        });
-        setRun(latest);
-        if (["completed", "partial", "failed"].includes(latest.status)) {
-          if (latest.status === "failed") setRunError("这次推荐未能完成，请调整条件后重试。");
-          break;
-        }
-        if (attempt === 11) {
-          setRunError("任务仍在处理中，暂时未能取得完整结果。请稍后重试。");
-          break;
-        }
-        await new Promise((resolve) => setTimeout(resolve, 750));
-      }
+      await observeRun(reference, controller);
     } catch (error) {
       if (!controller.signal.aborted)
         setRunError(error instanceof Error ? error.message : "推荐暂未完成，请重试。");
@@ -318,10 +319,107 @@ export function PlayMatchApp() {
       if (abortRef.current === controller) setBusy(false);
     }
   }
+  async function observeRun(created: RunReference, controller: AbortController) {
+    try {
+      await streamRun(
+        created.id,
+        created.access_token,
+        (event) => {
+          if (controller.signal.aborted || abortRef.current !== controller) return;
+          let data: Record<string, unknown>;
+          try {
+            data = JSON.parse(event.data) as Record<string, unknown>;
+          } catch {
+            return;
+          }
+          if (event.event === "progress" && typeof data.message === "string")
+            setProgress((old) =>
+              old.at(-1) === data.message ? old : [...old.slice(-3), data.message as string],
+            );
+          if (event.event === "result" && data.run) setRun(data.run as Run);
+          if (event.event === "error" && typeof data.message === "string")
+            setProgress((old) => [...old.slice(-3), data.message as string]);
+        },
+        controller.signal,
+      );
+    } catch (error) {
+      if (controller.signal.aborted) throw error;
+      setProgress((old) => [...old.slice(-3), "进度连接中断，正在读取结果…"]);
+    }
+    for (let attempt = 0; attempt < 12; attempt++) {
+      const latest = await api<Run>(`/runs/${encodeURIComponent(created.id)}`, {
+        headers: created.access_token ? { "X-Run-Token": created.access_token } : {},
+        signal: controller.signal,
+      });
+      if (controller.signal.aborted || abortRef.current !== controller) return;
+      setRun(latest);
+      if (terminalRun(latest.status)) {
+        if (latest.status === "failed") setRunError("这次推荐未能完成，请调整条件后重试。");
+        break;
+      }
+      if (attempt === 11) {
+        setRunError("任务仍在处理中，可继续查看原任务；无需重新提交。");
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 750));
+    }
+  }
+
+  async function resumeRun() {
+    if (!activeRun || busy) return;
+    const controller = new AbortController();
+    abortRef.current?.abort();
+    abortRef.current = controller;
+    setBusy(true);
+    setRunError("");
+    setProgress(["正在重新连接已保存的任务…"]);
+    try {
+      const latest = await api<Run>(`/runs/${encodeURIComponent(activeRun.id)}`, {
+        headers: activeRun.access_token ? { "X-Run-Token": activeRun.access_token } : {},
+        signal: controller.signal,
+      });
+      if (controller.signal.aborted || abortRef.current !== controller) return;
+      setRun(latest);
+      if (!terminalRun(latest.status)) await observeRun(activeRun, controller);
+      else if (latest.status === "failed") setRunError("这次推荐未能完成，请查看失败原因。");
+    } catch (error) {
+      if (!controller.signal.aborted)
+        setRunError(error instanceof Error ? error.message : "暂时无法读取原任务。");
+    } finally {
+      if (abortRef.current === controller) setBusy(false);
+    }
+  }
+
+  async function cancelRun() {
+    if (!activeRun || cancelling) return;
+    const reference = activeRun;
+    const observingController = abortRef.current;
+    setCancelling(true);
+    try {
+      const latest = await api<Run>(`/runs/${encodeURIComponent(activeRun.id)}/cancel`, {
+        method: "POST",
+        headers: activeRun.access_token ? { "X-Run-Token": activeRun.access_token } : {},
+      });
+      if (priorUser.current !== reference.owner || abortRef.current !== observingController) return;
+      abortRef.current?.abort();
+      setRun(latest);
+      setBusy(false);
+      setRunError("");
+      setProgress([]);
+    } catch (error) {
+      setToast({
+        text: error instanceof Error ? error.message : "取消请求未完成，任务状态未确认。",
+        error: true,
+      });
+    } finally {
+      setCancelling(false);
+    }
+  }
+
   function stopWaiting() {
     abortRef.current?.abort();
     setBusy(false);
-    setRunError("已停止等待。服务端任务可能继续执行，你可以重新发起推荐。");
+    setRunError("已停止等待。服务端任务仍可执行；点击继续查看可重连原任务，也可明确取消。");
   }
 
   const recommendations = run?.results || [];
@@ -601,6 +699,13 @@ export function PlayMatchApp() {
                       ))}
                     </div>
                   </div>
+                  <button
+                    className="text-button muted"
+                    disabled={cancelling || !activeRun}
+                    onClick={cancelRun}
+                  >
+                    {cancelling ? "正在取消…" : "取消任务"}
+                  </button>
                   <button className="text-button muted" onClick={stopWaiting}>
                     停止等待
                   </button>
@@ -614,6 +719,24 @@ export function PlayMatchApp() {
                     <p>{runError}</p>
                   </div>
                 </div>
+              )}
+              {activeRun && !busy && (!run || !terminalRun(run.status)) && (
+                <div className="notice" role="status">
+                  <p>已保存任务引用。刷新或断线不需要重新发起推荐。</p>
+                  <button className="text-button" onClick={resumeRun}>
+                    继续查看原任务
+                  </button>
+                  <button className="text-button" disabled={cancelling} onClick={cancelRun}>
+                    取消任务
+                  </button>
+                </div>
+              )}
+              {run && (
+                <p className="catalog-footnote" role="status">
+                  {run.status === "cancelled" ? "任务已取消" : `任务状态：${run.status}`} · 已尝试{" "}
+                  {run.attempt_count ?? 0} 次
+                  {run.last_checkpoint ? ` · 已提交阶段：${run.last_checkpoint}` : ""}
+                </p>
               )}
               {run?.warnings.map((warning, i) => (
                 <div className="notice" key={i}>
@@ -670,7 +793,11 @@ export function PlayMatchApp() {
                   </button>
                 </div>
               )}
-              {((run && !busy && recommendations.length === 0 && !runError) ||
+              {((run &&
+                !busy &&
+                run.status !== "cancelled" &&
+                recommendations.length === 0 &&
+                !runError) ||
                 (!run && !catalog.isPending && !catalog.isError && games.length === 0)) && (
                 <div className="empty-state">
                   <Search size={30} />

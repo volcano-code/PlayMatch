@@ -47,6 +47,17 @@ class RunRecord(Base):
     agent_state: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[str] = mapped_column(String(40))
     completed_at: Mapped[str | None] = mapped_column(String(40))
+    attempt_count: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    lease_token: Mapped[str | None] = mapped_column(String(64))
+    lease_expires_at: Mapped[float | None] = mapped_column(Float)
+    deadline_at: Mapped[float | None] = mapped_column(Float)
+    available_at: Mapped[float] = mapped_column(Float, default=0, server_default="0")
+
+
+class RunQueueLock(Base):
+    __tablename__ = "run_queue_lock"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    revision: Mapped[int] = mapped_column(Integer, default=0)
 
 
 class RunEventRecord(Base):

@@ -188,3 +188,16 @@ uv run python scripts/probe_providers.py --live --output data/provider-probe.jso
 
 真实模型探针使用隔离的 CPU 模型环境，不修改应用依赖，不调用付费 API；其开发评测不能
 替代独立用户测试。价格、通知和分布式执行的原有未完成边界保持不变。
+
+## v0.4：持久推荐任务与独立 worker
+
+推荐任务和初始事件在同一事务入队，API 重启不再直接判失败。工作进程通过租约和
+尝试令牌领取任务，从已提交的安全阶段接续；过期工作进程不能覆盖新结果。取消接口
+与前端“取消任务”均已接通，刷新后可以“继续查看原任务”，不重复提交推荐请求。
+
+Docker Compose 现在启动 **Web、API、worker、PostgreSQL**。本地 quickstart 仍默认
+内嵌队列消费者；独立模式请设置 `RUN_EXECUTION_MODE=external`，API 完成迁移后执行
+`uv run python -m playmatch.worker`。默认最多 3 次尝试、总时限 90 秒。
+
+这是应用级阶段恢复，不是外部调用 exactly-once；完整边界及验收方法见
+[持久任务说明](docs/durable-runs-v04.md)。升级前停止旧 API 进程，保留数据库卷。

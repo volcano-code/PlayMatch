@@ -27,12 +27,12 @@ from playmatch.models import (
     WatchRecord,
 )
 from playmatch.providers.cheapshark import CheapSharkClient
+from playmatch.run_queue import RunQueue, database_now, lock_queue
 from playmatch.runs import (
     TERMINAL,
     RunExecutor,
     append_event,
     now_iso,
-    recover_interrupted,
     run_payload,
 )
 from playmatch.schemas import (
@@ -163,13 +163,15 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
                     existing.title = game.title
                     existing.payload = game.model_dump()
             session.commit()
-        recover_interrupted(database)
         app.state.database = database
-        app.state.executor = RunExecutor(database, settings)
+        app.state.executor = (
+            RunExecutor(database, settings) if settings.run_execution_mode == "embedded" else None
+        )
         try:
             yield
         finally:
-            app.state.executor.close()
+            if app.state.executor is not None:
+                app.state.executor.close()
             database.close()
 
     app = FastAPI(title="PlayMatch API", version="0.1.0", lifespan=lifespan)
@@ -219,14 +221,15 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
             "pricing_currency": "USD",
             "supported_price_countries": ["US"],
             "notification_monitoring": "not_enabled",
-            "execution_mode": "single_process_bounded_workers",
+            "execution_mode": "durable_sql_" + settings.run_execution_mode,
+            "run_max_attempts": settings.run_max_attempts,
             "limitations": [
                 "目录包含人工起步记录及可选的审核导入；尚未启用全量 IGDB 同步。",
                 "默认 BM25；向量融合需显式配置，实际模式与降级原因见每次任务。",
                 "仅查询 CheapShark US/USD 观测报价，不提供中国区人民币价格。",
                 "版本与地区激活资格未核验的报价不会标记为保证可购买的最低价。",
                 "收藏仅保存目标价格，自动监控和通知尚未启用。",
-                "服务重启时未完成任务会明确失败，需要重试；尚未启用分布式执行。",
+                "推荐任务持久入队；工作进程中断后在租约到期时接续安全阶段，外部只读调用可能重试。",
             ],
         }
 
@@ -362,6 +365,8 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
         scope = "user:" + user.id if user else "anon:" + digest(visitor)
         payload_hash = digest(json.dumps(body.model_dump(), sort_keys=True, ensure_ascii=False))
         key_hash = digest(idempotency_key)
+        # Serialize idempotency and capacity admission in the same transaction.
+        lock_queue(session)
         existing = session.scalar(
             select(RunRecord).where(
                 RunRecord.idempotency_scope == scope, RunRecord.idempotency_key_hash == key_hash
@@ -393,7 +398,14 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
         app.state.rate_limiter.check(
             "run-ip:" + (request.client.host if request.client else "unknown"), 40
         )
-        if not app.state.executor.reserve():
+        if (
+            session.scalar(
+                select(func.count())
+                .select_from(RunRecord)
+                .where(RunRecord.status.in_(["queued", "running"]))
+            )
+            >= settings.max_pending_runs
+        ):
             raise HTTPException(503, "推荐队列已满，请稍后重试", headers={"Retry-After": "10"})
         run_id = str(uuid4())
         record = RunRecord(
@@ -413,6 +425,7 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
             agent_state={},
             created_at=now_iso(),
             completed_at=None,
+            deadline_at=database_now(session) + settings.run_timeout_seconds,
         )
         try:
             session.add(record)
@@ -423,7 +436,6 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
             session.commit()
         except IntegrityError:
             session.rollback()
-            app.state.executor.release()
             existing = session.scalar(
                 select(RunRecord).where(
                     RunRecord.idempotency_scope == scope, RunRecord.idempotency_key_hash == key_hash
@@ -432,15 +444,18 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
             if not existing or existing.payload_hash != payload_hash:
                 raise HTTPException(409, "幂等请求冲突") from None
             return created(existing)
-        except Exception:
-            app.state.executor.release()
-            raise
-        app.state.executor.submit_reserved(run_id)
         return created(record)
 
     @app.get("/api/v1/runs/{run_id}", response_model=Run)
     def get_run(run_id: str, request: Request, session: Session = Depends(get_db)):
         return run_payload(authorize_run(run_id, request, session))
+
+    @app.post("/api/v1/runs/{run_id}/cancel", response_model=Run)
+    def cancel_run(run_id: str, request: Request, session: Session = Depends(get_db)):
+        authorize_run(run_id, request, session)
+        record = RunQueue(app.state.database, settings).cancel(session, run_id)
+        session.commit()
+        return run_payload(record)
 
     @app.get("/api/v1/runs/{run_id}/events")
     async def run_events(
