@@ -1,0 +1,199 @@
+name: V06 source-linked catalog and evaluation verification
+on:
+  push:
+    branches: ['workbench/v06-validation']
+permissions:
+  contents: read
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
+jobs:
+  core:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: playmatch
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: playmatch_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U playmatch -d playmatch_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+      - name: Restore exact locally reviewed candidate
+        run: |
+          python - <<'PY'
+          import hashlib, lzma, os, subprocess
+          from pathlib import Path
+          evidence = Path(os.environ['RUNNER_TEMP']) / 'v06-evidence'
+          evidence.mkdir()
+          patch = lzma.decompress(b''.join(Path(f'.handoff/v06/{i:02}.part').read_bytes() for i in range(4)))
+          assert hashlib.sha256(patch).hexdigest() == 'b04551817d655a5b5c5bc716707bf8b6fabb491cd3e89bd334e947d382e1055b'
+          path = evidence / 'candidate.patch'
+          path.write_bytes(patch)
+          subprocess.run(['git', 'reset', '--hard', '81370ffcbac6c45c2fadf19207c7c6b9b2be46cb'], check=True)
+          subprocess.run(['git', 'apply', '--index', str(path)], check=True)
+          tree = subprocess.check_output(['git', 'write-tree']).decode().strip()
+          assert tree == 'ade32001ee3986cbebaf0cff48687ee4302d802e', tree
+          print('Verified candidate tree', tree)
+          PY
+      - run: python -m pip install -q uv==0.12.23
+      - run: uv sync --frozen --extra dev
+      - name: Python regression and fixed-snapshot development measurements
+        run: |
+          set -euo pipefail
+          uv run ruff check .
+          uv run ruff format --check .
+          uv run pytest -q --junitxml="$RUNNER_TEMP/v06-evidence/python.xml" | tee "$RUNNER_TEMP/v06-evidence/python.log"
+          uv run python scripts/evaluate_recommendations.py --mode keyword_baseline --check --output "$RUNNER_TEMP/v06-evidence/legacy-keyword.json"
+          uv run python scripts/evaluate_recommendations.py --mode bm25 --check --output "$RUNNER_TEMP/v06-evidence/legacy-bm25.json"
+          uv run python scripts/benchmark_catalog.py evaluate --check --output "$RUNNER_TEMP/v06-evidence/catalog-challenge.json"
+          cmp "$RUNNER_TEMP/v06-evidence/catalog-challenge.json" evals/catalog-v06-results.json
+          uv run python scripts/benchmark_catalog.py prepare --report "$RUNNER_TEMP/v06-evidence/catalog-challenge.json" --directory "$RUNNER_TEMP/v06-review"
+          cmp "$RUNNER_TEMP/v06-review/review-template.json" evals/review-v06/review-template.json
+          cmp "$RUNNER_TEMP/v06-review/scoring-key.json" evals/review-v06/scoring-key.json
+          uv run python scripts/check_openapi.py
+      - name: Isolated PostgreSQL databases
+        run: |
+          uv run python - <<'PY'
+          import psycopg
+          with psycopg.connect('postgresql://playmatch:ci-only-password@127.0.0.1:5432/playmatch_test', autocommit=True) as connection:
+              for name in ('playmatch_index_test', 'run_queue_test', 'notification_test'):
+                  connection.execute('CREATE DATABASE ' + name)
+          PY
+      - name: PostgreSQL catalog and index regression
+        env:
+          CATALOG_TEST_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/playmatch_test
+          INDEX_TEST_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/playmatch_index_test
+          PLAYMATCH_ALLOW_DISPOSABLE_DB: 'yes'
+        run: |
+          uv run pytest services/api/tests/test_catalog_v02.py -q --junitxml="$RUNNER_TEMP/v06-evidence/pg-catalog.xml"
+          uv run pytest services/api/tests/test_semantic_index.py -q --junitxml="$RUNNER_TEMP/v06-evidence/pg-index.xml"
+      - name: PostgreSQL queue and notification regression
+        env:
+          RUN_TEST_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/run_queue_test
+          ALERT_TEST_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/notification_test
+          PLAYMATCH_ALLOW_DISPOSABLE_DB: 'yes'
+        run: |
+          uv run pytest services/api/tests/test_durable_runs.py -q --junitxml="$RUNNER_TEMP/v06-evidence/pg-queue.xml"
+          uv run pytest services/api/tests/test_notifications_v05.py -q --junitxml="$RUNNER_TEMP/v06-evidence/pg-notifications.xml"
+      - name: PostgreSQL application restart
+        env:
+          DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/playmatch_test
+        run: uv run python scripts/smoke_postgres.py
+      - name: Frontend units and production build
+        run: |
+          set -euo pipefail
+          npm --prefix apps/web ci
+          npm --prefix apps/web run typecheck
+          npm --prefix apps/web run format:check
+          npm --prefix apps/web test | tee "$RUNNER_TEMP/v06-evidence/web-unit.log"
+          npm --prefix apps/web run build
+      - name: Browser coverage, aliases, and previous full-stack flows
+        run: |
+          set -euo pipefail
+          npm --prefix tests/e2e ci
+          npx --prefix tests/e2e playwright install --with-deps chromium > "$RUNNER_TEMP/v06-evidence/browser-install.log" 2>&1
+          npm --prefix tests/e2e test | tee "$RUNNER_TEMP/v06-evidence/browser.log"
+      - name: Export exact tested source and Git blobs only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import base64, hashlib, json, os, subprocess, urllib.request
+          from pathlib import Path
+          repo = 'volcano-code/PlayMatch'
+          assert os.environ['GITHUB_REPOSITORY'] == repo
+          def git(*args):
+              return subprocess.check_output(['git', *args]).decode().strip()
+          subprocess.run(['git', 'diff', '--exit-code'], check=True)
+          tree = git('write-tree')
+          assert tree == 'ade32001ee3986cbebaf0cff48687ee4302d802e'
+          directory = Path(os.environ['RUNNER_TEMP']) / 'v06-evidence'
+          subprocess.run(['git', 'archive', '--format=zip', tree, '-o', str(directory / 'source.zip')], check=True)
+          (directory / 'source.sha256').write_text(hashlib.sha256((directory / 'source.zip').read_bytes()).hexdigest())
+          entries = []
+          for line in git('diff', '--cached', '--name-status', '--no-renames').splitlines():
+              status, path = line.split('\t', 1)
+              assert not path.endswith(('.env', '.db', '.sqlite', '.pem'))
+              assert not path.startswith(('.state/', '.handoff/', 'node_modules/'))
+              if status == 'D':
+                  entries.append({'path': path, 'mode': '100644', 'type': 'blob', 'sha': None})
+                  continue
+              mode = git('ls-files', '-s', '--', path).split()[0]
+              content = Path(path).read_bytes()
+              assert mode in ('100644', '100755') and len(content) < 300000
+              request = urllib.request.Request('https://api.github.com/repos/' + repo + '/git/blobs',
+                  data=json.dumps({'encoding': 'base64', 'content': base64.b64encode(content).decode()}).encode(), method='POST',
+                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json'})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  blob = json.load(response)
+              assert blob['sha'] == git('hash-object', path)
+              entries.append({'path': path, 'mode': mode, 'type': 'blob', 'sha': blob['sha']})
+          result = {'tree_sha': tree, 'parent_sha': git('rev-parse', 'HEAD'),
+                    'base_tree_sha': git('rev-parse', 'HEAD^{tree}'), 'entries': entries}
+          (directory / 'candidate.json').write_text(json.dumps(result, indent=2))
+          print('V06_MANIFEST ' + json.dumps(result))
+          PY
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: v06-core-${{ github.sha }}
+          path: ${{ runner.temp }}/v06-evidence/
+          retention-days: 14
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: failure()
+        with:
+          name: v06-browser-failure-${{ github.sha }}
+          path: tests/e2e/test-results/
+          retention-days: 7
+  containers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Restore exact candidate
+        run: |
+          python3 - <<'PY'
+          import hashlib, lzma, os, subprocess
+          from pathlib import Path
+          patch = lzma.decompress(b''.join(Path(f'.handoff/v06/{i:02}.part').read_bytes() for i in range(4)))
+          assert hashlib.sha256(patch).hexdigest() == 'b04551817d655a5b5c5bc716707bf8b6fabb491cd3e89bd334e947d382e1055b'
+          path = Path(os.environ['RUNNER_TEMP']) / 'candidate.patch'
+          path.write_bytes(patch)
+          subprocess.run(['git', 'reset', '--hard', '81370ffcbac6c45c2fadf19207c7c6b9b2be46cb'], check=True)
+          subprocess.run(['git', 'apply', '--index', str(path)], check=True)
+          assert subprocess.check_output(['git', 'write-tree']).decode().strip() == 'ade32001ee3986cbebaf0cff48687ee4302d802e'
+          PY
+      - run: docker compose config --quiet
+      - run: docker compose up --build -d --wait --wait-timeout 120
+      - name: Real 48-game catalog, second page and independent recommendation worker
+        run: |
+          curl --fail --silent http://127.0.0.1:3000/api/v1/catalog/coverage | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["total_games"] == 48; assert d["chinese_interface_verified"] == 32'
+          curl --fail --silent 'http://127.0.0.1:3000/api/v1/games?offset=24&limit=24' | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["total"] == 48 and len(d["items"]) == 24'
+          docker compose exec -T api python scripts/smoke_worker.py
+      - name: Notification regression using explicitly synthetic quotes
+        run: docker compose exec -T -e PLAYMATCH_ALLOW_NOTIFICATION_FIXTURE=yes api python scripts/smoke_notifications.py
+      - name: Diagnostics
+        if: always()
+        run: docker compose logs --tail 60
+      - name: Stop ephemeral test containers
+        if: always()
+        run: docker compose down --volumes
