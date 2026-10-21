@@ -1,0 +1,23 @@
+diff --git a/tests/e2e/specs/steam-directory-v07.spec.ts b/tests/e2e/specs/steam-directory-v07.spec.ts
+index b54be1d..07aa1a8 100644
+--- a/tests/e2e/specs/steam-directory-v07.spec.ts
++++ b/tests/e2e/specs/steam-directory-v07.spec.ts
+@@ -37,15 +37,15 @@ test('synthetic directory keyset contract exposes pending metadata, not fictiona
+ });
+ 
+ test('synthetic status failure can retry real read without triggering synchronization', async ({ page }) => {
+-  let requests = 0;
++  let unavailable = true;
+   await page.route('**/api/v1/catalog/steam/status', async route => {
+-    requests++;
+-    if (requests <= 4) await route.fulfill({ status: 503, json: { detail: 'Synthetic unavailable' } });
++    if (unavailable) await route.fulfill({ status: 503, json: { detail: 'Synthetic unavailable' } });
+     else await route.continue();
+   });
+   await page.goto('/');
+   const section = page.getByRole('region', { name: 'Steam 自动同步目录' });
+   await expect(section.getByRole('alert')).toContainText('同步状态暂时不可用');
++  unavailable = false;
+   await section.getByRole('button', { name: '刷新同步状态' }).click();
+   await expect(section.getByText('同步未启用', { exact: true })).toBeVisible();
+ });
