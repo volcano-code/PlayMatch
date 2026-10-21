@@ -48,6 +48,7 @@ export interface OfferResponse {
   fetched_at: string | null;
   status: "ok" | "partial" | "unsupported" | "unavailable";
   notices: string[];
+  alert_evaluation?: string;
 }
 export interface Recommendation {
   game: Game;
@@ -91,6 +92,7 @@ export interface WatchItem {
   currency: string;
   country: string;
   monitoring_status: "not_enabled";
+  alert: PriceAlertState;
   created_at: string;
 }
 export type FeedbackKind = "like" | "dislike" | "owned" | "exclude";
@@ -105,4 +107,37 @@ export interface IndexStatus {
   search_method: "exact_cosine";
   max_documents: number;
   provider_probed: false;
+}
+
+export interface PriceAlertState {
+  state: "off" | "armed" | "pending" | "notified" | "failed";
+  version: number;
+  consent_version: string | null;
+  mode: "own_query_observation";
+  automatic_price_polling: false;
+  external_email: false;
+}
+export interface NotificationItem {
+  id: string;
+  payload: {
+    kind: "observed_target_price";
+    game_id: string;
+    game_title: string;
+    price_minor: number;
+    target_minor: number;
+    currency: "USD";
+    country: "US";
+    store: string;
+    offer_url: string;
+    observed_at: string;
+    source_updated_at: string | null;
+    purchase_eligibility: "not_verified";
+  };
+  created_at: string;
+  read_at: string | null;
+}
+export interface NotificationList {
+  items: NotificationItem[];
+  total: number;
+  unread: number;
 }

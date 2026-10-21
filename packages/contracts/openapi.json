@@ -591,6 +591,219 @@
         }
       }
     },
+    "/api/v1/watchlist/{game_id}/alert": {
+      "put": {
+        "summary": "Set Price Alert",
+        "operationId": "set_price_alert_api_v1_watchlist__game_id__alert_put",
+        "parameters": [
+          {
+            "name": "game_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Game Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertState"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/watchlist/{game_id}/check": {
+      "post": {
+        "summary": "Check Price Alert",
+        "operationId": "check_price_alert_api_v1_watchlist__game_id__check_post",
+        "parameters": [
+          {
+            "name": "game_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Game Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfferResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "summary": "Notifications",
+        "operationId": "notifications_api_v1_notifications_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100000,
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationList"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/{notification_id}/read": {
+      "post": {
+        "summary": "Read Notification",
+        "operationId": "read_notification_api_v1_notifications__notification_id__read_post",
+        "parameters": [
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Notification Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationItem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/{notification_id}": {
+      "delete": {
+        "summary": "Delete Notification",
+        "operationId": "delete_notification_api_v1_notifications__notification_id__delete",
+        "parameters": [
+          {
+            "name": "notification_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Notification Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/feedback": {
       "get": {
         "summary": "Get Feedback",
@@ -701,6 +914,94 @@
   },
   "components": {
     "schemas": {
+      "AlertInput": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "expected_version": {
+            "type": "integer",
+            "maximum": 2000000000.0,
+            "minimum": 0.0,
+            "title": "Expected Version"
+          },
+          "consent_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "observed-usd-inapp-v1"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consent Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "enabled",
+          "expected_version"
+        ],
+        "title": "AlertInput"
+      },
+      "AlertState": {
+        "properties": {
+          "state": {
+            "type": "string",
+            "enum": [
+              "off",
+              "armed",
+              "pending",
+              "notified",
+              "failed"
+            ],
+            "title": "State"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "consent_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consent Version"
+          },
+          "mode": {
+            "type": "string",
+            "const": "own_query_observation",
+            "title": "Mode",
+            "default": "own_query_observation"
+          },
+          "automatic_price_polling": {
+            "type": "boolean",
+            "const": false,
+            "title": "Automatic Price Polling",
+            "default": false
+          },
+          "external_email": {
+            "type": "boolean",
+            "const": false,
+            "title": "External Email",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "state",
+          "version",
+          "consent_version"
+        ],
+        "title": "AlertState"
+      },
       "Credentials": {
         "properties": {
           "email": {
@@ -1027,6 +1328,159 @@
         ],
         "title": "IndexStatus"
       },
+      "NotificationItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/NotificationPayload"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "read_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Read At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "payload",
+          "created_at",
+          "read_at"
+        ],
+        "title": "NotificationItem"
+      },
+      "NotificationList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/NotificationItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "unread": {
+            "type": "integer",
+            "title": "Unread"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "unread"
+        ],
+        "title": "NotificationList"
+      },
+      "NotificationPayload": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "observed_target_price",
+            "title": "Kind",
+            "default": "observed_target_price"
+          },
+          "game_id": {
+            "type": "string",
+            "maxLength": 80,
+            "minLength": 1,
+            "title": "Game Id"
+          },
+          "game_title": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 1,
+            "title": "Game Title"
+          },
+          "price_minor": {
+            "type": "integer",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Price Minor"
+          },
+          "target_minor": {
+            "type": "integer",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Target Minor"
+          },
+          "currency": {
+            "type": "string",
+            "const": "USD",
+            "title": "Currency",
+            "default": "USD"
+          },
+          "country": {
+            "type": "string",
+            "const": "US",
+            "title": "Country",
+            "default": "US"
+          },
+          "store": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Store"
+          },
+          "offer_url": {
+            "type": "string",
+            "maxLength": 8192,
+            "minLength": 1,
+            "title": "Offer Url"
+          },
+          "observed_at": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Observed At"
+          },
+          "source_updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 40
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Updated At"
+          },
+          "purchase_eligibility": {
+            "type": "string",
+            "const": "not_verified",
+            "title": "Purchase Eligibility",
+            "default": "not_verified"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "game_id",
+          "game_title",
+          "price_minor",
+          "target_minor",
+          "store",
+          "offer_url",
+          "observed_at"
+        ],
+        "title": "NotificationPayload"
+      },
       "Offer": {
         "properties": {
           "id": {
@@ -1185,6 +1639,23 @@
             },
             "type": "array",
             "title": "Notices"
+          },
+          "alert_evaluation": {
+            "type": "string",
+            "enum": [
+              "not_requested",
+              "disabled",
+              "above_target",
+              "queued",
+              "already_triggered",
+              "unavailable",
+              "unsupported",
+              "stale",
+              "no_qualifying_offers",
+              "save_failed"
+            ],
+            "title": "Alert Evaluation",
+            "default": "not_requested"
           }
         },
         "type": "object",
@@ -1543,6 +2014,9 @@
             "title": "Monitoring Status",
             "default": "not_enabled"
           },
+          "alert": {
+            "$ref": "#/components/schemas/AlertState"
+          },
           "created_at": {
             "type": "string",
             "title": "Created At"
@@ -1554,6 +2028,7 @@
           "target_minor",
           "currency",
           "country",
+          "alert",
           "created_at"
         ],
         "title": "WatchItem"

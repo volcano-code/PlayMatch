@@ -91,3 +91,14 @@ same-task reconnect across refresh and separate cancellation. Regression and clo
 acceptance evidence for this increment are recorded in its PR and validation-v04.md.
 No new provider credentials, catalog expansion, notification service, paid generation
 call, ANN index or public production deployment is implied by this stage.
+
+## v0.5 increment — own-query price alerts
+
+Implemented explicit one-shot USD observation consent, CAS/idempotent commands,
+fresh server-side quote evaluation via an explicit POST, transactional outbox,
+fenced leases/retries and owner-scoped in-app notification history/read/delete.
+UI makes background polling and external email absence explicit. Same-origin/auth,
+existing worker, migration0005 and full source/test/config/docs delivery retained.
+No new genuine catalog import, independent recommendation-quality result, CN price,
+continuous price monitoring, external email or public production deployment.
+See docs/price-alerts-v05.md and this increment's recorded validation, not prior counts.

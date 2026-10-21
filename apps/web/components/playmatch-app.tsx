@@ -6,6 +6,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Bookmark,
+  Bell,
   Check,
   ChevronRight,
   CircleAlert,
@@ -36,6 +37,8 @@ import { AuthDialog } from "./auth-dialog";
 import { CompareDialog } from "./compare-dialog";
 import { GameArtwork, GameCard } from "./game-card";
 import { OfferDrawer } from "./offer-drawer";
+import { PriceAlertControls } from "./price-alert-controls";
+import { NotificationInbox } from "./notification-inbox";
 import { RetrievalStatus } from "./retrieval-status";
 import { catalogLabel } from "@/lib/retrieval-labels";
 
@@ -49,7 +52,7 @@ const themes = [
 
 export function PlayMatchApp() {
   const client = useQueryClient();
-  const [view, setView] = useState<"discover" | "saved">("discover");
+  const [view, setView] = useState<"discover" | "saved" | "notifications">("discover");
   const [query, setQuery] = useState("");
   const [country, setCountry] = useState<Country>("US");
   const [budget, setBudget] = useState("");
@@ -97,7 +100,8 @@ export function PlayMatchApp() {
   const watchlist = useQuery({
     queryKey: ["watchlist", me.data?.id],
     enabled: Boolean(me.data),
-    queryFn: () => api<{ items: WatchItem[] }>("/watchlist"),
+    queryFn: ({ signal }) => api<{ items: WatchItem[] }>("/watchlist", { signal }),
+    refetchInterval: view === "saved" ? 3000 : false,
     retry: false,
   });
   const storedFeedback = useQuery({
@@ -151,6 +155,7 @@ export function PlayMatchApp() {
       setQuery("");
       client.removeQueries({ queryKey: ["watchlist"] });
       client.removeQueries({ queryKey: ["feedback"] });
+      client.removeQueries({ queryKey: ["notifications"] });
     }
     priorUser.current = id;
   }, [me.data?.id, me.isPending, client]);
@@ -186,7 +191,9 @@ export function PlayMatchApp() {
       }),
     });
     await client.invalidateQueries({ queryKey: ["watchlist"] });
-    setToast({ text: "已保存到收藏。目标价已记录，自动监控与通知尚未启用。" });
+    setToast({
+      text: "已保存收藏。查价提醒需单独确认；修改目标价会关闭旧提醒，不会自动发送邮件。",
+    });
   }
   async function toggleSave(game: Game) {
     if (!me.data) {
@@ -253,6 +260,7 @@ export function PlayMatchApp() {
       client.setQueryData(["me"], null);
       client.removeQueries({ queryKey: ["watchlist"] });
       client.removeQueries({ queryKey: ["feedback"] });
+      client.removeQueries({ queryKey: ["notifications"] });
       setView("discover");
       setToast({ text: "已退出账户。" });
     } catch (error) {
@@ -460,6 +468,12 @@ export function PlayMatchApp() {
             >
               <Bookmark size={16} />
               我的收藏{savedIds.size > 0 && <span className="nav-count">{savedIds.size}</span>}
+            </button>
+            <button
+              className={view === "notifications" ? "nav-item active" : "nav-item"}
+              onClick={() => setView("notifications")}
+            >
+              <Bell size={16} /> 通知中心
             </button>
           </nav>
           <div className="header-account">
@@ -865,6 +879,12 @@ export function PlayMatchApp() {
               )}
             </section>
           </>
+        ) : view === "notifications" ? (
+          <NotificationInbox
+            key={me.data?.id || "anonymous"}
+            ownerId={me.data?.id || null}
+            onLogin={() => setAuthOpen(true)}
+          />
         ) : (
           <section className="saved-section">
             <div className="section-heading">
@@ -878,7 +898,8 @@ export function PlayMatchApp() {
             <div className="notice">
               <CircleAlert size={17} />
               <p>
-                当前仅保存收藏与目标价，尚未启用自动价格监控或通知。打开游戏详情可主动查询报价。
+                不自动抓价、不发送邮件。设置 USD
+                目标价后，可明确开启查价触发的站内提醒；每次开启最多生成一条。
               </p>
             </div>
             {!me.data ? (
@@ -936,6 +957,11 @@ export function PlayMatchApp() {
                           : `目标价 ${formatMoney(item.target_minor, item.currency)}`}
                       </p>
                       <p className="fine-print">已收藏 · 监控未启用</p>
+                      <PriceAlertControls
+                        key={`${me.data!.id}:${item.game.id}:${item.alert?.version}`}
+                        ownerId={me.data!.id}
+                        item={item}
+                      />
                       <div className="watch-actions">
                         <button
                           className="text-button"

@@ -80,6 +80,11 @@ class WatchRecord(Base):
     currency: Mapped[str] = mapped_column(String(3))
     country: Mapped[str] = mapped_column(String(2))
     monitoring_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    alert_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    alert_state: Mapped[str] = mapped_column(String(16), default="off", server_default="off")
+    alert_armed_at: Mapped[float | None] = mapped_column(Float)
+    alert_consent: Mapped[str | None] = mapped_column(String(40))
+    alert_command: Mapped[str | None] = mapped_column(String(64))
     created_at: Mapped[str] = mapped_column(String(40))
 
 
@@ -150,3 +155,37 @@ class EmbeddingPointer(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     index_id: Mapped[str | None] = mapped_column(ForeignKey("embedding_indexes.id"))
     generation: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class AlertLock(Base):
+    __tablename__ = "alert_lock"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    revision: Mapped[int] = mapped_column(Integer, default=0)
+
+
+class PriceAlertEvent(Base):
+    __tablename__ = "price_alert_events"
+    __table_args__ = (UniqueConstraint("watch_id", "alert_version"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    watch_id: Mapped[str] = mapped_column(String(36), index=True)
+    alert_version: Mapped[int] = mapped_column(Integer)
+    payload: Mapped[dict] = mapped_column(JSON)
+    status: Mapped[str] = mapped_column(String(16), index=True)
+    created_at: Mapped[str] = mapped_column(String(40))
+    expires_at: Mapped[float] = mapped_column(Float)
+    available_at: Mapped[float] = mapped_column(Float)
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    lease_token: Mapped[str | None] = mapped_column(String(64))
+    lease_until: Mapped[float | None] = mapped_column(Float)
+    failure_code: Mapped[str | None] = mapped_column(String(40))
+
+
+class NotificationRecord(Base):
+    __tablename__ = "notifications"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    event_id: Mapped[str] = mapped_column(ForeignKey("price_alert_events.id"), unique=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    payload: Mapped[dict] = mapped_column(JSON)
+    created_at: Mapped[str] = mapped_column(String(40))
+    read_at: Mapped[str | None] = mapped_column(String(40))

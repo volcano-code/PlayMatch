@@ -201,3 +201,12 @@ Docker Compose 现在启动 **Web、API、worker、PostgreSQL**。本地 quickst
 
 这是应用级阶段恢复，不是外部调用 exactly-once；完整边界及验收方法见
 [持久任务说明](docs/durable-runs-v04.md)。升级前停止旧 API 进程，保留数据库卷。
+
+## v0.5：主动查价站内提醒
+
+“我的收藏”新增明确授权的一次性 USD 提醒，“通知中心”支持未读、已读、分页和删除。
+只有主动点击“查价并检查提醒”才查询并评估；不持续抓价、不发送邮件，普通收藏不会开启。
+投递使用现有独立 worker 与事务性 outbox，价格/版本未知不会伪装为保证可购买低价。
+更改目标/地区或关闭提醒会阻止未提交投递。升级包含迁移0005，先备份并停止旧API/worker，
+保留数据库卷，再 `docker compose up --build -d --wait`。
+详细范围及复现：[price-alerts-v05.md](docs/price-alerts-v05.md)。

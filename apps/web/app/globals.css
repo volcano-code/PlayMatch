@@ -2574,3 +2574,44 @@ a {
     font-size: 9px;
   }
 }
+
+.price-alert-controls {
+  margin: 1rem 0;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border, #283344);
+}
+.alert-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  line-height: 1.7;
+  margin-bottom: 0.8rem;
+  color: var(--muted, #a9b3c7);
+}
+.alert-consent input {
+  flex: 0 0 auto;
+  margin-top: 0.3rem;
+}
+.notification-list {
+  display: grid;
+  gap: 1rem;
+}
+.notification-card {
+  border: 1px solid var(--border, #283344);
+  border-radius: 18px;
+  padding: 1.3rem;
+  background: var(--panel, #151c2c);
+}
+.notification-card p {
+  margin: 0.6rem 0;
+}
+.notification-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.price-alert-controls .watch-actions,
+.notification-card .watch-actions {
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
