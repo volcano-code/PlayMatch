@@ -81,3 +81,13 @@ one query to the configured model; current default remains BM25. Indexed UI/stat
 Docker CLI are wired. Optional pinned-model integration probe reports real inference separately
 from synthetic regression tests. See catalog-index-v03.md; test counts and execution evidence
 are recorded against the delivered commit, not inferred from earlier stages.
+
+## v0.4 — durable runs (supersedes earlier single-process execution notes)
+
+Persisted queue admission, shared capacity, fenced claim/renew/progress/finalization,
+bounded crash retries, explicit cancellation, safe-stage snapshots and independent
+supervised worker implemented. Compose now runs a worker service. Browser offers
+same-task reconnect across refresh and separate cancellation. Regression and cloud
+acceptance evidence for this increment are recorded in its PR and validation-v04.md.
+No new provider credentials, catalog expansion, notification service, paid generation
+call, ANN index or public production deployment is implied by this stage.

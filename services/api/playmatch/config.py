@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     run_workers: int = Field(default=2, ge=1, le=8)
     max_pending_runs: int = Field(default=24, ge=1, le=100)
     run_timeout_seconds: int = Field(default=90, ge=10, le=300)
+    run_execution_mode: Literal["embedded", "external"] = "embedded"
+    run_lease_seconds: float = Field(default=15, ge=3, le=60, allow_inf_nan=False)
+    run_poll_seconds: float = Field(default=0.25, ge=0.05, le=5, allow_inf_nan=False)
+    run_max_attempts: int = Field(default=3, ge=1, le=5)
 
     retrieval_mode: Literal["keyword_baseline", "bm25", "hybrid", "indexed_hybrid"] = "bm25"
     embedding_base_url: str = ""

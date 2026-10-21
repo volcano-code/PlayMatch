@@ -347,7 +347,11 @@ async def _prices_for(candidates: list[dict], country: str) -> list[dict]:
 
 
 def build_graph(
-    settings: Settings, progress: Callable[[str, str, dict], None], *, semantic_resolver=None
+    settings: Settings,
+    progress: Callable[[str, str, dict], None],
+    *,
+    semantic_resolver=None,
+    resume_after: str | None = None,
 ):
     def understand(state: WorkflowState):
         baseline = rule_intent(state["request"])
@@ -485,7 +489,24 @@ def build_graph(
         ("explain", explain),
     ):
         graph.add_node(name, node)
-    graph.add_edge(START, "understand")
+    # The durable runner stores application-level node snapshots, not a native
+    # LangGraph checkpointer. Only these read-only node boundaries can resume.
+    if resume_after not in {None, "understand", "retrieve", "filter"}:
+        raise ValueError("Unsupported resume boundary")
+    if resume_after == "filter":
+        graph.add_conditional_edges(
+            START,
+            lambda state: (
+                "budget"
+                if state["candidates"] and state["intent"]["budget_minor"] is not None
+                else "explain"
+            ),
+        )
+    else:
+        graph.add_edge(
+            START,
+            {None: "understand", "understand": "retrieve", "retrieve": "filter"}[resume_after],
+        )
     graph.add_edge("understand", "retrieve")
     graph.add_edge("retrieve", "filter")
     graph.add_conditional_edges(

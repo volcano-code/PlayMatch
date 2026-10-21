@@ -5,8 +5,7 @@ from uuid import uuid4
 import pytest
 from fastapi.testclient import TestClient
 from playmatch.main import create_app
-from playmatch.models import RunEventRecord, RunRecord, SessionRecord, UserRecord
-from playmatch.runs import now_iso
+from playmatch.models import RunRecord, SessionRecord, UserRecord
 from playmatch.security import digest
 from sqlalchemy import select
 
@@ -223,82 +222,46 @@ def test_provider_unavailable_remains_explicit(client, monkeypatch):
     assert wait_run(client, created, headers)["status"] == "partial"
 
 
-def test_service_restart_marks_interrupted_run_failed(settings, catalog):
+def test_service_restart_preserves_and_recovers_queued_run(settings, catalog):
+    settings.run_execution_mode = "external"
     with TestClient(create_app(settings, catalog=catalog)) as client:
-        with client.app.state.database.sessions() as db:
-            record = RunRecord(
-                id=str(uuid4()),
-                user_id=None,
-                capability_hash=digest("fixture-token"),
-                idempotency_scope="fixture",
-                idempotency_key_hash=digest("fixture"),
-                payload_hash=digest("fixture"),
-                query="经营",
-                request_payload={"query": "经营"},
-                status="running",
-                mode="rules",
-                intent={},
-                results=[],
-                warnings=[],
-                agent_state={"last_stage": "retrieve"},
-                created_at=now_iso(),
-                completed_at=None,
-            )
-            db.add(record)
-            db.commit()
-            run_id = record.id
+        created, headers = start_run(client)
+        assert (
+            client.get(f"/api/v1/runs/{created['id']}", headers=headers).json()["status"]
+            == "queued"
+        )
     with TestClient(create_app(settings, catalog=catalog)) as client:
-        result = client.get(
-            f"/api/v1/runs/{run_id}", headers={"X-Run-Token": "fixture-token"}
-        ).json()
-        assert result["status"] == "failed"
-        assert any("中断" in item for item in result["warnings"])
-        with client.app.state.database.sessions() as db:
-            assert [
-                row.event
-                for row in db.scalars(
-                    select(RunEventRecord)
-                    .where(RunEventRecord.run_id == run_id)
-                    .order_by(RunEventRecord.sequence)
-                )
-            ] == ["error", "done"]
+        assert (
+            client.get(f"/api/v1/runs/{created['id']}", headers=headers).json()["status"]
+            == "queued"
+        )
+    settings.run_execution_mode = "embedded"
+    with TestClient(create_app(settings, catalog=catalog)) as client:
+        result = wait_run(client, created, headers)
+        assert result["status"] == "completed"
+        assert result["attempt_count"] == 1
+        assert result["last_checkpoint"] == "explain"
 
 
-def test_task_queue_has_a_real_bound(settings, catalog, monkeypatch):
-    import threading
-
-    hold = threading.Event()
-    started = threading.Event()
-
-    def blocked(_self, _run_id):
-        started.set()
-        assert hold.wait(timeout=5)
-
+def test_task_queue_has_a_real_bound(settings, catalog):
     settings.max_pending_runs = 1
-    monkeypatch.setattr("playmatch.runs.RunExecutor.execute", blocked)
+    settings.run_execution_mode = "external"
     with TestClient(create_app(settings, catalog=catalog)) as client:
-        try:
-            assert (
-                client.post(
-                    "/api/v1/runs",
-                    json={"query": "经营"},
-                    headers={"Idempotency-Key": str(uuid4())},
-                ).status_code
-                == 202
-            )
-            assert started.wait(timeout=2)
-            full = client.post(
-                "/api/v1/runs", json={"query": "太空"}, headers={"Idempotency-Key": str(uuid4())}
-            )
-            assert full.status_code == 503
-            assert full.headers["retry-after"] == "10"
-        finally:
-            hold.set()
+        created, headers = start_run(client)
+        full = client.post(
+            "/api/v1/runs", json={"query": "太空"}, headers={"Idempotency-Key": str(uuid4())}
+        )
+        assert full.status_code == 503 and full.headers["retry-after"] == "10"
+        assert (
+            client.post(f"/api/v1/runs/{created['id']}/cancel", headers=headers).json()["status"]
+            == "cancelled"
+        )
+        start_run(client, query="太空")
 
 
 def test_run_timeout_records_terminal_event(client, monkeypatch):
     class TimeoutGraph:
-        def invoke(self, *_args, **_kwargs):
+        def stream(self, *_args, **_kwargs):
             raise TimeoutError("fixture deadline")
 
     monkeypatch.setattr("playmatch.runs.build_graph", lambda *_args, **_kwargs: TimeoutGraph())

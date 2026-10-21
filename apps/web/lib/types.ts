@@ -58,7 +58,7 @@ export interface Recommendation {
 }
 export interface Run {
   id: string;
-  status: "queued" | "running" | "completed" | "partial" | "failed";
+  status: "queued" | "running" | "completed" | "partial" | "failed" | "cancelled";
   query: string;
   intent: Record<string, unknown>;
   results: Recommendation[];
@@ -66,6 +66,8 @@ export interface Run {
   mode: "rules" | "llm";
   created_at: string;
   completed_at: string | null;
+  attempt_count: number;
+  last_checkpoint: string | null;
 }
 export interface User {
   id: string;

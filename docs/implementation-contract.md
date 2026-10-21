@@ -110,3 +110,17 @@ indexed requests are partial. Public Game/Recommendation shapes are unchanged.
 Capabilities includes catalog_collection=review_bundle_cli and mode-dependent semantic bound.
 The new index operations are operator CLI only; no unauthenticated write endpoints.
 See docs/catalog-index-v03.md for review approval, durable batches, leases and CAS semantics.
+
+## v0.4 durable tasks
+
+`Run.status` adds `cancelled`; `Run` adds `attempt_count:int` and `last_checkpoint:string|null`.
+POST `/api/v1/runs/{id}/cancel` returns Run and requires the same ownership proof as reads
+plus existing CSRF controls. Terminal cancellation and completion are idempotent, first
+terminal commit wins. POST `/runs` admits capacity/idempotency and task/event together.
+Capabilities `execution_mode` is `durable_sql_embedded|durable_sql_external`, with
+`run_max_attempts`. Queued/running tasks are not failed merely because API restarted.
+
+Migration 0004 adds leases, deadline and shared admission lock. The database is the
+queue truth. Stage snapshots are application-level, not LangGraph native checkpoints.
+Only safe committed stages resume; budget is refreshed. Interrupted read-only external
+calls may repeat. See docs/durable-runs-v04.md for process, retry and privacy boundaries.

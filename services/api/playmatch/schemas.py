@@ -94,7 +94,7 @@ class RunCreated(BaseModel):
 
 class Run(BaseModel):
     id: str
-    status: Literal["queued", "running", "completed", "partial", "failed"]
+    status: Literal["queued", "running", "completed", "partial", "failed", "cancelled"]
     query: str
     intent: dict
     results: list[Recommendation]
@@ -102,6 +102,8 @@ class Run(BaseModel):
     mode: Literal["rules", "llm"]
     created_at: str
     completed_at: str | None
+    attempt_count: int = 0
+    last_checkpoint: str | None = None
 
 
 class Credentials(BaseModel):
