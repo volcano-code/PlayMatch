@@ -1,0 +1,57 @@
+{
+  "version": "0.5",
+  "date": "2026-10-21",
+  "scope": "explicit_own_query_observed_usd_in_app_notifications",
+  "baseline_commit": "a305fac3a540bff52fe91988a781578f1b22746d",
+  "implementation_commit": "d5d403ad3616c28a1c775ee48790ae40e5b49926",
+  "tested_product_tree": "ff15bef12f0d7611a2f8d89ff8a931901bc022e1",
+  "source_file_count": 133,
+  "hosted_run_id": 39603970137,
+  "hosted_jobs": {
+    "core": "success",
+    "containers": "success"
+  },
+  "artifact_id": 12347462827,
+  "artifact_sha256": "052220f4ecbcdbc9f239fe9cf6e0dd8f13de873bcb8bded24b81d29202ffc079",
+  "source_zip_sha256": "0b574f88d7370da234d884fb4087b1a2a3bbdbf438dacfd8e7e955614817a100",
+  "artifact_download_verified": true,
+  "all_source_bytes_compared": true,
+  "tests": {
+    "python_unique": 259,
+    "notification_new_cases": 46,
+    "postgres_configured_subset_runs": {
+      "catalog": 30,
+      "index": 24,
+      "queue": 26,
+      "notifications": 46
+    },
+    "frontend_unit": 21,
+    "browser": 17,
+    "openapi_paths": 24
+  },
+  "subset_note": "Subsets are included in 259, not additional unique tests. Some API/pure-function/process-specific fixtures retain SQLite.",
+  "lexical_development_eval": {
+    "keyword_pass": 23,
+    "bm25_pass": 23,
+    "total_each": 23,
+    "labels_changed": false,
+    "independent_quality_claim": false
+  },
+  "synthetic_data": {
+    "quote_provider_in_browser": true,
+    "container_quote_injected_under_explicit_flag": true,
+    "real_sql_and_worker_delivery": true,
+    "external_email_sent": false,
+    "live_price_drop_verified": false
+  },
+  "limitations": [
+    "No automatic price polling or external email",
+    "US/USD observations only, not verified purchase eligibility",
+    "Default real catalog remains 24 games",
+    "No independent human relevance evaluation",
+    "No production deployment or cross-host performance result",
+    "Long recommendation can delay notification delivery on a single worker",
+    "No automatic audit retention/account deletion workflow"
+  ],
+  "record_note": "Validation records appended after tested product tree; standard feature-branch/main CI tracked separately in PR."
+}
