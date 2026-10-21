@@ -6,6 +6,8 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker
 
+from playmatch import catalog_search  # noqa: F401 -- register ORM search-column events
+
 
 class Database:
     def __init__(self, url: str):

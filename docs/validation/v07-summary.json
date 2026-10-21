@@ -1,0 +1,60 @@
+{
+  "version": "0.7",
+  "date": "2026-10-21",
+  "scope": "steam_identity_discovery_sync_sql_browsing",
+  "base_commit": "4f61b364fe9bd11282a407449137524d8edecef6",
+  "implementation_commit": "593528228cdc501947743f379bf9f7bd5c408ee2",
+  "tested_tree": "1841d151b8b95e1a4e873a78e97bc1007a43eddf",
+  "tested_files": 164,
+  "hosted_run": 39629292324,
+  "artifact_id": 12358164034,
+  "artifact_sha256": "718ecc9e5c3a581d13a4cb5c2b6c50bb637b9446f57760227d2b06152809c5f8",
+  "source_sha256": "2d89fa1bf3fe00661a9025f0045385952bec8062ee812bd079713c4af2cf0124",
+  "verified_byte_identical": true,
+  "tests": {
+    "python": 339,
+    "new_python": 38,
+    "postgres_steam_suite_subset": 38,
+    "web_units": 23,
+    "browser": 23,
+    "openapi_paths": 27
+  },
+  "synthetic_scale": {
+    "dataset": "synthetic_generated_names_not_steam",
+    "network_requests": 0,
+    "rows": 100000,
+    "storage": "postgresql",
+    "python": "3.12.15",
+    "page_size": 5000,
+    "restart_read": true,
+    "metadata_created": 0,
+    "sync_seconds": 19.477,
+    "three_queries_seconds": 0.033,
+    "performance_claim": "single smoke execution, not production P95 or upstream coverage"
+  },
+  "live_steam_authenticated": false,
+  "live_steam_coverage_verified": false,
+  "automatic_metadata_enrichment": false,
+  "default_recommendation_metadata_games": 48,
+  "configured_defaults": {
+    "interval_seconds": 600,
+    "full_interval_seconds": 604800,
+    "page_size": 5000,
+    "daily_requests": 1000,
+    "enabled": false
+  },
+  "failure_history": {
+    "initial_hosted_run": 39628587775,
+    "initial_browser_passed": 22,
+    "initial_browser_failed": 1,
+    "fix": "explicit fixture failure then recovery; product behavior unchanged"
+  },
+  "limits": [
+    "no valid Steam key available for live full/delta traversal",
+    "no production P95 or throughput claim",
+    "name-only records are not recommendation metadata",
+    "current recommendation workflow and vector bounds remain",
+    "browser and provider tests include labeled synthetic fixtures",
+    "fifth sync service not live-authorized in CI"
+  ]
+}

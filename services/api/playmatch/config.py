@@ -2,7 +2,7 @@ from functools import lru_cache
 from typing import Literal
 from urllib.parse import urlparse
 
-from pydantic import Field
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -34,6 +34,13 @@ class Settings(BaseSettings):
     embedding_api_key: str = ""
     embedding_timeout_seconds: float = Field(default=8, ge=0.1, le=20, allow_inf_nan=False)
     semantic_min_score: float = Field(default=0.65, ge=0, le=1, allow_inf_nan=False)
+
+    steam_web_api_key: SecretStr = SecretStr("")
+    steam_sync_enabled: bool = False
+    steam_sync_interval_seconds: int = Field(default=600, ge=300, le=86400)
+    steam_full_sync_seconds: int = Field(default=604800, ge=86400, le=2592000)
+    steam_sync_page_size: int = Field(default=5000, ge=1, le=5000)
+    steam_sync_daily_requests: int = Field(default=1000, ge=1, le=10000)
 
     @property
     def embedding_enabled(self) -> bool:

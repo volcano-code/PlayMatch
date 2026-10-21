@@ -213,3 +213,13 @@ Docker Compose 现在启动 **Web、API、worker、PostgreSQL**。本地 quickst
 更改目标/地区或关闭提醒会阻止未提交投递。升级包含迁移0005，先备份并停止旧API/worker，
 保留数据库卷，再 `docker compose up --build -d --wait`。
 详细范围及复现：[price-alerts-v05.md](docs/price-alerts-v05.md)。
+
+## v0.7：Steam 持续发现目录
+
+新增独立 Steam full/delta 同步进程、持久游标/失败续传、数据库身份目录及前端状态/名称检索。
+这不是继续把种子扩成96款；配置服务端Key并启动同步器后，范围由官方游戏目录实际返回决定。
+“已发现名称”和“已有推荐资料”分开统计；没有Key时不会假装已导入全库。
+
+操作见 [Steam 同步与边界](docs/steam-directory-v07.md)。首次配置后：
+`docker compose --profile catalog-sync up --build -d --wait`。
+自动元数据补全、全库语义召回及全库实时价格不属于本轮已完成能力。
