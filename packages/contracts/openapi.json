@@ -55,6 +55,24 @@
         }
       }
     },
+    "/api/v1/catalog/coverage": {
+      "get": {
+        "summary": "Coverage",
+        "operationId": "coverage_api_v1_catalog_coverage_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogCoverage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/games": {
       "get": {
         "summary": "Games",
@@ -1002,6 +1020,67 @@
         ],
         "title": "AlertState"
       },
+      "CatalogCoverage": {
+        "properties": {
+          "total_games": {
+            "type": "integer",
+            "title": "Total Games"
+          },
+          "source_linked_games": {
+            "type": "integer",
+            "title": "Source Linked Games"
+          },
+          "description_observed": {
+            "type": "integer",
+            "title": "Description Observed"
+          },
+          "chinese_interface_verified": {
+            "type": "integer",
+            "title": "Chinese Interface Verified"
+          },
+          "online_coop_verified": {
+            "type": "integer",
+            "title": "Online Coop Verified"
+          },
+          "local_coop_verified": {
+            "type": "integer",
+            "title": "Local Coop Verified"
+          },
+          "horror_unknown": {
+            "type": "integer",
+            "title": "Horror Unknown"
+          },
+          "with_aliases": {
+            "type": "integer",
+            "title": "With Aliases"
+          },
+          "automatic_sync": {
+            "type": "boolean",
+            "title": "Automatic Sync"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_games",
+          "source_linked_games",
+          "description_observed",
+          "chinese_interface_verified",
+          "online_coop_verified",
+          "local_coop_verified",
+          "horror_unknown",
+          "with_aliases",
+          "automatic_sync",
+          "notes"
+        ],
+        "title": "CatalogCoverage"
+      },
       "Credentials": {
         "properties": {
           "email": {
@@ -1101,6 +1180,14 @@
           "title_zh": {
             "type": "string",
             "title": "Title Zh"
+          },
+          "aliases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Aliases"
           },
           "description": {
             "type": "string",

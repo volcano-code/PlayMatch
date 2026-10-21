@@ -1,0 +1,1401 @@
+[
+  {
+    "id": "steam-1086940",
+    "steam_app_id": 1086940,
+    "title": "Baldur's Gate 3",
+    "title_zh": "博德之门3",
+    "description": "组建冒险队伍，在龙与地下城世界进行回合制战斗，通过对话与选择改变同伴关系和故事。",
+    "themes": [
+      "奇幻",
+      "剧情",
+      "策略",
+      "合作"
+    ],
+    "genres": [
+      "角色扮演",
+      "回合制"
+    ],
+    "aliases": [
+      "BG3",
+      "博德之门三"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "online",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1086940/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1086940/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1086940/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1086940/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1086940/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/1086940/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "功能表列出 Online Co-op；人数与跨平台条件另行核验",
+        "url": "https://store.steampowered.com/app/1086940/",
+        "field": "coop",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-1245620",
+    "steam_app_id": 1245620,
+    "title": "ELDEN RING",
+    "title_zh": "艾尔登法环",
+    "description": "在交界地探索遗迹与地下城，组合武器和法术应对敌人与首领，展开奇幻动作冒险。",
+    "themes": [
+      "奇幻",
+      "探索",
+      "动作",
+      "挑战"
+    ],
+    "genres": [
+      "动作角色扮演"
+    ],
+    "aliases": [
+      "老头环",
+      "Elden Ring"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "online",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1245620/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1245620/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1245620/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1245620/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/1245620/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "功能表列出 Online Co-op；人数与跨平台条件另行核验",
+        "url": "https://store.steampowered.com/app/1245620/",
+        "field": "coop",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-1446780",
+    "steam_app_id": 1446780,
+    "title": "MONSTER HUNTER RISE",
+    "title_zh": "怪物猎人：崛起",
+    "description": "选择武器追猎怪物、收集素材制作装备，可与同伴合作迎战不同猎物。",
+    "themes": [
+      "动作",
+      "挑战",
+      "合作"
+    ],
+    "genres": [
+      "动作",
+      "狩猎"
+    ],
+    "aliases": [
+      "MHR",
+      "怪猎崛起"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "online",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1446780/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1446780/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1446780/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1446780/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1446780/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/1446780/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "功能表列出 Online Co-op；人数与跨平台条件另行核验",
+        "url": "https://store.steampowered.com/app/1446780/",
+        "field": "coop",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-1142710",
+    "steam_app_id": 1142710,
+    "title": "Total War: WARHAMMER III",
+    "title_zh": "全面战争：战锤3",
+    "description": "在战锤奇幻世界安排战略征服与军队作战，带领不同势力进入混沌领域。",
+    "themes": [
+      "奇幻",
+      "策略",
+      "战争",
+      "合作"
+    ],
+    "genres": [
+      "大战略",
+      "即时战术"
+    ],
+    "aliases": [
+      "战锤三",
+      "全战战锤3",
+      "TWW3"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "online",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1142710/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1142710/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1142710/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1142710/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1142710/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/1142710/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "功能表列出 Online Co-op；人数与跨平台条件另行核验",
+        "url": "https://store.steampowered.com/app/1142710/",
+        "field": "coop",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-281990",
+    "steam_app_id": 281990,
+    "title": "Stellaris",
+    "title_zh": "群星",
+    "description": "探索星系、接触外星文明并扩展帝国，以外交、科研与战略决策规划星际发展。",
+    "themes": [
+      "太空",
+      "科幻",
+      "探索",
+      "策略"
+    ],
+    "genres": [
+      "大战略",
+      "4X"
+    ],
+    "aliases": [
+      "群星",
+      "Stellaris"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/281990/header.jpg",
+    "store_url": "https://store.steampowered.com/app/281990/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/281990/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/281990/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/281990/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/281990/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-289070",
+    "steam_app_id": 289070,
+    "title": "Sid Meier’s Civilization VI",
+    "title_zh": "文明6",
+    "description": "发展城市、研究科技与文化，和历史领袖竞争，逐回合规划文明的成长。",
+    "themes": [
+      "历史",
+      "策略",
+      "经营"
+    ],
+    "genres": [
+      "回合制策略",
+      "4X"
+    ],
+    "aliases": [
+      "Civ6",
+      "文明六",
+      "Civilization 6"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/289070/header.jpg",
+    "store_url": "https://store.steampowered.com/app/289070/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/289070/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/289070/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/289070/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/289070/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-813780",
+    "steam_app_id": 813780,
+    "title": "Age of Empires II: Definitive Edition",
+    "title_zh": "帝国时代2：决定版",
+    "description": "建设城镇、采集资源与指挥军队，体验历史战役以及即时战略对战。",
+    "themes": [
+      "历史",
+      "策略",
+      "战争",
+      "合作"
+    ],
+    "genres": [
+      "即时战略"
+    ],
+    "aliases": [
+      "AOE2",
+      "帝国时代二决定版"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "online",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/813780/header.jpg",
+    "store_url": "https://store.steampowered.com/app/813780/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/813780/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/813780/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/813780/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/813780/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "功能表列出 Online Co-op；人数与跨平台条件另行核验",
+        "url": "https://store.steampowered.com/app/813780/",
+        "field": "coop",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-1158310",
+    "steam_app_id": 1158310,
+    "title": "Crusader Kings III",
+    "title_zh": "十字军之王3",
+    "description": "经营中世纪王朝，通过家族继承、婚姻、谋略和战争影响统治与人物命运。",
+    "themes": [
+      "历史",
+      "策略",
+      "剧情"
+    ],
+    "genres": [
+      "大战略",
+      "角色扮演"
+    ],
+    "aliases": [
+      "CK3",
+      "王国风云3"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1158310/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1158310/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1158310/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1158310/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1158310/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/1158310/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-255710",
+    "steam_app_id": 255710,
+    "title": "Cities: Skylines",
+    "title_zh": "城市：天际线",
+    "description": "规划道路与城区，配置城市公共服务，在发展城市时应对交通和管理问题。",
+    "themes": [
+      "经营",
+      "城市",
+      "策略"
+    ],
+    "genres": [
+      "城市建造",
+      "模拟"
+    ],
+    "aliases": [
+      "城市天际线",
+      "Cities Skylines"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/255710/header.jpg",
+    "store_url": "https://store.steampowered.com/app/255710/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/255710/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/255710/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/255710/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/255710/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-457140",
+    "steam_app_id": 457140,
+    "title": "Oxygen Not Included",
+    "title_zh": "缺氧",
+    "description": "在小行星内部经营殖民地，安排资源、氧气和温度系统，维持居民生存。",
+    "themes": [
+      "太空",
+      "科幻",
+      "经营",
+      "生存"
+    ],
+    "genres": [
+      "殖民地模拟"
+    ],
+    "aliases": [
+      "缺氧",
+      "ONI"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/457140/header.jpg",
+    "store_url": "https://store.steampowered.com/app/457140/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/457140/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/457140/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/457140/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/457140/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-1366540",
+    "steam_app_id": 1366540,
+    "title": "Dyson Sphere Program",
+    "title_zh": "戴森球计划",
+    "description": "采集资源、设计自动化生产线，将行星工厂扩展为利用恒星能源的星际工业网络。",
+    "themes": [
+      "太空",
+      "科幻",
+      "经营",
+      "自动化"
+    ],
+    "genres": [
+      "工厂建造",
+      "策略"
+    ],
+    "aliases": [
+      "DSP",
+      "戴森球"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1366540/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1366540/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1366540/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1366540/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1366540/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/1366540/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-1336490",
+    "steam_app_id": 1336490,
+    "title": "Against the Storm",
+    "title_zh": "风暴之城",
+    "description": "在末日暴雨下带领多种族居民建立聚落，分配资源并应对不断变化的建设挑战。",
+    "themes": [
+      "奇幻",
+      "经营",
+      "策略",
+      "生存"
+    ],
+    "genres": [
+      "城市建造",
+      "Roguelite"
+    ],
+    "aliases": [
+      "风暴之城",
+      "Against the Storm"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1336490/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1336490/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1336490/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1336490/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1336490/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/1336490/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-653530",
+    "steam_app_id": 653530,
+    "title": "Return of the Obra Dinn",
+    "title_zh": "奥伯拉丁的回归",
+    "description": "登上失踪后归来的商船调查人员遭遇，通过现场线索推断身份与事件真相。",
+    "themes": [
+      "悬疑",
+      "解谜",
+      "剧情"
+    ],
+    "genres": [
+      "推理",
+      "调查"
+    ],
+    "aliases": [
+      "奥伯拉丁",
+      "Obra Dinn"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/653530/header.jpg",
+    "store_url": "https://store.steampowered.com/app/653530/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/653530/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/653530/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/653530/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/653530/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-1677770",
+    "steam_app_id": 1677770,
+    "title": "The Case of the Golden Idol",
+    "title_zh": "黄金偶像案",
+    "description": "调查相互关联的离奇死亡现场，寻找线索，推断嫌疑人、动机和事件经过。",
+    "themes": [
+      "悬疑",
+      "解谜",
+      "剧情"
+    ],
+    "genres": [
+      "推理",
+      "点击冒险"
+    ],
+    "aliases": [
+      "黄金偶像",
+      "Golden Idol"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "unknown",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1677770/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1677770/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1677770/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1677770/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1677770/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-257510",
+    "steam_app_id": 257510,
+    "title": "The Talos Principle",
+    "title_zh": "塔洛斯的法则",
+    "description": "探索遗迹并破解第一人称机关谜题，在哲学科幻叙事中思考意识与存在。",
+    "themes": [
+      "科幻",
+      "解谜",
+      "探索",
+      "剧情"
+    ],
+    "genres": [
+      "第一人称解谜"
+    ],
+    "aliases": [
+      "塔洛斯法则",
+      "Talos"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/257510/header.jpg",
+    "store_url": "https://store.steampowered.com/app/257510/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/257510/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/257510/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/257510/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/257510/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-736260",
+    "steam_app_id": 736260,
+    "title": "Baba Is You",
+    "title_zh": "Baba Is You",
+    "description": "推动文字方块来改写关卡规则，通过组合逻辑关系改变物体行为并解决谜题。",
+    "themes": [
+      "解谜",
+      "挑战",
+      "逻辑"
+    ],
+    "genres": [
+      "推箱子",
+      "逻辑解谜"
+    ],
+    "aliases": [
+      "巴巴是你",
+      "巴巴是我",
+      "Baba"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/736260/header.jpg",
+    "store_url": "https://store.steampowered.com/app/736260/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/736260/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/736260/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/736260/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/736260/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-1135690",
+    "steam_app_id": 1135690,
+    "title": "Unpacking",
+    "title_zh": "Unpacking",
+    "description": "把搬家纸箱中的物品安放进新居，在整理和装饰空间的过程中拼出生活故事。",
+    "themes": [
+      "放松",
+      "温馨",
+      "解谜",
+      "剧情"
+    ],
+    "genres": [
+      "整理",
+      "休闲"
+    ],
+    "aliases": [
+      "拆箱",
+      "Unpacking"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1135690/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1135690/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1135690/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1135690/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1135690/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/1135690/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-1455840",
+    "steam_app_id": 1455840,
+    "title": "Dorfromantik",
+    "title_zh": "Dorfromantik",
+    "description": "摆放地块连接村落、田野和森林，在安静的景观拼接中完成任务并扩大版图。",
+    "themes": [
+      "放松",
+      "田园",
+      "解谜",
+      "策略"
+    ],
+    "genres": [
+      "地块拼图",
+      "建造"
+    ],
+    "aliases": [
+      "多尔浪漫",
+      "Dorfromantik"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1455840/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1455840/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1455840/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1455840/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1455840/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/1455840/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-1055540",
+    "steam_app_id": 1055540,
+    "title": "A Short Hike",
+    "title_zh": "A Short Hike",
+    "description": "沿着山间小路徒步、攀爬和滑翔，自由探索公园景色并逐渐接近山顶。",
+    "themes": [
+      "放松",
+      "探索",
+      "自然"
+    ],
+    "genres": [
+      "冒险",
+      "探索"
+    ],
+    "aliases": [
+      "短途徒步",
+      "短途旅行"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "unknown",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1055540/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1055540/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1055540/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1055540/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1055540/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-972660",
+    "steam_app_id": 972660,
+    "title": "Spiritfarer: Farewell Edition",
+    "title_zh": "Spiritfarer",
+    "description": "建造渡船、探索世界并照料灵魂旅伴，在经营与陪伴中面对离别，也可本地合作。",
+    "themes": [
+      "温馨",
+      "经营",
+      "探索",
+      "剧情",
+      "合作"
+    ],
+    "genres": [
+      "模拟经营",
+      "冒险"
+    ],
+    "aliases": [
+      "灵魂摆渡者",
+      "Spiritfarer"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "local",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/972660/header.jpg",
+    "store_url": "https://store.steampowered.com/app/972660/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/972660/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/972660/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/972660/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/972660/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "功能表列出 Shared/Split Screen Co-op；不等于原生在线合作",
+        "url": "https://store.steampowered.com/app/972660/",
+        "field": "coop",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-1562430",
+    "steam_app_id": 1562430,
+    "title": "DREDGE",
+    "title_zh": "DREDGE",
+    "description": "驾驶渔船探索神秘群岛，售卖渔获升级船只，在海域调查不安的秘密。",
+    "themes": [
+      "海洋",
+      "探索",
+      "悬疑"
+    ],
+    "genres": [
+      "钓鱼",
+      "冒险"
+    ],
+    "aliases": [
+      "渔帆暗涌",
+      "Dredge"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1562430/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1562430/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1562430/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1562430/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1562430/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/1562430/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-1092790",
+    "steam_app_id": 1092790,
+    "title": "Inscryption",
+    "title_zh": "Inscryption",
+    "description": "通过卡组构筑展开诡异牌局，把密室式解谜与心理恐怖叙事交织在一起。",
+    "themes": [
+      "策略",
+      "解谜",
+      "悬疑",
+      "恐怖"
+    ],
+    "genres": [
+      "卡牌构筑",
+      "Roguelike"
+    ],
+    "aliases": [
+      "邪恶冥刻",
+      "Inscryption"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "unknown",
+    "horror": "yes",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/1092790/header.jpg",
+    "store_url": "https://store.steampowered.com/app/1092790/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/1092790/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/1092790/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/1092790/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/1092790/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "开发者简介明确包含 psychological horror",
+        "url": "https://store.steampowered.com/app/1092790/",
+        "field": "horror",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-632360",
+    "steam_app_id": 632360,
+    "title": "Risk of Rain 2",
+    "title_zh": "雨中冒险2",
+    "description": "在外星环境中迎战怪物，组合拾取的道具与角色能力，独自或与队友尝试逃离。",
+    "themes": [
+      "科幻",
+      "动作",
+      "挑战",
+      "合作"
+    ],
+    "genres": [
+      "第三人称射击",
+      "Roguelike"
+    ],
+    "aliases": [
+      "ROR2",
+      "雨中冒险二"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "online",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/632360/header.jpg",
+    "store_url": "https://store.steampowered.com/app/632360/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/632360/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/632360/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/632360/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/632360/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "功能表列出 Online Co-op；人数与跨平台条件另行核验",
+        "url": "https://store.steampowered.com/app/632360/",
+        "field": "coop",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  },
+  {
+    "id": "steam-322330",
+    "steam_app_id": 322330,
+    "title": "Don't Starve Together",
+    "title_zh": "饥荒联机版",
+    "description": "在荒野收集材料、制作工具和建造营地，与同伴共同应对生存威胁。",
+    "themes": [
+      "生存",
+      "探索",
+      "合作"
+    ],
+    "genres": [
+      "生存建造"
+    ],
+    "aliases": [
+      "DST",
+      "饥荒联机"
+    ],
+    "platforms": [
+      "PC"
+    ],
+    "chinese_support": "verified",
+    "coop": "online",
+    "horror": "unknown",
+    "image_url": "https://cdn.akamai.steamstatic.com/steam/apps/322330/header.jpg",
+    "store_url": "https://store.steampowered.com/app/322330/",
+    "evidence": [
+      {
+        "label": "官方商店作品身份与 AppID；本体记录，不包含付费扩展",
+        "url": "https://store.steampowered.com/app/322330/",
+        "field": "steam_app_id",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "官方商店简介与玩法介绍；中文概述及主题由开发助手整理，非人工评测",
+        "url": "https://store.steampowered.com/app/322330/",
+        "field": "description",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "检索别名为编辑标签，不代表官方中文译名",
+        "url": "https://store.steampowered.com/app/322330/",
+        "field": "aliases",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "语言表列出简体中文界面；不代表中文配音",
+        "url": "https://store.steampowered.com/app/322330/",
+        "field": "chinese_support",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      },
+      {
+        "label": "功能表列出 Online Co-op；人数与跨平台条件另行核验",
+        "url": "https://store.steampowered.com/app/322330/",
+        "field": "coop",
+        "observed_at": "2026-10-21T13:34:55.550089Z"
+      }
+    ],
+    "metadata_status": "curated",
+    "estimated_hours": null
+  }
+]

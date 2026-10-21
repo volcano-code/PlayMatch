@@ -20,7 +20,7 @@ export function retrievalLabel(value: unknown): string {
 export function catalogLabel(value: unknown): string {
   switch (value) {
     case "curated_starter":
-      return "人工整理的起始目录";
+      return "来源整理的游戏目录";
     case "mixed":
       return "含供应商导入的目录";
     case "igdb":
@@ -32,7 +32,7 @@ export function catalogLabel(value: unknown): string {
 
 export function metadataLabel(value: unknown): string {
   if (value === "provider") return "供应商资料 · 硬条件待核验";
-  if (value === "curated") return "人工整理资料";
+  if (value === "curated") return "来源整理资料";
   return "来源待确认";
 }
 

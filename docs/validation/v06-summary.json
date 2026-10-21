@@ -1,0 +1,71 @@
+{
+  "stage": "v0.6",
+  "date": "2026-10-21",
+  "baseline_commit": "81370ffcbac6c45c2fadf19207c7c6b9b2be46cb",
+  "implementation_commit": "139b5d4578435a18d993e7dd79f1087740e54014",
+  "tested_tree": "ade32001ee3986cbebaf0cff48687ee4302d802e",
+  "tested_files": 149,
+  "workflow_run": 39613239174,
+  "artifact_id": 12351048203,
+  "artifact_sha256": "2c90c75116592c048d8ee07f082ad66925756c4e5dd51de469b0ecdfd7fcafbc",
+  "source_sha256": "241159e30fb572392fe0215d4112e178c67ae7cb17501a858df4dd378ac55b7e",
+  "source_bytes_verified_against_local": true,
+  "tests": {
+    "python": 301,
+    "frontend_units": 21,
+    "browser": 20,
+    "postgres_subset_reruns": {
+      "catalog": 30,
+      "index": 24,
+      "queue": 26,
+      "notifications": 46
+    },
+    "openapi_paths": 25
+  },
+  "local_initial_failure": {
+    "test": "test_killed_process_recovered_from_committed_stage",
+    "reason": "startup marker not observed in existing 10 second window",
+    "passed": 300,
+    "failed": 1,
+    "isolated_retry_passed": true,
+    "full_retry_passed": 301,
+    "test_timeout_changed": false
+  },
+  "catalog": {
+    "before": 24,
+    "after": 48,
+    "new_source_linked_games": 24,
+    "source_kind": "official_steam_pages_read_by_coding_agent",
+    "igdb_live_import": false,
+    "simplified_interface_with_evidence": 32,
+    "online_coop_with_evidence": 16,
+    "local_coop_with_evidence": 1,
+    "horror_unknown": 47
+  },
+  "evaluation": {
+    "cases": 40,
+    "descriptive_queries": 24,
+    "alias_queries": 8,
+    "constraints": 8,
+    "label_origin": "coding_agent_provisional",
+    "independent_human_review": false,
+    "known_positive_hit5": {
+      "keyword_baseline": 24,
+      "bm25_without_aliases": 24,
+      "bm25": 32
+    },
+    "positive_cases": 32,
+    "hard_violation_cases": 0,
+    "ndcg": null,
+    "human_review_tasks": 32,
+    "judgments_per_reviewer": 145,
+    "completed_human_reviews": 0
+  },
+  "boundaries": [
+    "PostgreSQL counts are subsets, not additional unique tests.",
+    "Browser suite contains explicitly synthetic UI and price fixtures.",
+    "No real embedding model or paid LLM was executed in this increment.",
+    "Alias functional cases are not independent recommendation quality.",
+    "No current CN prices, scheduled monitoring, external email, public deployment or production scale claim."
+  ]
+}

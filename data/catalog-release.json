@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "release_id": "catalog-v06-20261021",
+  "parts": [
+    {
+      "path": "catalog.json",
+      "sha256": "04b3470ffa38b4082c5d095993f477362a727e16bf0dd55649ed6ebc511e9f10",
+      "count": 24
+    },
+    {
+      "path": "catalog-v06.json",
+      "sha256": "5a2e1f9c4b782e0d893dcff813e9c287fd52459ca8d91778599b9e6026fa05bf",
+      "count": 24
+    }
+  ],
+  "total_games": 48,
+  "automatic_sync": false
+}

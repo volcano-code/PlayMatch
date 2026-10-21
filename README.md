@@ -1,5 +1,8 @@
 # PlayMatch
 
+> 最新阶段：v0.6 来源目录与评测。默认48款真实作品（原24款 + 24款官方页面核对条目），支持BG3、CK3等编辑别名、实际数据覆盖面板及固定快照评测。资料与标签由开发助手整理，独立人工评审尚未完成。此前版本说明与验收数字是历史记录，当前范围见 [v0.6说明](docs/catalog-evaluation-v06.md)。
+
+
 [![CI](https://github.com/volcano-code/PlayMatch/actions/workflows/ci.yml/badge.svg)](https://github.com/volcano-code/PlayMatch/actions/workflows/ci.yml)
 
 **通过主题、偏好和约束发现游戏，再查看有来源、可核验的购买报价。**

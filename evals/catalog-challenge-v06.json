@@ -1,0 +1,529 @@
+{
+  "schema_version": 2,
+  "name": "catalog-challenge-v06",
+  "split": "development_challenge",
+  "label_origin": "coding_agent_provisional",
+  "independent_human_review": false,
+  "catalog_sha256": "20a335f6081514026fe56608b59dc993e94d5fae31f62d1431116c819fef6eec",
+  "cases": [
+    {
+      "id": "discovery-01",
+      "family": "fantasy-party",
+      "kind": "discovery",
+      "query": "想组建小队，用对话和回合制战斗体验龙与地下城故事",
+      "relevant_ids": [
+        "steam-1086940"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1086940/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-02",
+      "family": "souls-action",
+      "kind": "discovery",
+      "query": "想在交界地挑战首领，研究武器和法术的搭配",
+      "relevant_ids": [
+        "steam-1245620"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1245620/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-03",
+      "family": "hunting-coop",
+      "kind": "discovery",
+      "query": "和朋友组队狩猎大型怪物，用素材制作装备",
+      "relevant_ids": [
+        "steam-1446780"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1446780/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-04",
+      "family": "fantasy-war",
+      "kind": "discovery",
+      "query": "想指挥战锤奇幻军队，在战略地图扩张并打即时战斗",
+      "relevant_ids": [
+        "steam-1142710"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1142710/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-05",
+      "family": "space-empire",
+      "kind": "discovery",
+      "query": "想经营一个星际帝国，探索银河并与外星文明打交道",
+      "relevant_ids": [
+        "steam-281990"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/281990/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-06",
+      "family": "historical-4x",
+      "kind": "discovery",
+      "query": "想从城市开始逐回合发展科技文化，与历史领袖竞争",
+      "relevant_ids": [
+        "steam-289070"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/289070/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-07",
+      "family": "historical-rts",
+      "kind": "discovery",
+      "query": "想采资源建城镇，操作军队打中世纪即时战略战役",
+      "relevant_ids": [
+        "steam-813780"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/813780/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-08",
+      "family": "dynasty",
+      "kind": "discovery",
+      "query": "我想通过婚姻和继承经营中世纪家族，不只是打一场仗",
+      "relevant_ids": [
+        "steam-1158310"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1158310/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-09",
+      "family": "city",
+      "kind": "discovery",
+      "query": "喜欢规划城市道路和公共服务，想解决交通问题",
+      "relevant_ids": [
+        "steam-255710"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/255710/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-10",
+      "family": "colony",
+      "kind": "discovery",
+      "query": "想管理地下殖民地的氧气和温度，让居民生存下去",
+      "relevant_ids": [
+        "steam-457140"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/457140/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-11",
+      "family": "factory-space",
+      "kind": "discovery",
+      "query": "想把自动化生产线铺到不同星球，最后利用恒星能量",
+      "relevant_ids": [
+        "steam-1366540"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1366540/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-12",
+      "family": "storm-city",
+      "kind": "discovery",
+      "query": "想带领不同种族在暴雨里重建聚落，做资源取舍",
+      "relevant_ids": [
+        "steam-1336490"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1336490/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-13",
+      "family": "ship-mystery",
+      "kind": "discovery",
+      "query": "想调查一艘失踪归来的商船，推断船员身份和遭遇",
+      "relevant_ids": [
+        "steam-653530"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/653530/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-14",
+      "family": "detective",
+      "kind": "discovery",
+      "query": "想从离奇死亡的现场寻找线索，推断嫌疑人和动机",
+      "relevant_ids": [
+        "steam-1677770"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1677770/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-15",
+      "family": "philosophy-puzzle",
+      "kind": "discovery",
+      "query": "想在遗迹里做第一人称机关解谜，也思考意识和存在",
+      "relevant_ids": [
+        "steam-257510"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/257510/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-16",
+      "family": "rule-puzzle",
+      "kind": "discovery",
+      "query": "想通过挪动文字来改变关卡规则，玩逻辑推箱子",
+      "relevant_ids": [
+        "steam-736260"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/736260/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-17",
+      "family": "unpacking",
+      "kind": "discovery",
+      "query": "想把搬家纸箱里的物品摆进新家，慢慢发现生活故事",
+      "relevant_ids": [
+        "steam-1135690"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1135690/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-18",
+      "family": "tile-landscape",
+      "kind": "discovery",
+      "query": "想安静摆放村庄森林地块，拼出越来越大的风景",
+      "relevant_ids": [
+        "steam-1455840"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1455840/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-19",
+      "family": "hiking",
+      "kind": "discovery",
+      "query": "想在山间徒步、攀爬和滑翔，欣赏公园风景",
+      "relevant_ids": [
+        "steam-1055540"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1055540/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-20",
+      "family": "spirit-boat",
+      "kind": "discovery",
+      "query": "想经营渡船、照料灵魂旅伴，在冒险中体验告别",
+      "relevant_ids": [
+        "steam-972660"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/972660/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-21",
+      "family": "fishing-mystery",
+      "kind": "discovery",
+      "query": "想驾驶渔船钓鱼卖鱼并升级船只，调查神秘群岛",
+      "relevant_ids": [
+        "steam-1562430"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1562430/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-22",
+      "family": "card-horror",
+      "kind": "discovery",
+      "query": "想玩卡组构筑，但还希望有密室谜题和心理恐怖",
+      "relevant_ids": [
+        "steam-1092790"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1092790/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-23",
+      "family": "alien-shooter",
+      "kind": "discovery",
+      "query": "想和队友在外星怪物群里战斗，组合道具能力",
+      "relevant_ids": [
+        "steam-632360"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/632360/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "discovery-24",
+      "family": "wilderness-coop",
+      "kind": "discovery",
+      "query": "想和同伴在荒野采材料做工具建营地，共同应对生存",
+      "relevant_ids": [
+        "steam-322330"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/322330/"
+      ],
+      "rationale": "根据官方简介给出的开发助手暂定正例，不穷举其他合适游戏；该主题家族不是独立人工标注。"
+    },
+    {
+      "id": "alias-01",
+      "family": "fantasy-party",
+      "kind": "alias",
+      "query": "BG3",
+      "relevant_ids": [
+        "steam-1086940"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1086940/"
+      ],
+      "rationale": "编辑别名检索回归；与对应描述案例同家族，不作为独立样本泛化证据。"
+    },
+    {
+      "id": "alias-02",
+      "family": "souls-action",
+      "kind": "alias",
+      "query": "老头环",
+      "relevant_ids": [
+        "steam-1245620"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1245620/"
+      ],
+      "rationale": "编辑别名检索回归；与对应描述案例同家族，不作为独立样本泛化证据。"
+    },
+    {
+      "id": "alias-03",
+      "family": "hunting-coop",
+      "kind": "alias",
+      "query": "MHR",
+      "relevant_ids": [
+        "steam-1446780"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1446780/"
+      ],
+      "rationale": "编辑别名检索回归；与对应描述案例同家族，不作为独立样本泛化证据。"
+    },
+    {
+      "id": "alias-04",
+      "family": "fantasy-war",
+      "kind": "alias",
+      "query": "TWW3",
+      "relevant_ids": [
+        "steam-1142710"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1142710/"
+      ],
+      "rationale": "编辑别名检索回归；与对应描述案例同家族，不作为独立样本泛化证据。"
+    },
+    {
+      "id": "alias-05",
+      "family": "historical-4x",
+      "kind": "alias",
+      "query": "Civ6",
+      "relevant_ids": [
+        "steam-289070"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/289070/"
+      ],
+      "rationale": "编辑别名检索回归；与对应描述案例同家族，不作为独立样本泛化证据。"
+    },
+    {
+      "id": "alias-06",
+      "family": "historical-rts",
+      "kind": "alias",
+      "query": "AOE2",
+      "relevant_ids": [
+        "steam-813780"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/813780/"
+      ],
+      "rationale": "编辑别名检索回归；与对应描述案例同家族，不作为独立样本泛化证据。"
+    },
+    {
+      "id": "alias-07",
+      "family": "dynasty",
+      "kind": "alias",
+      "query": "CK3",
+      "relevant_ids": [
+        "steam-1158310"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/1158310/"
+      ],
+      "rationale": "编辑别名检索回归；与对应描述案例同家族，不作为独立样本泛化证据。"
+    },
+    {
+      "id": "alias-08",
+      "family": "alien-shooter",
+      "kind": "alias",
+      "query": "ROR2",
+      "relevant_ids": [
+        "steam-632360"
+      ],
+      "evidence_urls": [
+        "https://store.steampowered.com/app/632360/"
+      ],
+      "rationale": "编辑别名检索回归；与对应描述案例同家族，不作为独立样本泛化证据。"
+    },
+    {
+      "id": "constraint-01",
+      "family": "hard-1",
+      "kind": "constraint",
+      "query": "需要中文的太空探索",
+      "required_fields": {
+        "chinese_support": "verified"
+      },
+      "expect_empty": false,
+      "forbidden_ids": [],
+      "excluded_themes": [],
+      "rationale": "依据快照字段和显式排除条件验收；缺失人数/无恐怖证明不能按满足处理。不查询价格。"
+    },
+    {
+      "id": "constraint-02",
+      "family": "hard-2",
+      "kind": "constraint",
+      "query": "需要在线合作动作",
+      "required_fields": {
+        "coop": "online"
+      },
+      "expect_empty": false,
+      "forbidden_ids": [],
+      "excluded_themes": [],
+      "rationale": "依据快照字段和显式排除条件验收；缺失人数/无恐怖证明不能按满足处理。不查询价格。"
+    },
+    {
+      "id": "constraint-03",
+      "family": "hard-3",
+      "kind": "constraint",
+      "query": "需要本地合作",
+      "required_fields": {
+        "coop": "local"
+      },
+      "expect_empty": false,
+      "forbidden_ids": [],
+      "excluded_themes": [],
+      "rationale": "依据快照字段和显式排除条件验收；缺失人数/无恐怖证明不能按满足处理。不查询价格。"
+    },
+    {
+      "id": "constraint-04",
+      "family": "hard-4",
+      "kind": "constraint",
+      "query": "需要四人合作",
+      "required_fields": {},
+      "expect_empty": true,
+      "forbidden_ids": [],
+      "excluded_themes": [],
+      "rationale": "依据快照字段和显式排除条件验收；缺失人数/无恐怖证明不能按满足处理。不查询价格。"
+    },
+    {
+      "id": "constraint-05",
+      "family": "hard-5",
+      "kind": "constraint",
+      "query": "不要恐怖元素的放松游戏",
+      "required_fields": {
+        "horror": "no"
+      },
+      "expect_empty": true,
+      "forbidden_ids": [],
+      "excluded_themes": [],
+      "rationale": "依据快照字段和显式排除条件验收；缺失人数/无恐怖证明不能按满足处理。不查询价格。"
+    },
+    {
+      "id": "constraint-06",
+      "family": "hard-6",
+      "kind": "constraint",
+      "query": "想经营，不要生存",
+      "required_fields": {},
+      "expect_empty": false,
+      "forbidden_ids": [],
+      "excluded_themes": [
+        "生存"
+      ],
+      "rationale": "依据快照字段和显式排除条件验收；缺失人数/无恐怖证明不能按满足处理。不查询价格。"
+    },
+    {
+      "id": "constraint-07",
+      "family": "hard-7",
+      "kind": "constraint",
+      "query": "想要策略游戏",
+      "required_fields": {},
+      "expect_empty": false,
+      "forbidden_ids": [
+        "steam-1142710",
+        "steam-289070"
+      ],
+      "excluded_themes": [],
+      "rationale": "依据快照字段和显式排除条件验收；缺失人数/无恐怖证明不能按满足处理。不查询价格。"
+    },
+    {
+      "id": "constraint-08",
+      "family": "hard-8",
+      "kind": "constraint",
+      "query": "想要太空游戏，必须中文，预算人民币100元",
+      "required_fields": {
+        "chinese_support": "verified"
+      },
+      "expect_empty": false,
+      "forbidden_ids": [],
+      "excluded_themes": [],
+      "rationale": "依据快照字段和显式排除条件验收；缺失人数/无恐怖证明不能按满足处理。不查询价格。"
+    }
+  ]
+}

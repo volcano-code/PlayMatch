@@ -102,3 +102,16 @@ existing worker, migration0005 and full source/test/config/docs delivery retaine
 No new genuine catalog import, independent recommendation-quality result, CN price,
 continuous price monitoring, external email or public production deployment.
 See docs/price-alerts-v05.md and this increment's recorded validation, not prior counts.
+
+
+## v0.6: source-linked catalog expansion and reproducible measurement
+
+- 24 new distinct official Steam product records; default release 48. Sources,
+  checked times and coding-agent provenance committed; no IGDB credentials used.
+- Chinese interface, online/local co-op and unknown horror remain separate facts.
+- Optional editorial aliases, actual coverage endpoint/panel and true second page.
+- Original 24-game snapshot and 23-case labels frozen. Separate 40-case development
+  challenge, same-catalog alias ablation, exact report and pending review templates.
+- Two-reviewer pooled metric workflow implemented; no human grades fabricated.
+- Full checks/results for this increment belong in docs/validation-v06.md.
+- No new live prices, paid model/embedding run, background polling or deployment.

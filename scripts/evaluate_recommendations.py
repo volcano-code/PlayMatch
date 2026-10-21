@@ -15,7 +15,6 @@ from unittest.mock import AsyncMock, patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "services" / "api"))
 
-from playmatch.catalog_seed import load_catalog  # noqa: E402
 from playmatch.config import Settings  # noqa: E402
 from playmatch.schemas import Recommendation  # noqa: E402
 from playmatch.workflow import build_graph, rule_intent  # noqa: E402
@@ -59,7 +58,8 @@ def assess(case: dict, output: dict) -> tuple[list[str], list[str]]:
 
 
 def evaluate(dataset: dict, retrieval_mode: str = "keyword_baseline") -> dict:
-    catalog = load_catalog()
+    catalog_path = Path(os.getenv("PLAYMATCH_CATALOG_PATH", ROOT / "data/catalog.json"))
+    catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
     valid_ids = {row["id"] for row in catalog}
     settings = Settings(_env_file=None, llm_api_key="", llm_model="", retrieval_mode=retrieval_mode)
     graph = build_graph(settings, lambda *_: None)

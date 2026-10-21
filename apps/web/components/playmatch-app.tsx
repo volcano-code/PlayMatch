@@ -33,6 +33,7 @@ import {
   type RunReference,
 } from "@/lib/run-reference";
 import type { Capabilities, Country, FeedbackKind, Game, Run, User, WatchItem } from "@/lib/types";
+import { CatalogCoveragePanel } from "./catalog-coverage";
 import { AuthDialog } from "./auth-dialog";
 import { CompareDialog } from "./compare-dialog";
 import { GameArtwork, GameCard } from "./game-card";
@@ -658,6 +659,8 @@ export function PlayMatchApp() {
                 </button>
               ))}
             </div>
+
+            <CatalogCoveragePanel />
 
             <section
               className="results-section"

@@ -51,6 +51,7 @@ def document(game: dict) -> str:
         [
             game["title"],
             game["title_zh"],
+            *game.get("aliases", []),
             *game["themes"],
             *game["genres"],
             game["description"],

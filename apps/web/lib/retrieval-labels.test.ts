@@ -29,13 +29,13 @@ test("unknown retrieval modes never inherit an enabled claim", () => {
 test("provider catalog is not mislabeled as curated", () => {
   assert.equal(catalogLabel("mixed"), "含供应商导入的目录");
   assert.equal(catalogLabel("igdb"), "IGDB 游戏资料");
-  assert.equal(catalogLabel("curated_starter"), "人工整理的起始目录");
+  assert.equal(catalogLabel("curated_starter"), "来源整理的游戏目录");
   assert.equal(catalogLabel(undefined), "目录来源待确认");
 });
 
 test("metadata status does not imply verified hard constraints", () => {
   assert.match(metadataLabel("provider"), /待核验/);
-  assert.equal(metadataLabel("curated"), "人工整理资料");
+  assert.equal(metadataLabel("curated"), "来源整理资料");
   assert.equal(metadataLabel("invalid"), "来源待确认");
 });
 
