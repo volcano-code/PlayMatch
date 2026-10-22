@@ -89,6 +89,20 @@ jobs:
           STEAM_BENCH_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/steam_directory_test
           PLAYMATCH_ALLOW_DISPOSABLE_DB: 'yes'
         run: uv run python scripts/benchmark_steam_directory.py --output /tmp/steam-scale.json
+      - name: Verify automatic metadata and SQL postings on PostgreSQL
+        env:
+          METADATA_TEST_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/metadata_test
+          PLAYMATCH_ALLOW_DISPOSABLE_DB: 'yes'
+        run: |
+          uv run python -c "import psycopg; c=psycopg.connect('postgresql://playmatch:ci-only-password@127.0.0.1:5432/playmatch_test', autocommit=True); c.execute('CREATE DATABASE metadata_test'); c.close()"
+          uv run pytest services/api/tests/test_metadata_v08.py -q --junitxml=/tmp/metadata-postgres.xml
+      - name: Synthetic 10k metadata and bounded posting retrieval (not live coverage)
+        env:
+          METADATA_BENCH_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/metadata_bench_test
+          PLAYMATCH_ALLOW_DISPOSABLE_DB: 'yes'
+        run: |
+          uv run python -c "import psycopg; c=psycopg.connect('postgresql://playmatch:ci-only-password@127.0.0.1:5432/playmatch_test', autocommit=True); c.execute('CREATE DATABASE metadata_bench_test'); c.close()"
+          uv run python scripts/benchmark_metadata_search.py --output /tmp/metadata-scale.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         if: always()
         with:
@@ -97,6 +111,8 @@ jobs:
             /tmp/python-results.xml
             /tmp/steam-postgres.xml
             /tmp/steam-scale.json
+            /tmp/metadata-postgres.xml
+            /tmp/metadata-scale.json
           retention-days: 14
       - name: Check exported OpenAPI is current
         run: uv run python scripts/check_openapi.py
@@ -165,6 +181,8 @@ jobs:
         run: docker compose exec -T -e PLAYMATCH_ALLOW_NOTIFICATION_FIXTURE=yes api python scripts/smoke_notifications.py
       - name: Synthetic Steam discovery to real SQL and HTTP (no live key)
         run: docker compose exec -T -e PLAYMATCH_ALLOW_STEAM_FIXTURE=yes api python scripts/smoke_steam_directory.py
+      - name: Synthetic metadata -> postings -> independent worker -> actual HTTP recommendation
+        run: docker compose exec -T -e PLAYMATCH_ALLOW_METADATA_FIXTURE=yes api python scripts/smoke_metadata.py
       - name: Container logs on failure
         if: failure()
         run: docker compose logs --tail 100

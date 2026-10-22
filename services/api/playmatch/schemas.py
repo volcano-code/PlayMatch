@@ -327,6 +327,32 @@ class SteamDirectoryStatus(BaseModel):
     requests_today: int
     request_budget: int
     poll_interval_seconds: int
-    automatic_metadata_enrichment: Literal[False] = False
+    automatic_metadata_enrichment: bool = False
     automatic_price_polling: Literal[False] = False
+    notes: list[str]
+
+
+class EnrichmentStatus(BaseModel):
+    status: Literal[
+        "disabled",
+        "not_configured",
+        "worker_not_running",
+        "backoff",
+        "processing",
+        "ready",
+        "never_enriched",
+    ]
+    enabled: bool
+    configured: bool
+    worker_recent: bool
+    jobs_by_state: dict[str, int]
+    eligible_metadata: int
+    automatic_metadata: int
+    last_success_at: float | None
+    last_error: str | None
+    next_request_at: float
+    reserved_requests_today: int
+    request_budget: int
+    refresh_seconds: int
+    retrieval_candidate_limit: int
     notes: list[str]

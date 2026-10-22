@@ -34,6 +34,7 @@ import {
 } from "@/lib/run-reference";
 import type { Capabilities, Country, FeedbackKind, Game, Run, User, WatchItem } from "@/lib/types";
 import { CatalogCoveragePanel } from "./catalog-coverage";
+import { MetadataEnrichmentPanel } from "@/components/metadata-enrichment";
 import { SteamDirectoryPanel } from "./steam-directory";
 import { AuthDialog } from "./auth-dialog";
 import { CompareDialog } from "./compare-dialog";
@@ -662,6 +663,7 @@ export function PlayMatchApp() {
             </div>
 
             <SteamDirectoryPanel />
+            <MetadataEnrichmentPanel />
             <CatalogCoveragePanel />
 
             <section

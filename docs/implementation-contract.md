@@ -181,3 +181,27 @@ GetAppList API. First full, overlapping incremental, periodic full, failure repl
 rate/backoff/budget and token-fenced atomic page commits. Missing in a full scan is
 not deletion. See docs/steam-directory-v07.md; no real all-Steam coverage claim until
 credentialed deployed traversal has actually completed.
+
+## v0.8 automatic metadata and bounded candidate recall
+
+Migration 0007 adds persistent `metadata_jobs`/scheduler state, auto-source expiry,
+blocked eligibility, transactional `game_search_terms` and a search revision.
+GET `/api/v1/catalog/enrichment/status` returns `EnrichmentStatus` (read-only,
+no-store, no secret): status, enabled/configured/worker_recent, job-state counts,
+eligible_metadata, automatic_metadata, last_success/error, request reservation
+and budget, refresh interval and retrieval candidate cap. Steam status's
+`automatic_metadata_enrichment` now reports a boolean configuration flag, never
+successful completion. Capabilities also exposes this explicit feature config.
+
+Optional metadata-enrichment worker performs exact Steam-ID IGDB matching.
+Curated/operator records are preserved; only automatic records expire. Successful
+metadata and lexical index writes are atomic. Unsupported or ambiguous identities
+are not promoted. Source descriptions remain in their original language.
+
+Production recommendation requests no longer load arbitrary-sized complete
+corpora: a bounded SQL inverted-index shortlist precedes the existing ranker.
+Intent records scope/count/truncation. Small corpora preserve ranking/recovery
+behavior. Existing vector limits remain and no global ANN claim is made.
+Game payload schema and prior frozen evaluation files are unchanged. See
+[metadata-enrichment-v08.md](metadata-enrichment-v08.md) for field evidence,
+activation, limits, freshness and fixtures.

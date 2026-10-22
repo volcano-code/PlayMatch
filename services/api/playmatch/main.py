@@ -13,10 +13,11 @@ from sqlalchemy import delete, func, select, update
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
-from playmatch.catalog_search import metadata_page
-from playmatch.catalog_seed import catalog_coverage, load_catalog
+from playmatch.catalog_search import coverage_sql, metadata_page
+from playmatch.catalog_seed import load_catalog
 from playmatch.config import Settings, get_settings
 from playmatch.database import Database
+from playmatch.metadata_enrichment import enrichment_status
 from playmatch.models import (
     CatalogLock,
     FeedbackRecord,
@@ -51,6 +52,7 @@ from playmatch.schemas import (
     AlertState,
     CatalogCoverage,
     Credentials,
+    EnrichmentStatus,
     FeedbackInput,
     Game,
     GameList,
@@ -182,6 +184,9 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
                 else:
                     existing.title = game.title
                     existing.payload = game.model_dump()
+                    existing.metadata_origin = "manual"
+                    existing.metadata_valid_until = None
+                    existing.recommendation_blocked = False
             session.commit()
         app.state.database = database
         app.state.executor = (
@@ -250,6 +255,13 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
             "catalog_import": "operator_cli",
             "semantic_catalog_limit": 5000 if settings.retrieval_mode == "indexed_hybrid" else 128,
             "catalog_collection": "review_bundle_cli",
+            "metadata_enrichment": {
+                "enabled": settings.metadata_enrichment_enabled,
+                "configured": settings.metadata_configured,
+                "status_url": "/api/v1/catalog/enrichment/status",
+            },
+            "candidate_generation": "sql_postings_then_rerank",
+            "candidate_limit": settings.retrieval_candidate_limit,
             "steam_directory": {
                 "status_url": "/api/v1/catalog/steam/status",
                 "browse_url": "/api/v1/catalog/steam/games",
@@ -270,7 +282,7 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
             "execution_mode": "durable_sql_" + settings.run_execution_mode,
             "run_max_attempts": settings.run_max_attempts,
             "limitations": [
-                "目录包含来源整理记录及可选的审核导入；尚未启用全量 IGDB 同步。",
+                "目录包含来源整理记录、审核导入及可选的自动 IGDB 补全；运行状态与覆盖量分别展示。",
                 "默认 BM25；向量融合需显式配置，实际模式与降级原因见每次任务。",
                 "仅查询 CheapShark US/USD 观测报价，不提供中国区人民币价格。",
                 "版本与地区激活资格未核验的报价不会标记为保证可购买的最低价。",
@@ -287,7 +299,12 @@ def create_app(settings: Settings | None = None, *, catalog: list[dict] | None =
     @app.get("/api/v1/catalog/coverage", response_model=CatalogCoverage)
     def coverage(response: Response, session: Session = Depends(get_db)):
         response.headers["Cache-Control"] = "no-store"
-        return catalog_coverage([row.payload for row in session.scalars(select(GameRecord))])
+        return coverage_sql(session)
+
+    @app.get("/api/v1/catalog/enrichment/status", response_model=EnrichmentStatus)
+    def metadata_status(response: Response, session: Session = Depends(get_db)):
+        response.headers["Cache-Control"] = "no-store"
+        return enrichment_status(session, settings)
 
     @app.get("/api/v1/catalog/steam/status", response_model=SteamDirectoryStatus)
     def steam_status(response: Response, session: Session = Depends(get_db)):

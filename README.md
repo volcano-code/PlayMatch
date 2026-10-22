@@ -223,3 +223,16 @@ Docker Compose 现在启动 **Web、API、worker、PostgreSQL**。本地 quickst
 操作见 [Steam 同步与边界](docs/steam-directory-v07.md)。首次配置后：
 `docker compose --profile catalog-sync up --build -d --wait`。
 自动元数据补全、全库语义召回及全库实时价格不属于本轮已完成能力。
+
+## v0.8：自动资料补全与大目录候选接入
+
+在 v0.7 Steam 身份目录之上新增可选 `metadata-enrichment` 服务：按 AppID
+从 IGDB 获取资料，身份核对通过后原子写入资料与词项索引，自动进入推荐。
+人工资料不覆盖；自动资料过期/冲突不进入推荐。大目录先用 SQL 倒排词项索引
+召回有限候选，再执行已有排序与硬约束，避免每次把全库 JSON 加载进 Python。
+这不是全库向量召回，也不表示当前环境已导入真实 Steam 全库。
+
+默认不启用外部采集。服务端配置 Steam/IGDB 后，启用 `catalog-sync` 与
+`metadata-enrichment` 两个 Compose profile。完整操作、配额与时效限制见
+[自动资料补全文档](docs/metadata-enrichment-v08.md)。提供独立状态面板，配置、
+进程、成功批次、可用资料数量分开显示；供应商简介不冒充已完成中文翻译。
