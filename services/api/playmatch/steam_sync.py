@@ -305,13 +305,13 @@ def sync_status(session, settings) -> dict:
         "requests_today": state.daily_requests,
         "request_budget": settings.steam_sync_daily_requests,
         "poll_interval_seconds": settings.steam_sync_interval_seconds,
-        "automatic_metadata_enrichment": False,
+        "automatic_metadata_enrichment": settings.metadata_enrichment_enabled,
         "automatic_price_polling": False,
         "notes": [
             "已发现名称不等于具备主题推荐资料；不编造简介、语言或实时价格。",
             "up_to_date 仅表示近期完成接口遍历，不保证上游无延迟或全库绝无遗漏。",
             "未在最近全量遍历出现的记录保留，不自动认定下架或删除收藏。",
-            "当前按需推荐仍使用已有资料集；自动资料补全和大规模向量检索尚未交付。",
+            "推荐只使用有效资料；自动资料补全需单独启用并查看运行状态，名称发现不是完成补全。",
         ],
     }
 

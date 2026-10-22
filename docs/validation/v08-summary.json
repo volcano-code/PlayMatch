@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-10-22",
+  "phase": "v0.8",
+  "base_commit": "221e9f27f1033609638546bc830037d43b0c065a",
+  "implementation_commit": "c6b8ba5b918f48345d1bb01e7b8ab9867e5bca2d",
+  "implementation_tree": "5348612d5b9ce46c2e6886d8f5d2bb8b53e3a674",
+  "implementation_files": 180,
+  "ci_run": 39721759041,
+  "ci_jobs_passed": 3,
+  "artifact_id": 12401581557,
+  "artifact_sha256": "564d6186465f8c4d9b17976ed4636076efac43428c0547a4cd8efad56385a3c3",
+  "tests": {
+    "python_unique_passed": 381,
+    "new_python_unique": 42,
+    "metadata_postgres_configured_subset_passed": 42,
+    "frontend_units_passed": 25,
+    "browser_cases_passed": 25,
+    "openapi_paths": 28,
+    "subset_counts_are_not_additive": true
+  },
+  "metadata_scale": {
+    "dataset": "synthetic_metadata_not_real_games",
+    "network_requests": 0,
+    "metadata_records": 10000,
+    "posting_records": 200000,
+    "restart_read": true,
+    "storage": "postgresql",
+    "python": "3.12.15",
+    "insert_seconds": 19.749,
+    "three_queries_seconds": 0.15,
+    "payload_cap": 256,
+    "queries": [
+      {
+        "query_kind": "rarequantumzebra",
+        "payloads": 1,
+        "truncated": false
+      },
+      {
+        "query_kind": "科幻",
+        "payloads": 256,
+        "truncated": true
+      },
+      {
+        "query_kind": "不存在的zzqqvxx",
+        "payloads": 0,
+        "truncated": false
+      }
+    ],
+    "claim": "single scale smoke; not production P95, parallel throughput, retrieval recall or live coverage"
+  },
+  "container_flow": "synthetic IGDB -> real PostgreSQL/postings -> independent recommendation worker -> HTTP result",
+  "live_steam_calls": 0,
+  "live_igdb_calls": 0,
+  "paid_model_calls": 0,
+  "default_real_metadata_count": 48,
+  "whole_library_ann": false,
+  "independent_recommendation_quality_claim": false,
+  "failures_fixed": [
+    "small-corpus checkpoint compatibility regression",
+    "old migration fixture used new ORM default columns"
+  ],
+  "limits": [
+    "Real credentials and upstream contract/coverage still unverified",
+    "Incomplete IGDB mappings remain unmatched or rejected",
+    "Default daily reservations intentionally conservative",
+    "Bounded lexical candidate generation can miss relevant games",
+    "No production P95, concurrency or freshness SLA"
+  ]
+}

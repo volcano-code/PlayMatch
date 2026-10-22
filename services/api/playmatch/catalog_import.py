@@ -47,7 +47,7 @@ def source_url(value: str, *, image=False) -> str:
 class ImportItem(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     provider_id: str = Field(pattern=r"^[1-9][0-9]{0,18}$")
-    steam_app_id: int = Field(gt=0, le=2147483647)
+    steam_app_id: int = Field(gt=0, le=4294967295)
     title: str = Field(min_length=1, max_length=300)
     description: str = Field(min_length=1, max_length=6000)
     themes: list[str] = Field(default_factory=list, max_length=30)

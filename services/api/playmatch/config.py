@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     llm_api_key: str = ""
     llm_model: str = ""
     igdb_client_id: str = ""
-    igdb_client_secret: str = ""
+    igdb_client_secret: str = Field(default="", repr=False)
     llm_timeout_seconds: float = Field(default=20, ge=1, le=60)
     run_workers: int = Field(default=2, ge=1, le=8)
     max_pending_runs: int = Field(default=24, ge=1, le=100)
@@ -41,6 +41,16 @@ class Settings(BaseSettings):
     steam_full_sync_seconds: int = Field(default=604800, ge=86400, le=2592000)
     steam_sync_page_size: int = Field(default=5000, ge=1, le=5000)
     steam_sync_daily_requests: int = Field(default=1000, ge=1, le=10000)
+
+    metadata_enrichment_enabled: bool = False
+    metadata_batch_size: int = Field(default=10, ge=1, le=10)
+    metadata_daily_requests: int = Field(default=1000, ge=6, le=10000)
+    metadata_refresh_seconds: int = Field(default=604800, ge=3600, le=2592000)
+    retrieval_candidate_limit: int = Field(default=256, ge=32, le=512)
+
+    @property
+    def metadata_configured(self) -> bool:
+        return bool(self.igdb_client_id.strip() and self.igdb_client_secret.strip())
 
     @property
     def embedding_enabled(self) -> bool:

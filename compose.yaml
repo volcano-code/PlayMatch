@@ -36,6 +36,11 @@ services:
       EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:-}
       EMBEDDING_TIMEOUT_SECONDS: ${EMBEDDING_TIMEOUT_SECONDS:-8}
       SEMANTIC_MIN_SCORE: ${SEMANTIC_MIN_SCORE:-0.65}
+      METADATA_ENRICHMENT_ENABLED: ${METADATA_ENRICHMENT_ENABLED:-false}
+      METADATA_BATCH_SIZE: ${METADATA_BATCH_SIZE:-10}
+      METADATA_DAILY_REQUESTS: ${METADATA_DAILY_REQUESTS:-1000}
+      METADATA_REFRESH_SECONDS: ${METADATA_REFRESH_SECONDS:-604800}
+      RETRIEVAL_CANDIDATE_LIMIT: ${RETRIEVAL_CANDIDATE_LIMIT:-256}
       STEAM_WEB_API_KEY: ${STEAM_WEB_API_KEY:-}
       STEAM_SYNC_ENABLED: ${STEAM_SYNC_ENABLED:-false}
       STEAM_SYNC_INTERVAL_SECONDS: ${STEAM_SYNC_INTERVAL_SECONDS:-600}
@@ -88,6 +93,22 @@ services:
       timeout: 5s
       start_period: 30s
       retries: 3
+    stop_grace_period: 35s
+    restart: unless-stopped
+
+  metadata-enrichment:
+    profiles: ["metadata-enrichment"]
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.api
+    command: ["python", "-m", "playmatch.metadata_worker"]
+    environment:
+      <<: *api-environment
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      disable: true
     stop_grace_period: 35s
     restart: unless-stopped
 

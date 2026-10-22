@@ -36,6 +36,13 @@ class GameRecord(Base):
     id: Mapped[str] = mapped_column(String(80), primary_key=True)
     title: Mapped[str] = mapped_column(String(300), index=True)
     payload: Mapped[dict] = mapped_column(JSON)
+    metadata_origin: Mapped[str] = mapped_column(
+        String(16), default="manual", server_default="manual"
+    )
+    metadata_valid_until: Mapped[float | None] = mapped_column(Float)
+    recommendation_blocked: Mapped[bool] = mapped_column(
+        Boolean, default=False, server_default="false"
+    )
     search_text: Mapped[str] = mapped_column(Text, default="", server_default="")
     search_themes: Mapped[str] = mapped_column(Text, default="", server_default="")
 
@@ -256,3 +263,47 @@ class SteamSyncReceipt(Base):
     rows_seen: Mapped[int] = mapped_column(Integer)
     final_cursor: Mapped[int] = mapped_column(BigInteger)
     final_page_hash: Mapped[str] = mapped_column(String(64))
+
+
+class GameSearchTerm(Base):
+    __tablename__ = "game_search_terms"
+    game_id: Mapped[str] = mapped_column(
+        ForeignKey("games.id", ondelete="CASCADE"), primary_key=True
+    )
+    term: Mapped[str] = mapped_column(String(80), primary_key=True, index=True)
+    weight: Mapped[int] = mapped_column(Integer)
+
+
+class SearchRevision(Base):
+    __tablename__ = "search_revision"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    revision: Mapped[int] = mapped_column(BigInteger, default=0)
+
+
+class EnrichmentJob(Base):
+    __tablename__ = "metadata_jobs"
+    appid: Mapped[int] = mapped_column(ForeignKey("steam_directory_apps.appid"), primary_key=True)
+    source_hash: Mapped[str] = mapped_column(String(64))
+    status: Mapped[str] = mapped_column(String(24), default="pending", index=True)
+    available_at: Mapped[float] = mapped_column(Float, default=0, index=True)
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    lease_token: Mapped[str | None] = mapped_column(String(64))
+    last_error: Mapped[str | None] = mapped_column(String(48))
+    last_success: Mapped[float | None] = mapped_column(Float)
+    provider_updated: Mapped[int | None] = mapped_column(BigInteger)
+    provider_hash: Mapped[str | None] = mapped_column(String(64))
+
+
+class EnrichmentState(Base):
+    __tablename__ = "metadata_state"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    scan_cursor: Mapped[int] = mapped_column(BigInteger, default=0)
+    scan_due: Mapped[float] = mapped_column(Float, default=0)
+    next_request_at: Mapped[float] = mapped_column(Float, default=0)
+    heartbeat_at: Mapped[float | None] = mapped_column(Float)
+    last_success: Mapped[float | None] = mapped_column(Float)
+    lease_token: Mapped[str | None] = mapped_column(String(64))
+    lease_until: Mapped[float] = mapped_column(Float, default=0)
+    request_day: Mapped[int] = mapped_column(Integer, default=0)
+    reserved_requests: Mapped[int] = mapped_column(Integer, default=0)
+    last_error: Mapped[str | None] = mapped_column(String(48))

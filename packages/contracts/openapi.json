@@ -73,6 +73,24 @@
         }
       }
     },
+    "/api/v1/catalog/enrichment/status": {
+      "get": {
+        "summary": "Metadata Status",
+        "operationId": "metadata_status_api_v1_catalog_enrichment_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnrichmentStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/catalog/steam/status": {
       "get": {
         "summary": "Steam Status",
@@ -1186,6 +1204,118 @@
         ],
         "title": "Credentials"
       },
+      "EnrichmentStatus": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "disabled",
+              "not_configured",
+              "worker_not_running",
+              "backoff",
+              "processing",
+              "ready",
+              "never_enriched"
+            ],
+            "title": "Status"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "configured": {
+            "type": "boolean",
+            "title": "Configured"
+          },
+          "worker_recent": {
+            "type": "boolean",
+            "title": "Worker Recent"
+          },
+          "jobs_by_state": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Jobs By State"
+          },
+          "eligible_metadata": {
+            "type": "integer",
+            "title": "Eligible Metadata"
+          },
+          "automatic_metadata": {
+            "type": "integer",
+            "title": "Automatic Metadata"
+          },
+          "last_success_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Success At"
+          },
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "next_request_at": {
+            "type": "number",
+            "title": "Next Request At"
+          },
+          "reserved_requests_today": {
+            "type": "integer",
+            "title": "Reserved Requests Today"
+          },
+          "request_budget": {
+            "type": "integer",
+            "title": "Request Budget"
+          },
+          "refresh_seconds": {
+            "type": "integer",
+            "title": "Refresh Seconds"
+          },
+          "retrieval_candidate_limit": {
+            "type": "integer",
+            "title": "Retrieval Candidate Limit"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "enabled",
+          "configured",
+          "worker_recent",
+          "jobs_by_state",
+          "eligible_metadata",
+          "automatic_metadata",
+          "last_success_at",
+          "last_error",
+          "next_request_at",
+          "reserved_requests_today",
+          "request_budget",
+          "refresh_seconds",
+          "retrieval_candidate_limit",
+          "notes"
+        ],
+        "title": "EnrichmentStatus"
+      },
       "Evidence": {
         "properties": {
           "label": {
@@ -2269,7 +2399,6 @@
           },
           "automatic_metadata_enrichment": {
             "type": "boolean",
-            "const": false,
             "title": "Automatic Metadata Enrichment",
             "default": false
           },

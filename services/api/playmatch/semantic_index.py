@@ -82,7 +82,20 @@ def lock_catalog(session) -> None:
 
 
 def catalog_rows(session) -> list[dict]:
-    return [row.payload for row in session.scalars(select(GameRecord).order_by(GameRecord.id))]
+    from playmatch.candidate_search import eligibility
+    from playmatch.run_queue import database_now
+
+    rows = list(
+        session.scalars(
+            select(GameRecord.payload)
+            .where(*eligibility(database_now(session)))
+            .order_by(GameRecord.id)
+            .limit(MAX_INDEX_GAMES + 1)
+        )
+    )
+    if len(rows) > MAX_INDEX_GAMES:
+        raise IndexUnavailable("catalog_too_large")
+    return rows
 
 
 def checked_vector(row: EmbeddingVector, dimensions: int | None = None) -> list[float]:
@@ -126,10 +139,15 @@ def index_status(database, settings) -> dict:
                 status = "corrupt"
             elif index.identity != model_identity(settings):
                 status = "model_mismatch"
-            elif index.catalog_hash != fingerprint(catalog_rows(session)):
-                status = "stale"
             else:
-                status = "ready"
+                try:
+                    status = (
+                        "ready"
+                        if index.catalog_hash == fingerprint(catalog_rows(session))
+                        else "stale"
+                    )
+                except IndexUnavailable:
+                    status = "stale"
         return {
             "status": status,
             "active_index_id": index.id if index else None,

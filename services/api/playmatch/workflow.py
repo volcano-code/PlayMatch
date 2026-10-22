@@ -53,6 +53,7 @@ class IntentModel(BaseModel):
 class WorkflowState(TypedDict, total=False):
     request: dict
     catalog: list[dict]
+    catalog_context: dict
     feedback: list[dict]
     intent: dict
     candidates: list[dict]
@@ -351,6 +352,7 @@ def build_graph(
     progress: Callable[[str, str, dict], None],
     *,
     semantic_resolver=None,
+    catalog_resolver=None,
     resume_after: str | None = None,
 ):
     def understand(state: WorkflowState):
@@ -369,24 +371,33 @@ def build_graph(
         return {"intent": baseline, "mode": mode, "warnings": warnings}
 
     def search(state: WorkflowState):
+        catalog, scope = state["catalog"], {}
+        if catalog_resolver is not None:
+            catalog, scope = catalog_resolver(
+                state["intent"], state["request"]["query"], state["feedback"]
+            )
         if settings.retrieval_mode == "keyword_baseline":
             candidates = retrieve(
-                state["catalog"], state["intent"], state["request"]["query"], state["feedback"]
+                catalog, state["intent"], state["request"]["query"], state["feedback"]
             )
             metadata, warnings = {"retrieval": "keyword_baseline"}, []
         else:
             candidates, metadata, warnings = search_catalog(
-                state["catalog"],
+                catalog,
                 state["intent"],
                 state["request"]["query"],
                 state["feedback"],
                 settings,
                 semantic_resolver=semantic_resolver,
             )
-        actual_intent = {**state["intent"], **metadata}
+        actual_intent = {**state["intent"], **metadata, **scope}
+        if scope.get("candidate_source") == "sql_postings":
+            warnings.append(
+                f"从 {scope['eligible_corpus_size']} 款有效资料以词项索引召回 {len(catalog)} 款候选再排序；不是全库向量召回，可能遗漏候选。"
+            )
         progress(
             "retrieve",
-            f"已从 {len(state['catalog'])} 款目录游戏中检索候选",
+            f"已从 {len(catalog)} 款目录游戏中检索候选",
             {"intent": actual_intent},
         )
         return {

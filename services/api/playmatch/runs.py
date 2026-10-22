@@ -13,7 +13,8 @@ from copy import deepcopy
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
-from playmatch.models import FeedbackRecord, GameRecord
+from playmatch.candidate_search import CatalogChanged, catalog_context, shortlist
+from playmatch.models import FeedbackRecord
 from playmatch.run_queue import (  # re-export stable API imports
     CHECKPOINT_VERSION,
     Claim,
@@ -42,6 +43,7 @@ MAX_CHECKPOINT_BYTES = 8 * 1024 * 1024
 # Public metadata only. A key rotation must not invalidate an otherwise same model.
 POLICY_FIELDS = (
     "retrieval_mode",
+    "retrieval_candidate_limit",
     "embedding_base_url",
     "embedding_model",
     "embedding_revision",
@@ -63,6 +65,10 @@ def context_hash(state: dict, settings) -> str:
     return hash_json(
         {
             "catalog": state["catalog"],
+            "catalog_context": state.get("catalog_context")
+            if (state.get("catalog_context") or {}).get("eligible_count", 0)
+            > settings.retrieval_candidate_limit
+            else None,
             "feedback": state["feedback"],
             "request": state["request"],
             "policy": {k: getattr(settings, k) for k in POLICY_FIELDS},
@@ -135,12 +141,11 @@ def execute_claim(database, settings, claim: Claim, *, stop_event=None) -> None:
     try:
         with database.sessions() as session, session.begin():
             record = owned(session, claim)
+            catalog, catalog_version = catalog_context(session, settings.retrieval_candidate_limit)
             initial = {
                 "request": deepcopy(record.request_payload),
-                "catalog": [
-                    deepcopy(game.payload)
-                    for game in session.scalars(select(GameRecord).order_by(GameRecord.id))
-                ],
+                "catalog": catalog,
+                "catalog_context": catalog_version,
                 "feedback": [
                     {"game_id": row.game_id, "kind": row.kind}
                     for row in session.scalars(
@@ -173,10 +178,22 @@ def execute_claim(database, settings, claim: Claim, *, stop_event=None) -> None:
             check_active()
             queue.event(claim, stage, message, updates)
 
+        def candidate_resolver(intent, query, feedback):
+            with database.sessions() as session:
+                return shortlist(
+                    session,
+                    intent,
+                    query,
+                    feedback,
+                    settings.retrieval_candidate_limit,
+                    expected_revision=catalog_version["revision"],
+                )
+
         graph = build_graph(
             settings,
             progress,
             resume_after=stage,
+            catalog_resolver=candidate_resolver,
             semantic_resolver=lambda catalog, query: search_index(
                 database, settings, catalog, query
             ),
@@ -195,6 +212,8 @@ def execute_claim(database, settings, claim: Claim, *, stop_event=None) -> None:
                 # Budget is never a resumable checkpoint: re-query prices after
                 # interruption. Explain and terminal events commit atomically below.
         queue.complete(claim, state)
+    except CatalogChanged:
+        queue.abandon(claim)  # Next attempt hashes the new metadata revision.
     except LeaseLost:
         pass  # Never let an old attempt publish or alter its successor.
     except SQLAlchemyError:
