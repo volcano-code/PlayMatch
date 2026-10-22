@@ -1,0 +1,72 @@
+name: V08 source handoff (not test validation)
+on:
+  push:
+    branches: ['workbench/v08-stage']
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Verify exact product tree and export Git objects only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, json, lzma, os, subprocess, urllib.request
+          from pathlib import Path
+          repo = 'volcano-code/PlayMatch'
+          assert os.environ['GITHUB_REPOSITORY'] == repo
+          evidence = Path(os.environ['RUNNER_TEMP']) / 'v08-source'
+          evidence.mkdir()
+          encoded = ''.join(Path(f'.handoff/v08/{i}.b64').read_text() for i in range(4))
+          patch = lzma.decompress(base64.b64decode(encoded, validate=True))
+          assert hashlib.sha256(patch).hexdigest() == '0334aa15f42b3da40979aeabd4b932ea713d8708eea6db52fefb85b5442f46ab'
+          path = evidence / 'candidate.patch'
+          path.write_bytes(patch)
+          subprocess.run(['git', 'reset', '--hard', '221e9f27f1033609638546bc830037d43b0c065a'], check=True)
+          subprocess.run(['git', 'apply', '--index', str(path)], check=True)
+          def git(*args):
+              return subprocess.check_output(['git', *args]).decode().strip()
+          tree = git('write-tree')
+          assert tree == '5348612d5b9ce46c2e6886d8f5d2bb8b53e3a674', tree
+          entries = []
+          for line in git('diff', '--cached', '--name-status', '--no-renames').splitlines():
+              status, path = line.split('\t', 1)
+              assert not path.endswith(('.env', '.db', '.sqlite', '.pem'))
+              assert not path.startswith(('.state/', '.handoff/', 'node_modules/'))
+              if status == 'D':
+                  entries.append({'path': path, 'mode': '100644', 'type': 'blob', 'sha': None})
+                  continue
+              mode = git('ls-files', '-s', '--', path).split()[0]
+              content = Path(path).read_bytes()
+              assert mode in ('100644', '100755') and len(content) < 500000
+              request = urllib.request.Request('https://api.github.com/repos/' + repo + '/git/blobs',
+                  data=json.dumps({'encoding': 'base64', 'content': base64.b64encode(content).decode()}).encode(), method='POST',
+                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json'})
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  blob = json.load(response)
+              assert blob['sha'] == git('hash-object', path)
+              entries.append({'path': path, 'mode': mode, 'type': 'blob', 'sha': blob['sha']})
+          subprocess.run(['git', 'diff', '--exit-code'], check=True)
+          subprocess.run(['git', 'archive', '--format=zip', tree, '-o', str(evidence / 'source.zip')], check=True)
+          result = {'tree_sha': tree, 'parent_sha': git('rev-parse', 'HEAD'),
+                    'base_tree_sha': git('rev-parse', 'HEAD^{tree}'), 'entries': entries,
+                    'validation': 'source transport only; formal PR CI must run'}
+          (evidence / 'candidate.json').write_text(json.dumps(result, indent=2))
+          (evidence / 'source.sha256').write_text(hashlib.sha256((evidence / 'source.zip').read_bytes()).hexdigest())
+          print(json.dumps(result))
+          PY
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: v08-source-${{ github.sha }}
+          path: ${{ runner.temp }}/v08-source/
+          retention-days: 14
