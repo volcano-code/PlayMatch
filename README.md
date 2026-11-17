@@ -138,6 +138,21 @@ Steam worker 负责身份发现；IGDB worker 负责对已发现身份进行资�
 
 **配置完成不等于同步成功。** 至少完成一次真实 full sync 和后续 incremental sync，并检查实际发现数量、补全成功/拒绝/待处理数量及来源时间，才能报告真实覆盖。不要把 10 万身份或 1 万资料的合成容量测试当作真实上游数据。
 
+## Steam / IGDB 接入预检
+
+在配置真实凭证前，可以先执行只读预检。它不会请求 Steam/IGDB、启动 worker 或修改数据库，也不会输出密钥：
+
+```bash
+uv run python scripts/check_ingestion_readiness.py
+# API 启动并完成迁移后，读取运行状态：
+uv run python scripts/check_ingestion_readiness.py --api-base-url http://127.0.0.1:8000
+# 部署验收时可启用严格门禁：
+uv run python scripts/check_ingestion_readiness.py --require-steam --require-metadata
+uv run python scripts/check_ingestion_readiness.py --api-base-url http://127.0.0.1:8000 --require-api --require-steam-full-sync --require-metadata-success
+```
+
+报告会区分“已配置”与“已完成真实同步”。详细字段、严格门禁和安全边界见 [ingestion-readiness-v09.md](docs/ingestion-readiness-v09.md)。
+
 ## 用户主动触发的价格提醒
 
 CheapShark 不需要 API Key。用户登录后可在收藏中设置 US/USD 目标价、阅读并同意授权说明、开启一次性规则，再主动点击“查价并检查提醒”。符合条件的观测结果会进入站内通知中心。收藏、普通报价查询和页面刷新不会自动开启提醒；没有持续后台抓价或外部邮件投递。
