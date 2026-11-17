@@ -16,6 +16,7 @@ This increment adds a read-only operator preflight for the existing v0.7 Steam i
 - The command never contacts Steam or IGDB, starts workers, mutates the database, or initiates ingestion.
 - Unit tests cover disabled/missing/complete configuration, secret redaction, status payload allow-listing, HTTP failures, unsafe API origins, and strict runtime evidence gates.
 - README and deployment documentation include the preflight procedure.
+- CI runs the configuration-only CLI without credentials or external network access.
 
 ## Commands
 
@@ -26,9 +27,23 @@ uv run python scripts/check_ingestion_readiness.py --require-steam --require-met
 uv run python scripts/check_ingestion_readiness.py --api-base-url http://127.0.0.1:8000 --require-api --require-steam-full-sync --require-metadata-success
 ```
 
-## Validation status
+## Validation
 
-The new tests and offline CLI smoke are wired into the repository CI. Their result is pending the final workflow run for this branch. No local test run is claimed in this record.
+Final GitHub Actions run: [44105062763](https://github.com/volcano-code/PlayMatch/actions/runs/44105062763), commit `0b500ced8fee1c8a9e6ae36ae129b63c66d9baac`.
+
+- Ruff lint: passed.
+- Ruff format check: passed.
+- Full Python suite: **392 passed**.
+- Configuration-only preflight CLI and JSON schema smoke: passed.
+- Existing recommendation evaluations and fixed catalog challenge: passed.
+- PostgreSQL catalog, index, durable-run, notification, Steam, and metadata suites: passed.
+- Synthetic Steam 100k identity and metadata 10k posting capacity smoke: passed; these are synthetic capacity checks, not live catalog coverage.
+- OpenAPI consistency and PostgreSQL migration/account persistence smoke: passed.
+- Frontend typecheck, formatting, unit tests, and production build: passed.
+- Playwright browser suite: **25 passed**.
+- Docker Compose configuration, container startup, same-origin API, independent worker, notification fixture, synthetic Steam and metadata HTTP integration: passed.
+
+The first CI attempt identified a missing `math` import and Ruff formatting differences in the new files. These were corrected; the final run above passed all three jobs. The failed attempt is retained in GitHub Actions history.
 
 ## Explicitly not claimed
 
