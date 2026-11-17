@@ -1,3 +1,11 @@
+# PlayMatch implementation contract and compatibility history
+
+> This document began as the v0.1 implementation contract. Its original API shapes and early assumptions are historical snapshots, not a complete description of the current v0.8 runtime. For current runtime behavior, use README.md, docs/deployment.md, the current OpenAPI export, and the v0.4–v0.8 stage documents. Do not implement against an early section without checking the later extension that supersedes it.
+
+Current implementation baseline: v0.8 (2026-10-22). The project uses Next.js/TypeScript, FastAPI/Pydantic/SQLAlchemy, LangGraph, SQLite for local quickstart, PostgreSQL in Compose, SQL-backed durable recommendation runs, and independent optional ingestion workers. See [validation-v08.md](validation-v08.md) for the recorded acceptance evidence and limits.
+
+---
+
 # PlayMatch implementation contract v0.1
 
 This is the first working release of the approved eight-week plan, not a claim that all milestones are complete.
