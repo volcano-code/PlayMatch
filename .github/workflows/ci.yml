@@ -44,6 +44,10 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest -q --junitxml=/tmp/python-results.xml
+      - name: Check ingestion preflight without external credentials or network
+        run: |
+          uv run python scripts/check_ingestion_readiness.py --config-only > /tmp/ingestion-readiness.json
+          uv run python -c "import json; p=json.load(open('/tmp/ingestion-readiness.json')); assert p['schema_version'] == 1 and p['does_not_verify_connectivity'] is True"
       - name: Check exploratory recommendation cases
         run: uv run python scripts/evaluate_recommendations.py --check
       - name: Check BM25 against the unchanged exploratory cases
