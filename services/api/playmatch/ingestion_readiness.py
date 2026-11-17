@@ -134,9 +134,9 @@ def _validate_api_base_url(base_url: str) -> str:
         raise ValueError("api_base_url_must_be_an_origin")
     if parsed.scheme == "http":
         try:
-            loopback = parsed.hostname == "localhost" or ipaddress.ip_address(
-                parsed.hostname
-            ).is_loopback
+            loopback = (
+                parsed.hostname == "localhost" or ipaddress.ip_address(parsed.hostname).is_loopback
+            )
         except ValueError:
             loopback = False
         if not loopback:
@@ -157,10 +157,21 @@ def _allowlisted_payload(kind: str, payload: object) -> dict | None:
                 isinstance(k, str) and type(v) is int and v >= 0 for k, v in value.items()
             ):
                 result[key] = value
-        elif key in {"discovered_games", "with_recommendation_metadata", "metadata_pending",
-                     "pages_committed", "rows_seen_in_cycle", "cursor", "requests_today",
-                     "request_budget", "eligible_metadata", "automatic_metadata",
-                     "reserved_requests_today", "refresh_seconds", "retrieval_candidate_limit"}:
+        elif key in {
+            "discovered_games",
+            "with_recommendation_metadata",
+            "metadata_pending",
+            "pages_committed",
+            "rows_seen_in_cycle",
+            "cursor",
+            "requests_today",
+            "request_budget",
+            "eligible_metadata",
+            "automatic_metadata",
+            "reserved_requests_today",
+            "refresh_seconds",
+            "retrieval_candidate_limit",
+        }:
             if type(value) is int and value >= 0:
                 result[key] = value
         elif key in {"last_success_at", "last_full_success_at"}:
@@ -238,8 +249,7 @@ def requirements_satisfied(
 
     runtime = report.get("runtime", {}).get("endpoints", {})
     if require_api and not all(
-        runtime.get(name, {}).get("reachable") is True
-        for name in ("health", "steam", "metadata")
+        runtime.get(name, {}).get("reachable") is True for name in ("health", "steam", "metadata")
     ):
         return False
     if require_steam_full_sync:
