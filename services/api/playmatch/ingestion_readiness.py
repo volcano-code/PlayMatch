@@ -162,6 +162,9 @@ def _allowlisted_payload(kind: str, payload: object) -> dict | None:
                      "reserved_requests_today", "refresh_seconds", "retrieval_candidate_limit"}:
             if type(value) is int and value >= 0:
                 result[key] = value
+        elif key in {"last_success_at", "last_full_success_at"}:
+            if type(value) in {int, float} and math.isfinite(value) and value >= 0:
+                result[key] = value
         elif key in {"enabled", "configured", "worker_recent", "cycle_in_progress"}:
             if type(value) is bool:
                 result[key] = value
