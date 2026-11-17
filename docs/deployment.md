@@ -74,6 +74,22 @@ Steam 身份目录与推荐资料目录是两层数据。发现的 AppID/名称�
 
 价格能力仍是用户触发的 US/USD CheapShark 观测报价与一次性站内提醒，不是后台持续抓价、外部邮件或国区报价。价格/版本/激活不确定性必须保留。
 
+## Steam / IGDB 运行预检
+
+安装依赖后，先做不访问外网的配置检查：
+
+```bash
+uv run python scripts/check_ingestion_readiness.py
+```
+
+API 完成迁移并运行后，可额外读取实际 worker 和数据状态：
+
+```bash
+uv run python scripts/check_ingestion_readiness.py --api-base-url http://127.0.0.1:8000
+```
+
+严格部署门禁和报告字段见 [ingestion-readiness-v09.md](ingestion-readiness-v09.md)。该工具不会调用 Steam/IGDB，也不会执行同步；只有 status 接口报告已有 full-sync / enrichment 记录后，才能认为达到相应最低运行验收门槛。
+
 ## 公共部署前的必要工作
 
 公共部署还需要实际 HTTPS 入口、适当的限流层、数据库备份与恢复演练、邮箱验证和账户找回、监控告警、密钥轮换与安全审查。当前注册仅校验邮箱格式和唯一性。仓库提供可运行容器配置和 CI，不等于已完成生产运营或 SLA 验收。
