@@ -8,6 +8,7 @@ as proof that an upstream provider is reachable.
 from __future__ import annotations
 
 import ipaddress
+import math
 from urllib.parse import urlsplit
 
 import httpx
