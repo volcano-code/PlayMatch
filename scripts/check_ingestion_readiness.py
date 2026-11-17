@@ -37,11 +37,27 @@ def main(argv=None) -> int:
         action="store_true",
         help="Do not probe a running API, even when PLAYMATCH_API_BASE_URL is set",
     )
-    parser.add_argument("--require-steam", action="store_true", help="Require enabled Steam sync and a key")
-    parser.add_argument("--require-metadata", action="store_true", help="Require enabled IGDB enrichment and both credentials")
-    parser.add_argument("--require-api", action="store_true", help="Require all three PlayMatch status endpoints")
-    parser.add_argument("--require-steam-full-sync", action="store_true", help="Require runtime evidence of a completed full Steam sync")
-    parser.add_argument("--require-metadata-success", action="store_true", help="Require at least one successful automatic metadata record")
+    parser.add_argument(
+        "--require-steam", action="store_true", help="Require enabled Steam sync and a key"
+    )
+    parser.add_argument(
+        "--require-metadata",
+        action="store_true",
+        help="Require enabled IGDB enrichment and both credentials",
+    )
+    parser.add_argument(
+        "--require-api", action="store_true", help="Require all three PlayMatch status endpoints"
+    )
+    parser.add_argument(
+        "--require-steam-full-sync",
+        action="store_true",
+        help="Require runtime evidence of a completed full Steam sync",
+    )
+    parser.add_argument(
+        "--require-metadata-success",
+        action="store_true",
+        help="Require at least one successful automatic metadata record",
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -55,14 +71,18 @@ def main(argv=None) -> int:
                 "reason": "api_base_url_not_supplied_or_config_only",
             }
         print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
-        return 0 if requirements_satisfied(
-            report,
-            require_steam=args.require_steam,
-            require_metadata=args.require_metadata,
-            require_api=args.require_api,
-            require_steam_full_sync=args.require_steam_full_sync,
-            require_metadata_success=args.require_metadata_success,
-        ) else 2
+        return (
+            0
+            if requirements_satisfied(
+                report,
+                require_steam=args.require_steam,
+                require_metadata=args.require_metadata,
+                require_api=args.require_api,
+                require_steam_full_sync=args.require_steam_full_sync,
+                require_metadata_success=args.require_metadata_success,
+            )
+            else 2
+        )
     except (ValueError, OSError) as error:
         # Do not echo arbitrary exception text, which may contain user configuration.
         print(json.dumps({"error": type(error).__name__}), file=sys.stderr)
