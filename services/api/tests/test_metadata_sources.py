@@ -142,7 +142,12 @@ def test_rawg_client_requires_exact_steam_store_link():
     def handler(request):
         requests.append(request)
         if request.url.path == "/api/games":
-            return httpx.Response(200, json={"results": [rawg_payload(999)]})
+            return httpx.Response(200, json={"results": [{"id": 42, "name": "Dota 2"}]})
+        if request.url.path == "/api/games/42/stores":
+            return httpx.Response(
+                200,
+                json={"results": [{"url": "https://store.steampowered.com/app/999/"}]},
+            )
         raise AssertionError("detail endpoint must not be requested without exact link")
 
     async def call():
@@ -151,8 +156,8 @@ def test_rawg_client_requires_exact_steam_store_link():
             return await rawg.lookup_by_steam_id(570, "Dota 2")
 
     assert asyncio.run(call()) is None
-    assert len(requests) == 1
-    assert "fixture-secret" in requests[0].url.params["key"]
+    assert len(requests) == 2
+    assert all("fixture-secret" in request.url.params["key"] for request in requests)
 
 
 def test_rawg_detail_is_checked_again_after_search():
@@ -161,8 +166,13 @@ def test_rawg_detail_is_checked_again_after_search():
     def handler(request):
         calls.append(request)
         if request.url.path == "/api/games":
-            return httpx.Response(200, json={"results": [rawg_payload(570)]})
-        return httpx.Response(200, json=rawg_payload(999))
+            return httpx.Response(200, json={"results": [{"id": 42, "name": "Dota 2"}]})
+        if request.url.path == "/api/games/42/stores":
+            return httpx.Response(
+                200,
+                json={"results": [{"url": "https://store.steampowered.com/app/570/"}]},
+            )
+        return httpx.Response(200, json={**rawg_payload(570), "id": 999})
 
     async def call():
         async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
@@ -249,7 +259,7 @@ def test_metadata_worker_persists_steam_and_rawg_provenance_atomically(tmp_path)
             )
 
         class ProviderFixture:
-            request_reservation = 21
+            request_reservation = 51
 
             async def lookup_batch(self, appids):
                 assert appids == [570]
