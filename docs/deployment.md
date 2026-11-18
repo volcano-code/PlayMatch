@@ -1,6 +1,6 @@
 # 运行与部署说明
 
-本文描述当前 v0.8 代码基线。历史阶段的运行边界请以各阶段文档为准；不要将 v0.1 初始说明当作当前实现。
+本文描述 v0.8 核心运行基线及 v0.9 Steam-first 多数据源 Metadata 增量。历史阶段的运行边界请以各阶段文档为准；不要将 v0.1 初始说明当作当前实现。
 
 ## 本地默认
 
@@ -10,7 +10,7 @@ SQLite 与无模型配置适合快速体验。应用首次启动执行 Alembic �
 
 ## Docker Compose
 
-Compose 使用 PostgreSQL，启动 Web、API、独立推荐 worker 和数据库。只有 Web 端口绑定宿主机 loopback；API 与数据库保持在容器网络内。Steam 同步与 IGDB 补全为可选 profile，默认不启动。
+Compose 使用 PostgreSQL，启动 Web、API、独立推荐 worker 和数据库。只有 Web 端口绑定宿主机 loopback；API 与数据库保持在容器网络内。Steam 身份同步与 Metadata 补全为可选 profile，默认不启动。
 
 ```bash
 cp .env.example .env
@@ -20,14 +20,14 @@ docker compose ps
 docker compose logs -f api worker web
 ```
 
-启用真实 Steam 身份同步与 IGDB 自动补全前，先阅读 `steam-directory-v07.md` 和 `metadata-enrichment-v08.md`，在服务端环境配置 operator 自己申请的凭证，再显式启动：
+启用 Steam 身份同步与 Metadata 补全前，先阅读 `steam-directory-v07.md` 和 `multi-source-metadata-v09.md`。Steam 身份同步需要 operator 自己申请的 Steam Web API Key；默认 Metadata provider 使用 Steam Store AppDetails，不需要 IGDB/Twitch 认证，RAWG 是可选补充：
 
 ```bash
 docker compose --profile catalog-sync --profile metadata-enrichment up --build -d --wait
 docker compose logs -f catalog-sync metadata-enrichment
 ```
 
-两个采集服务默认关闭。配置凭证或启动 profile 不等于真实同步成功；必须通过状态接口确认最近成功批次、游标、待处理任务、失败和实际资料数量。不要将密钥提交 Git、发到聊天或放进 URL。
+两个采集服务默认关闭。配置凭证或启动 profile 不等于真实同步成功；必须通过状态接口确认最近成功批次、游标、待处理任务、失败和实际资料数量。Steam Store AppDetails 是未文档化的 best-effort 商店接口，不是官方 Steam Web API；RAWG Key 仅在后端使用，且必须遵守 RAWG 当前计划与署名/使用条款。不要将密钥提交 Git、发到聊天或放进 URL。
 
 `POSTGRES_PASSWORD` 的默认值仅用于本地开发；可换成随机的 URL 安全字符串，因为同一个值会放入数据库连接 URL。若修改 `WEB_PORT`，同时将 `ALLOWED_ORIGINS` 改成实际端口的 origin；否则跨站请求校验会拒绝注册、推荐等写操作。例如端口 3100 对应 `http://localhost:3100,http://127.0.0.1:3100`。
 
@@ -54,9 +54,11 @@ SSE 事件先写数据库，客户端按序读取；代理需要保留流式传�
 | `LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` | 可选兼容模型服务 |
 | `RETRIEVAL_MODE` | `keyword_baseline`、`bm25`、`hybrid` 或 `indexed_hybrid` |
 | `EMBEDDING_BASE_URL` / `EMBEDDING_MODEL` / `EMBEDDING_API_KEY` | 可选 embedding 服务 |
-| `IGDB_CLIENT_ID` / `IGDB_CLIENT_SECRET` | IGDB 自动资料补全服务端凭证 |
+| `METADATA_PROVIDER` | `steam_rawg`（默认）、`steam_store` 或可选 legacy `igdb` |
+| `RAWG_API_KEY` | 可选 RAWG 资料补充 Key；不配置时 Steam Store 主数据源仍可工作 |
+| `IGDB_CLIENT_ID` / `IGDB_CLIENT_SECRET` | 仅当 `METADATA_PROVIDER=igdb` 时需要的 legacy provider 凭证 |
 | `STEAM_WEB_API_KEY` / `STEAM_SYNC_ENABLED` | Steam 身份同步凭证和显式开关 |
-| `METADATA_ENRICHMENT_ENABLED` | IGDB 自动资料补全显式开关 |
+| `METADATA_ENRICHMENT_ENABLED` | Steam Store / RAWG / IGDB Metadata worker 显式开关 |
 | `RETRIEVAL_CANDIDATE_LIMIT` | 大目录 SQL 候选正文上限，默认 256 |
 | `API_INTERNAL_URL` | Next.js 服务端到 FastAPI 的固定地址 |
 | `PLAYMATCH_CATALOG_PATH` | 显式指定目录文件，供容器或包安装使用 |
@@ -74,7 +76,7 @@ Steam 身份目录与推荐资料目录是两层数据。发现的 AppID/名称�
 
 价格能力仍是用户触发的 US/USD CheapShark 观测报价与一次性站内提醒，不是后台持续抓价、外部邮件或国区报价。价格/版本/激活不确定性必须保留。
 
-## Steam / IGDB 运行预检
+## Steam / Metadata 运行预检
 
 安装依赖后，先做不访问外网的配置检查：
 
@@ -88,7 +90,7 @@ API 完成迁移并运行后，可额外读取实际 worker 和数据状态：
 uv run python scripts/check_ingestion_readiness.py --api-base-url http://127.0.0.1:8000
 ```
 
-严格部署门禁和报告字段见 [ingestion-readiness-v09.md](ingestion-readiness-v09.md)。该工具不会调用 Steam/IGDB，也不会执行同步；只有 status 接口报告已有 full-sync / enrichment 记录后，才能认为达到相应最低运行验收门槛。
+严格部署门禁和报告字段见 [ingestion-readiness-v09.md](ingestion-readiness-v09.md)。该工具不会调用 Steam、RAWG 或 IGDB，也不会执行同步；只有 status 接口报告已有 full-sync / enrichment 记录后，才能认为达到相应最低运行验收门槛。
 
 ## 公共部署前的必要工作
 
