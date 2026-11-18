@@ -174,3 +174,24 @@ def test_default_steam_rawg_provider_needs_no_igdb_or_rawg_credentials():
     assert report["metadata"]["state"] == "configured_not_probed"
     assert report["metadata"]["configured"] is True
     assert report["metadata"]["rawg_optional_supplement_configured"] is False
+
+
+
+def test_rawg_key_is_redacted_and_only_enabled_for_steam_rawg_mode():
+    settings = Settings(
+        _env_file=None,
+        metadata_enrichment_enabled=True,
+        metadata_provider="steam_rawg",
+        rawg_api_key="synthetic-rawg-secret",
+    )
+    report = build_config_report(settings)
+    assert report["metadata"]["rawg_optional_supplement_configured"] is True
+    assert "synthetic-rawg-secret" not in json.dumps(report)
+
+    disabled = Settings(
+        _env_file=None,
+        metadata_enrichment_enabled=True,
+        metadata_provider="steam_store",
+        rawg_api_key="synthetic-rawg-secret",
+    )
+    assert disabled.rawg_configured is False
