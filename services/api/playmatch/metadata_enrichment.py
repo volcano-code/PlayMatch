@@ -112,7 +112,10 @@ class MetadataEnricher:
                         job.attempts, job.last_error = 0, None
                         lock_catalog(session)
                         old_metadata = session.get(GameRecord, f"steam-{app.appid}")
-                        if old_metadata and old_metadata.metadata_origin in {"igdb_auto", "provider_auto"}:
+                        if old_metadata and old_metadata.metadata_origin in {
+                            "igdb_auto",
+                            "provider_auto",
+                        }:
                             old_metadata.recommendation_blocked = True
                 state.scan_cursor = apps[-1].appid if apps else 0
                 state.scan_due = now + (1 if apps else 600)
@@ -204,7 +207,9 @@ class MetadataEnricher:
                     succeeded = True
                     continue
                 provider_id = value["provider_id"]
-                has_multi_source_provenance = isinstance(value.get("sources"), list) and bool(value.get("sources"))
+                has_multi_source_provenance = isinstance(value.get("sources"), list) and bool(
+                    value.get("sources")
+                )
                 source_entries = value.get("sources")
                 if not has_multi_source_provenance:
                     source_entries = [
@@ -223,7 +228,9 @@ class MetadataEnricher:
                     and len(entry["content_hash"]) == 64
                     for entry in source_entries
                 )
-                if not valid_sources or len({entry["provider_id"] for entry in source_entries}) != len(source_entries):
+                if not valid_sources or len(
+                    {entry["provider_id"] for entry in source_entries}
+                ) != len(source_entries):
                     raise ValueError("Invalid metadata provenance")
                 conflict = any(
                     (existing := session.get(CatalogSource, entry["provider_id"])) is not None
@@ -239,11 +246,15 @@ class MetadataEnricher:
                     if record:
                         record.recommendation_blocked = True
                     continue
-                if not has_multi_source_provenance and job.provider_updated is not None and (
-                    value["updated_at"] < job.provider_updated
-                    or (
-                        value["updated_at"] == job.provider_updated
-                        and value["hash"] != job.provider_hash
+                if (
+                    not has_multi_source_provenance
+                    and job.provider_updated is not None
+                    and (
+                        value["updated_at"] < job.provider_updated
+                        or (
+                            value["updated_at"] == job.provider_updated
+                            and value["hash"] != job.provider_hash
+                        )
                     )
                 ):
                     job.status, job.last_error, job.available_at = (
@@ -271,7 +282,9 @@ class MetadataEnricher:
                     session.add(record)
                 else:
                     record.title, record.payload = payload["title"], payload
-                record.metadata_origin = "provider_auto" if has_multi_source_provenance else "igdb_auto"
+                record.metadata_origin = (
+                    "provider_auto" if has_multi_source_provenance else "igdb_auto"
+                )
                 record.metadata_valid_until = now + self.settings.metadata_refresh_seconds
                 record.recommendation_blocked = False
                 session.flush()  # Includes transactional postings via ORM hook.
@@ -298,7 +311,10 @@ class MetadataEnricher:
                     select(CatalogSource).where(CatalogSource.game_id == record.id)
                 )
                 for stale in stale_sources:
-                    if stale.provider_id.startswith(("steam-store:", "rawg:")) and stale.provider_id not in active_source_ids:
+                    if (
+                        stale.provider_id.startswith(("steam-store:", "rawg:"))
+                        and stale.provider_id not in active_source_ids
+                    ):
                         session.delete(stale)
                 job.provider_updated, job.provider_hash = value["updated_at"], value["hash"]
                 job.last_success, job.status, job.last_error, job.attempts = now, "ready", None, 0
