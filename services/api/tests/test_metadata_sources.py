@@ -94,7 +94,7 @@ def test_rawg_is_only_attached_when_exact_steam_store_url_matches():
     assert "Strategy" in value["payload"]["themes"]
     assert value["payload"]["horror"] == "yes"
     assert {row["provider_id"] for row in value["sources"]} == {"steam-store:570", "rawg:42"}
-    assert len([row for row in value["payload"]["evidence"] if "RAWG" in row["label"]]) == 2
+    assert len([row for row in value["payload"]["evidence"] if "RAWG" in row["label"]]) == 3
 
 
 def test_rawg_store_mapping_rejects_lookalike_and_untrusted_urls():
@@ -208,7 +208,7 @@ def test_rawg_detail_is_checked_again_after_search():
             return await rawg.lookup_by_steam_id(570, "Dota 2")
 
     assert asyncio.run(call()) is None
-    assert len(calls) == 2
+    assert len(calls) == 3
 
 
 def test_steam_rawg_provider_degrades_to_steam_if_rawg_unavailable():
