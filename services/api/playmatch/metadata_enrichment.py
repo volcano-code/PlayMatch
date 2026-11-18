@@ -204,8 +204,9 @@ class MetadataEnricher:
                     succeeded = True
                     continue
                 provider_id = value["provider_id"]
+                has_multi_source_provenance = isinstance(value.get("sources"), list) and bool(value.get("sources"))
                 source_entries = value.get("sources")
-                if not isinstance(source_entries, list) or not source_entries:
+                if not has_multi_source_provenance:
                     source_entries = [
                         {
                             "provider_id": provider_id,
@@ -238,7 +239,7 @@ class MetadataEnricher:
                     if record:
                         record.recommendation_blocked = True
                     continue
-                if not source_entries and job.provider_updated is not None and (
+                if not has_multi_source_provenance and job.provider_updated is not None and (
                     value["updated_at"] < job.provider_updated
                     or (
                         value["updated_at"] == job.provider_updated
@@ -270,6 +271,7 @@ class MetadataEnricher:
                     session.add(record)
                 else:
                     record.title, record.payload = payload["title"], payload
+                record.metadata_origin = "provider_auto" if has_multi_source_provenance else "igdb_auto"
                 record.metadata_valid_until = now + self.settings.metadata_refresh_seconds
                 record.recommendation_blocked = False
                 session.flush()  # Includes transactional postings via ORM hook.
