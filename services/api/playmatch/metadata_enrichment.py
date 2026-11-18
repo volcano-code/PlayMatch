@@ -313,7 +313,12 @@ class MetadataEnricher:
                 for stale in stale_sources:
                     if stale.provider_id not in active_source_ids:
                         session.delete(stale)
-                job.provider_updated, job.provider_hash = value["updated_at"], value["hash"]
+                if has_multi_source_provenance:
+                    # The Steam Store endpoint has no comparable source-modified timestamp.
+                    # Do not compare its observation epoch with a legacy IGDB source version.
+                    job.provider_updated, job.provider_hash = None, None
+                else:
+                    job.provider_updated, job.provider_hash = value["updated_at"], value["hash"]
                 job.last_success, job.status, job.last_error, job.attempts = now, "ready", None, 0
                 job.available_at = now + self.settings.metadata_refresh_seconds
                 succeeded = True
