@@ -1,4 +1,4 @@
-"""Safe, read-only readiness checks for optional Steam and IGDB ingestion.
+"""Safe, read-only readiness checks for Steam identity sync and selectable metadata providers.
 
 The report contains configuration presence and allow-listed runtime fields only.
 It never prints credentials, performs ingestion, or treats configured credentials
@@ -49,6 +49,8 @@ _RUNTIME_FIELDS = {
         "request_budget",
         "refresh_seconds",
         "retrieval_candidate_limit",
+        "metadata_provider",
+        "rawg_configured",
     ),
 }
 
@@ -72,7 +74,8 @@ def build_config_report(settings: Settings) -> dict:
     igdb_id_present = bool(settings.igdb_client_id.strip())
     igdb_secret_present = bool(settings.igdb_client_secret.strip())
     steam_configured = steam_key_present
-    metadata_configured = igdb_id_present and igdb_secret_present
+    rawg_key_present = _secret_present(settings.rawg_api_key)
+    metadata_configured = settings.metadata_configured
 
     return {
         "schema_version": 1,
@@ -92,10 +95,13 @@ def build_config_report(settings: Settings) -> dict:
             "state": _component_state(settings.metadata_enrichment_enabled, metadata_configured),
             "enabled": settings.metadata_enrichment_enabled,
             "configured": metadata_configured,
+            "provider": settings.metadata_provider,
             "credential_presence": {
-                "client_id": igdb_id_present,
-                "client_secret": igdb_secret_present,
+                "igdb_client_id": igdb_id_present,
+                "igdb_client_secret": igdb_secret_present,
+                "rawg_api_key": rawg_key_present,
             },
+            "rawg_optional_supplement_configured": rawg_key_present,
             "batch_size": settings.metadata_batch_size,
             "daily_request_budget": settings.metadata_daily_requests,
             "refresh_interval_seconds": settings.metadata_refresh_seconds,
@@ -177,7 +183,13 @@ def _allowlisted_payload(kind: str, payload: object) -> dict | None:
         elif key in {"last_success_at", "last_full_success_at"}:
             if type(value) in {int, float} and math.isfinite(value) and value >= 0:
                 result[key] = value
-        elif key in {"enabled", "configured", "worker_recent", "cycle_in_progress"}:
+        elif key in {
+            "enabled",
+            "configured",
+            "worker_recent",
+            "cycle_in_progress",
+            "rawg_configured",
+        }:
             if type(value) is bool:
                 result[key] = value
         elif value is None or isinstance(value, (str, bool)):

@@ -1,3 +1,5 @@
+> **历史阶段说明：** 本文记录 v0.8 的 IGDB 实现，不再代表当前默认 Metadata provider。v0.9 默认切换为 Steam Store AppDetails + 可选 RAWG 精确 Steam URL 补充；IGDB 适配器保留为可选 legacy provider。当前操作以 [multi-source-metadata-v09.md](multi-source-metadata-v09.md) 为准。
+
 # v0.8 — Automatic metadata and bounded recommendation retrieval
 
 This release connects Steam discovery identities to IGDB metadata and to the existing recommendation workflow. It does not claim that the current environment has acquired the live Steam library. No Steam/IGDB credentials were supplied for this increment; HTTP fixtures remain explicitly synthetic. The 48-game offline catalog and prior evaluation labels are unchanged.

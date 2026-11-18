@@ -18,7 +18,8 @@ def test_default_configuration_is_explicitly_disabled_and_redacted():
     assert report["does_not_verify_connectivity"] is True
     rendered = json.dumps(report)
     assert "steam_web_api_key" not in rendered
-    assert "igdb_client_secret" not in rendered
+    assert "rawg_api_key" in rendered
+    assert "igdb_client_secret" in rendered  # field name only; no credential value
 
 
 def test_enabled_integrations_without_credentials_are_blocked():
@@ -26,10 +27,12 @@ def test_enabled_integrations_without_credentials_are_blocked():
         _env_file=None,
         steam_sync_enabled=True,
         metadata_enrichment_enabled=True,
+        metadata_provider="igdb",
     )
     report = build_config_report(settings)
     assert report["steam"]["state"] == "missing_credentials"
     assert report["metadata"]["state"] == "missing_credentials"
+    assert report["metadata"]["provider"] == "igdb"
     assert not requirements_satisfied(report, require_steam=True)
     assert not requirements_satisfied(report, require_metadata=True)
 
@@ -40,6 +43,7 @@ def test_complete_credentials_are_reported_as_unprobed_not_healthy():
         steam_sync_enabled=True,
         steam_web_api_key="synthetic-steam-secret",
         metadata_enrichment_enabled=True,
+        metadata_provider="igdb",
         igdb_client_id="synthetic-client-id",
         igdb_client_secret="synthetic-client-secret",
         run_execution_mode="external",
@@ -47,6 +51,7 @@ def test_complete_credentials_are_reported_as_unprobed_not_healthy():
     report = build_config_report(settings)
     assert report["steam"]["state"] == "configured_not_probed"
     assert report["metadata"]["state"] == "configured_not_probed"
+    assert report["metadata"]["provider"] == "igdb"
     assert report["recommendation_execution"]["independent_worker_required"] is True
     assert requirements_satisfied(report, require_steam=True, require_metadata=True)
     rendered = json.dumps(report)
@@ -161,3 +166,32 @@ def test_live_acceptance_requirements_need_successful_runtime_evidence():
     )
     assert requirements_satisfied(report, require_steam_full_sync=True)
     assert requirements_satisfied(report, require_metadata_success=True)
+
+
+def test_default_steam_rawg_provider_needs_no_igdb_or_rawg_credentials():
+    settings = Settings(_env_file=None, metadata_enrichment_enabled=True)
+    report = build_config_report(settings)
+    assert report["metadata"]["provider"] == "steam_rawg"
+    assert report["metadata"]["state"] == "configured_not_probed"
+    assert report["metadata"]["configured"] is True
+    assert report["metadata"]["rawg_optional_supplement_configured"] is False
+
+
+def test_rawg_key_is_redacted_and_only_enabled_for_steam_rawg_mode():
+    settings = Settings(
+        _env_file=None,
+        metadata_enrichment_enabled=True,
+        metadata_provider="steam_rawg",
+        rawg_api_key="synthetic-rawg-secret",
+    )
+    report = build_config_report(settings)
+    assert report["metadata"]["rawg_optional_supplement_configured"] is True
+    assert "synthetic-rawg-secret" not in json.dumps(report)
+
+    disabled = Settings(
+        _env_file=None,
+        metadata_enrichment_enabled=True,
+        metadata_provider="steam_store",
+        rawg_api_key="synthetic-rawg-secret",
+    )
+    assert disabled.rawg_configured is False

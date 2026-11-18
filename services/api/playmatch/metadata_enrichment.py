@@ -1,7 +1,7 @@
 """Leased, budgeted automatic enrichment from discovered Steam identities.
 
 One batch per database, no network transaction, source fencing, and atomic
-metadata + lexical-index writes. It does not scrape Steam or call a language model.
+metadata + lexical-index writes. Provider-specific network work stays outside transactions.
 """
 
 from dataclasses import dataclass
@@ -64,6 +64,7 @@ def lock_catalog(session):
 class MetadataEnricher:
     def __init__(self, database, settings, client):
         self.database, self.settings, self.client = database, settings, client
+        self.request_reservation = getattr(client, "request_reservation", REQUEST_RESERVATION)
 
     def claim(self) -> EnrichmentClaim | None:
         if not self.settings.metadata_enrichment_enabled or not self.settings.metadata_configured:
@@ -111,7 +112,10 @@ class MetadataEnricher:
                         job.attempts, job.last_error = 0, None
                         lock_catalog(session)
                         old_metadata = session.get(GameRecord, f"steam-{app.appid}")
-                        if old_metadata and old_metadata.metadata_origin == "igdb_auto":
+                        if old_metadata and old_metadata.metadata_origin in {
+                            "igdb_auto",
+                            "provider_auto",
+                        }:
                             old_metadata.recommendation_blocked = True
                 state.scan_cursor = apps[-1].appid if apps else 0
                 state.scan_due = now + (1 if apps else 600)
@@ -122,7 +126,7 @@ class MetadataEnricher:
             if day != state.request_day:
                 state.request_day, state.reserved_requests = day, 0
             if (
-                state.reserved_requests + REQUEST_RESERVATION
+                state.reserved_requests + self.request_reservation
                 > self.settings.metadata_daily_requests
             ):
                 state.next_request_at, state.last_error = (
@@ -142,7 +146,7 @@ class MetadataEnricher:
             if not jobs:
                 return None
             state.lease_token, state.lease_until = token_hex(24), now + LEASE_SECONDS
-            state.reserved_requests += REQUEST_RESERVATION
+            state.reserved_requests += self.request_reservation
             state.next_request_at = now + 2
             identities = []
             for job in jobs:
@@ -181,7 +185,7 @@ class MetadataEnricher:
                 if source_hash(app) != expected:
                     job.source_hash, job.status, job.available_at = source_hash(app), "pending", now
                     job.last_error = "discovery_changed"
-                    if record and record.metadata_origin == "igdb_auto":
+                    if record and record.metadata_origin in {"igdb_auto", "provider_auto"}:
                         record.recommendation_blocked = True
                     continue
                 value = results[appid]
@@ -190,12 +194,12 @@ class MetadataEnricher:
                     job.status = "unmatched" if error == "unmatched" else "rejected"
                     job.last_error = error[:48]
                     job.available_at = now + RETRY_SECONDS
-                    if record and record.metadata_origin == "igdb_auto":
+                    if record and record.metadata_origin in {"igdb_auto", "provider_auto"}:
                         record.recommendation_blocked = True
                     continue
                 # Never overwrite curated/operator-imported records with automated data.
                 if record and (
-                    record.metadata_origin != "igdb_auto"
+                    record.metadata_origin not in {"igdb_auto", "provider_auto"}
                     or record.payload.get("metadata_status") == "curated"
                 ):
                     job.status, job.last_error, job.last_success = "preserved", None, now
@@ -203,13 +207,37 @@ class MetadataEnricher:
                     succeeded = True
                     continue
                 provider_id = value["provider_id"]
-                source = session.get(CatalogSource, provider_id)
-                owner = session.scalar(
-                    select(CatalogSource).where(CatalogSource.game_id == f"steam-{appid}")
+                has_multi_source_provenance = isinstance(value.get("sources"), list) and bool(
+                    value.get("sources")
                 )
-                if (source and source.game_id != f"steam-{appid}") or (
-                    owner and owner.provider_id != provider_id
-                ):
+                source_entries = value.get("sources")
+                if not has_multi_source_provenance:
+                    source_entries = [
+                        {
+                            "provider_id": provider_id,
+                            "observed_at": value["observed_at"],
+                            "content_hash": value["hash"],
+                        }
+                    ]
+                valid_sources = all(
+                    isinstance(entry, dict)
+                    and isinstance(entry.get("provider_id"), str)
+                    and 1 <= len(entry["provider_id"]) <= 40
+                    and isinstance(entry.get("observed_at"), str)
+                    and isinstance(entry.get("content_hash"), str)
+                    and len(entry["content_hash"]) == 64
+                    for entry in source_entries
+                )
+                if not valid_sources or len(
+                    {entry["provider_id"] for entry in source_entries}
+                ) != len(source_entries):
+                    raise ValueError("Invalid metadata provenance")
+                conflict = any(
+                    (existing := session.get(CatalogSource, entry["provider_id"])) is not None
+                    and existing.game_id != f"steam-{appid}"
+                    for entry in source_entries
+                )
+                if conflict:
                     job.status, job.last_error, job.available_at = (
                         "rejected",
                         "identity_conflict",
@@ -218,11 +246,15 @@ class MetadataEnricher:
                     if record:
                         record.recommendation_blocked = True
                     continue
-                if job.provider_updated is not None and (
-                    value["updated_at"] < job.provider_updated
-                    or (
-                        value["updated_at"] == job.provider_updated
-                        and value["hash"] != job.provider_hash
+                if (
+                    not has_multi_source_provenance
+                    and job.provider_updated is not None
+                    and (
+                        value["updated_at"] < job.provider_updated
+                        or (
+                            value["updated_at"] == job.provider_updated
+                            and value["hash"] != job.provider_hash
+                        )
                     )
                 ):
                     job.status, job.last_error, job.available_at = (
@@ -245,26 +277,48 @@ class MetadataEnricher:
                         id=payload["id"],
                         title=payload["title"],
                         payload=payload,
-                        metadata_origin="igdb_auto",
+                        metadata_origin="provider_auto" if value.get("sources") else "igdb_auto",
                     )
                     session.add(record)
                 else:
                     record.title, record.payload = payload["title"], payload
+                record.metadata_origin = (
+                    "provider_auto" if has_multi_source_provenance else "igdb_auto"
+                )
                 record.metadata_valid_until = now + self.settings.metadata_refresh_seconds
                 record.recommendation_blocked = False
                 session.flush()  # Includes transactional postings via ORM hook.
-                if source is None:
-                    session.add(
-                        CatalogSource(
-                            provider_id=provider_id,
-                            game_id=record.id,
-                            observed_at=value["observed_at"],
-                            content_hash=value["hash"],
+                active_source_ids = set()
+                for entry in source_entries:
+                    source_id = entry["provider_id"]
+                    active_source_ids.add(source_id)
+                    source = session.get(CatalogSource, source_id)
+                    if source is None:
+                        session.add(
+                            CatalogSource(
+                                provider_id=source_id,
+                                game_id=record.id,
+                                observed_at=entry["observed_at"],
+                                content_hash=entry["content_hash"],
+                            )
                         )
-                    )
+                    else:
+                        source.observed_at = entry["observed_at"]
+                        source.content_hash = entry["content_hash"]
+                # Provenance rows describe the sources in this normalized snapshot.
+                # Remove old provider receipts that no longer contribute to this record.
+                stale_sources = session.scalars(
+                    select(CatalogSource).where(CatalogSource.game_id == record.id)
+                )
+                for stale in stale_sources:
+                    if stale.provider_id not in active_source_ids:
+                        session.delete(stale)
+                if has_multi_source_provenance:
+                    # The Steam Store endpoint has no comparable source-modified timestamp.
+                    # Do not compare its observation epoch with a legacy IGDB source version.
+                    job.provider_updated, job.provider_hash = None, None
                 else:
-                    source.observed_at, source.content_hash = value["observed_at"], value["hash"]
-                job.provider_updated, job.provider_hash = value["updated_at"], value["hash"]
+                    job.provider_updated, job.provider_hash = value["updated_at"], value["hash"]
                 job.last_success, job.status, job.last_error, job.attempts = now, "ready", None, 0
                 job.available_at = now + self.settings.metadata_refresh_seconds
                 succeeded = True
@@ -310,7 +364,11 @@ class MetadataEnricher:
         if claim is None:
             return False
         try:
-            results = await lookup_batch(self.client, [i for i, _ in claim.identities])
+            appids = [i for i, _ in claim.identities]
+            if hasattr(self.client, "lookup_batch"):
+                results = await self.client.lookup_batch(appids)
+            else:
+                results = await lookup_batch(self.client, appids)
             self.apply(claim, results)
         except EnrichmentLeaseLost:
             return True
@@ -340,7 +398,7 @@ def enrichment_status(session, settings) -> dict:
     auto = session.scalar(
         select(func.count())
         .select_from(GameRecord)
-        .where(GameRecord.metadata_origin == "igdb_auto", *fresh)
+        .where(GameRecord.metadata_origin.in_(("igdb_auto", "provider_auto")), *fresh)
     )
     recent = state.heartbeat_at is not None and now - state.heartbeat_at < LEASE_SECONDS * 2
     status = (
@@ -375,6 +433,8 @@ def enrichment_status(session, settings) -> dict:
         "request_budget": settings.metadata_daily_requests,
         "refresh_seconds": settings.metadata_refresh_seconds,
         "retrieval_candidate_limit": settings.retrieval_candidate_limit,
+        "metadata_provider": settings.metadata_provider,
+        "rawg_configured": settings.rawg_configured,
         "notes": [
             "启用不等于已取得真实上游资料；未匹配或有歧义的 AppID 不自动生成简介。",
             "保留 IGDB 原文；中文主题为固定词表映射，不冒充完整中文翻译。",

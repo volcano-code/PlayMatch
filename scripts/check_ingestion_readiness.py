@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check Steam/IGDB ingestion configuration and optionally read runtime status.
+"""Check Steam catalog/metadata-provider configuration and optionally read runtime status.
 
 Examples:
   uv run python scripts/check_ingestion_readiness.py
@@ -43,7 +43,7 @@ def main(argv=None) -> int:
     parser.add_argument(
         "--require-metadata",
         action="store_true",
-        help="Require enabled IGDB enrichment and both credentials",
+        help="Require enabled and configured selected metadata provider",
     )
     parser.add_argument(
         "--require-api", action="store_true", help="Require all three PlayMatch status endpoints"

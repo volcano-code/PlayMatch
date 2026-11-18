@@ -1,6 +1,6 @@
 # PlayMatch
 
-> **当前实现基线：v0.8（2026-10-22）**。本仓库已经实现 Steam 游戏身份发现、IGDB 自动资料补全、SQL 词项候选召回、持久化推荐任务与用户主动触发的站内价格提醒。默认离线推荐资料为 48 款；真实 Steam/IGDB 全量同步需要部署者自行配置凭证并完成运行验收。当前能力和边界以本文及对应阶段验收文档为准。
+> **当前研发增量：v0.9 多数据源 Metadata Engine（建立在 v0.8 功能基线上）**。Steam AppID 身份目录、Steam Store 主资料源、可选 RAWG 精确身份补充、字段级证据和多来源 provenance 已进入实现与 CI 验收。默认离线推荐资料仍为 48 款；真实 Steam/RAWG 上游覆盖尚未在本开发环境执行。
 
 [![CI](https://github.com/volcano-code/PlayMatch/actions/workflows/ci.yml/badge.svg)](https://github.com/volcano-code/PlayMatch/actions/workflows/ci.yml)
 
@@ -26,18 +26,18 @@ PlayMatch 是一个中文全栈游戏发现与购买辅助 Agent。用户描述�
 | 个性化 | 收藏、目标价、喜好/不喜欢/已拥有反馈 |
 | 价格提醒 | 用户明确授权后的一次性 US/USD 查价与站内通知 |
 | Steam 目录 | 可选全量/增量身份发现、持久游标、失败续传和状态查询 |
-| IGDB 补全 | 可选按 Steam AppID 精确匹配的资料补全、来源记录、过期与冲突保护 |
+| Metadata Engine | Steam Store 主资料源；可选 RAWG 精确 Steam 链接补充；IGDB 保留为可选 legacy provider；多来源 provenance 与冲突保护 |
 | 工程验证 | Alembic、锁定依赖、OpenAPI 检查、Python/前端/Playwright 测试、PostgreSQL 与容器 CI |
 
 ## 数据和产品边界
 
-- **默认推荐资料目录是 48 款离线整理作品，不是 Steam 全库。** Steam 同步先建立 AppID/名称身份目录；只有 IGDB 匹配、PC/基础游戏和来源检查通过的资料才进入推荐资料表。
+- **默认推荐资料目录是 48 款离线整理作品，不是 Steam 全库。** Steam 官方身份同步先建立 AppID/名称目录；只有资料源返回的 AppID 精确匹配、PC/基础游戏和来源检查通过后，才进入推荐资料表。
 - **发现身份不等于可推荐资料。** 未补全、冲突或缺少证据的记录不会被编造成完整游戏条目。自动补全按 AppID 精确匹配，不以标题相似度兜底。
 - **大目录召回不是全库 ANN。** 当前大目录使用 SQL 倒排词项先召回有限候选，再执行现有排序与硬约束；词项不重合和候选截断仍可能漏掉结果。不能把合成容量测试当成真实覆盖率或推荐质量指标。
-- **中文与玩法标签保持保守。** IGDB 的语言记录只在符合平台及简体界面证据规则时作为正向证据；缺失不代表不支持。供应商原文简介不会冒充中文翻译。
+- **中文与玩法标签保持保守。** Steam Store 明确列出的简体中文支持可作为供应商正向证据；缺失仍为 unknown。合作模式只在商店明确列出 Online Co-op / Local Co-op 时赋值；不从缺失字段推断否定结论。
 - **价格只覆盖当前已接通的 US/USD CheapShark 观测报价。** 报价不保证版本、激活地区或结算资格等价，也不保证最低可购价；没有证据时保留未知，不将美元换算成国区人民币售价。
 - **价格提醒不是持续监控。** 用户需要明确开启一次性规则并主动点击“查价并检查提醒”；目前没有后台持续轮询或外部邮件投递。
-- **真实上游需要部署后验收。** 仓库没有 Steam/IGDB 凭证。HTTP fixture、合成数据和容量测试用于验证代码路径，不代表已经抓取真实全库或证明上游持续可用。
+- **真实上游需要部署后验收。** Steam Store AppDetails 是未文档化的 best-effort 商店接口，不是官方 Web API；RAWG 需要自行申请 API Key，且必须遵循其当前计划、署名和使用条款。HTTP fixture、合成数据和容量测试不代表已经抓取真实全库或证明上游持续可用。
 - **不是生产 SLA 声明。** 公开部署仍需自行完成 HTTPS、限流、邮箱验证/找回、备份恢复演练、监控和持续运行验收。
 
 ## 快速启动
@@ -53,7 +53,7 @@ cp .env.example .env
 docker compose up --build -d --wait
 ```
 
-打开 [http://localhost:3000](http://localhost:3000)。默认 Compose 启动 Web、API、PostgreSQL 和独立推荐 worker；Steam 同步与 IGDB 补全服务默认不启动。Web 端口只绑定宿主机 loopback，数据库不对宿主机公开。
+打开 [http://localhost:3000](http://localhost:3000)。默认 Compose 启动 Web、API、PostgreSQL 和独立推荐 worker；Steam 身份同步与 Metadata 补全服务默认不启动。Web 端口只绑定宿主机 loopback，数据库不对宿主机公开。
 
 ```bash
 docker compose logs -f api worker web
@@ -110,37 +110,51 @@ LLM_MODEL=your-supported-model
 
 检索模式与 LLM 意图解析相互独立。默认 `RETRIEVAL_MODE=bm25`，embedding/RRF 路径需要单独配置 embedding 服务；`indexed_hybrid` 还需要先由操作员构建兼容的持久索引。大目录的 SQL 倒排候选召回不应被描述为全库向量检索。索引操作和兼容性规则见 [catalog-index-v03.md](docs/catalog-index-v03.md)。
 
-## 启用 Steam 身份同步和 IGDB 资料补全
+## 启用 Steam 身份同步与多数据源 Metadata Engine
 
-这是可选的外部数据采集能力。先阅读 [Steam 同步说明](docs/steam-directory-v07.md) 和 [IGDB 自动资料补全说明](docs/metadata-enrichment-v08.md)，确认 API 使用权限、配额和运行成本。
+数据采集分成两个独立服务：
 
-在服务端 `.env` 配置由你自行申请的凭证（不要发送到聊天或提交 Git）：
+1. **Steam identity worker**：通过官方 IStoreService 身份目录同步 AppID 和名称，需要 Steam Web API Key。
+2. **Metadata worker**：默认使用 Steam Store AppDetails 作为主资料源；可选调用 RAWG 补充类型和标签，但只有 RAWG 结果包含与当前 Steam AppID 完全一致的 Steam 商店链接时才接受。IGDB 仍保留为可选 legacy provider，不再是默认前置条件。
+
+先阅读 [Steam 同步说明](docs/steam-directory-v07.md) 和 [多数据源 Metadata Engine 说明](docs/multi-source-metadata-v09.md)。
+
+服务端 `.env`：
 
 ```dotenv
+# Steam identity sync (official IStoreService)
 STEAM_WEB_API_KEY=your-steam-server-key
 STEAM_SYNC_ENABLED=true
-IGDB_CLIENT_ID=your-igdb-client-id
-IGDB_CLIENT_SECRET=your-igdb-client-secret
+
+# Metadata provider: steam_rawg (default), steam_store, or legacy igdb
+METADATA_PROVIDER=steam_rawg
 METADATA_ENRICHMENT_ENABLED=true
+
+# Optional RAWG supplement; Steam Store primary source works without this key
+RAWG_API_KEY=
 ```
 
-启动两个可选服务：
+启动服务：
 
 ```bash
 docker compose --profile catalog-sync --profile metadata-enrichment up --build -d --wait
 docker compose logs -f catalog-sync metadata-enrichment
 ```
 
-Steam worker 负责身份发现；IGDB worker 负责对已发现身份进行资料补全。两者都需要真实凭证、持续运行和配额配置。通过状态接口检查实际结果：
+如果暂时没有 Steam Web API Key，可先对已有 `steam_directory_apps` 记录运行 Metadata worker；Steam Store 主资料查询本身不需要 Steam API Key。要新增 Steam 身份，仍需启用 catalog-sync。
+
+RAWG 的免费计划条款目前要求非商业使用并在使用其数据/图片的页面署名和链接；若项目未来商业化，应先核实并取得适用商业授权。参见 [RAWG API 计划和条款](https://rawg.io/apidocs)。
+
+状态接口：
 
 - `GET /api/v1/catalog/steam/status`：Steam 身份发现、心跳、游标和失败状态。
-- `GET /api/v1/catalog/enrichment/status`：资料补全配置、成功批次、积压和可用资料情况。
+- `GET /api/v1/catalog/enrichment/status`：当前 provider、worker、成功批次、积压和可用资料情况。
 
-**配置完成不等于同步成功。** 至少完成一次真实 full sync 和后续 incremental sync，并检查实际发现数量、补全成功/拒绝/待处理数量及来源时间，才能报告真实覆盖。不要把 10 万身份或 1 万资料的合成容量测试当作真实上游数据。
+**配置完成不等于同步成功。** 先执行只读预检，再做一页 Steam 身份同步和一批 Metadata 补全，检查实际 AppID、来源记录、字段证据和拒绝原因。不要把合成容量测试当作真实上游覆盖。
 
-## Steam / IGDB 接入预检
+## Steam / Metadata 接入预检
 
-在配置真实凭证前，可以先执行只读预检。它不会请求 Steam/IGDB、启动 worker 或修改数据库，也不会输出密钥：
+在配置真实凭证前，可以先执行只读预检。它不会请求 Steam、RAWG 或 IGDB，启动 worker 或修改数据库，也不会输出密钥：
 
 ```bash
 uv run python scripts/check_ingestion_readiness.py
@@ -222,16 +236,18 @@ flowchart TD
 - [v0.5 价格提醒边界](docs/price-alerts-v05.md)
 - [v0.6 目录与评测说明](docs/catalog-evaluation-v06.md)
 - [v0.7 Steam 身份同步](docs/steam-directory-v07.md)
-- [v0.8 IGDB 自动补全](docs/metadata-enrichment-v08.md)
+- [v0.8 IGDB 自动补全（历史适配器）](docs/metadata-enrichment-v08.md)
+- [v0.9 多数据源 Metadata Engine](docs/multi-source-metadata-v09.md)
+- [v0.9 多数据源验收记录](docs/validation-v09-multi-source.md)
 - [阶段记录](docs/implementation-status.md)
 - [v0.8 验收记录](docs/validation-v08.md)
 
 ## 开发路线
 
-当前仓库功能基线为 v0.8。后续计划按以下顺序推进：
+当前核心产品基线为 v0.8，v0.9 正在推进多数据源 Metadata Engine。后续计划按以下顺序推进：
 
 1. **P0 工程基线对齐**：修复文档、运行模式、环境配置和验收说明之间的漂移。
-2. **P1 真实数据验收**：使用部署者自己的 Steam/IGDB 凭证完成真实小批量、全量及增量运行验收。
+2. **P1 真实数据验收**：先验收 Steam Store 小批量资料，再配置 RAWG Key 做精确链接补充；IGDB 仅作为可选 provider。
 3. **P2 推荐引擎升级**：在保留 BM25 基线的前提下，实验 Dense Retrieval、Reranker、多轮需求澄清和个性化排序。
 4. **P3 独立评测**：建立独立查询与人工标注集，报告检索/排序质量、硬约束违规、延迟与成本。
 5. **P4 产品化**：完善地区价格覆盖、监控、备份恢复、账号找回与生产部署。
