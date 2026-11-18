@@ -1,37 +1,25 @@
 # PlayMatch 阶段记录
 
-> 本文顶部为当前权威状态；下方历史阶段记录保留用于追溯，不能将早期版本的限制覆盖为当前实现。
+> 当前权威状态置顶；历史阶段记录保留供追溯。此增量已通过合成/离线 CI，不代表已执行真实外部数据同步。
 
-## 当前研发基线：v0.9 多数据源 Metadata Engine
+## 当前基线：v0.9 多数据源 Metadata Engine
 
-- P0 工程基线对齐：PR #15 的完整 CI 已通过；PR 仍待审查/合并。
-- P1 只读接入预检：PR #16 的完整 CI 已通过；PR 仍待审查/合并。
-- P1 多数据源增量：当前分支新增 Steam Store AppDetails 主资料源、可选 RAWG 精确 Steam 商店链接补充、统一 provider worker、字段级 evidence、多来源 provenance 和 migration 0008。该增量的 CI 尚待最终验收。
-- 默认 provider 为 `steam_rawg`：Steam Store 主查询不需要 IGDB/Twitch 2FA 或 RAWG Key；RAWG Key 可选，未配置时 Steam Store 数据仍可进入候选流程。IGDB 作为 `METADATA_PROVIDER=igdb` 的 legacy provider 保留。
-- Steam Store AppDetails 是未文档化的 best-effort 接口，不是官方 Valve Web API。它可能限流、变化或不可用；不能作为长期可用性承诺。
-- RAWG 只在搜索结果和详情结果均包含精确匹配当前 Steam AppID 的 Steam Store URL 时接受补充；不进行 title-only 身份匹配。RAWG 使用必须遵循其当前 API 计划、署名与用途条款。
-- 新增 migration 0008 允许同一游戏保存多个 CatalogSource provenance 记录。自动 Metadata 与 curated/manual 记录继续隔离；缺失字段保持 unknown。
-- 尚未提供真实 Steam Store / RAWG 凭证和线上调用结果；当前只进行确定性 HTTP fixture、数据库迁移与 CI 验收。真实覆盖率、匹配率、资料新鲜度和上游可用性仍未验证。
+- 默认 Metadata Provider 已从 IGDB-only 改为 `steam_rawg`：Steam Store AppDetails 为 best-effort 主资料源；RAWG 可选补充；IGDB 保留为 legacy 可选适配器。
+- Steam Store AppDetails 不需要 Twitch 2FA 或 metadata API key，但它是未文档化商店端点，不是官方承诺稳定的 Steam Web API。
+- RAWG 仅在其商店链接端点返回精确匹配当前 Steam AppID 的 HTTPS Steam Store URL 后才补充资料；不使用标题相似度确认身份。公开/商业使用前必须核对 RAWG 当前免费计划、署名及商业许可。
+- 新增 provider-neutral MetadataProvider 接口、字段级 evidence、多来源 CatalogSource provenance 和 migration 0008；人工/策展资料仍受保护。
+- 缺失的中文支持、合作模式、恐怖标签和平台事实继续保持 unknown，不推断负面结论。
+- CI 验收：Python 406 passed、Playwright 25 passed，三个 CI job（Python/PostgreSQL、Web/browser、containers）全部通过。详见 [v0.9 多数据源验收](validation-v09-multi-source.md) 和 [CI run 44321715823](https://github.com/volcano-code/PlayMatch/actions/runs/44321715823)。
+- 未完成：没有执行真实 Steam Store/RAWG/IGDB 外部请求；真实目录覆盖、字段命中率、供应商可用性和生产新鲜度 SLA 均未验证。默认策展推荐目录仍48款。
 
-## 当前实现能力边界
+## 下一步
 
-- 默认离线推荐资料仍为48款有来源记录的 PC 游戏，不是 Steam 全库。
-- Steam 官方 IStoreService 身份目录和 Steam Store AppDetails 资料接口是两条不同链路：前者需要 Steam Web API Key，后者当前使用 best-effort Store endpoint。
-- RAWG 是可选补充，不负责身份权威；无精确 Steam URL 映射就不补充。
-- 大目录推荐仍使用 SQL 倒排词项候选召回，不是全库 ANN。Dense Retrieval / Reranker 尚未完成。
-- 价格仍为用户主动触发的 US/USD CheapShark 观测报价和一次性站内提醒；无持续后台抓价、外部邮件或国区价格保证。
-- 生产运营尚未证明公开生产部署、HTTPS、邮箱验证/找回、备份恢复演练、监控告警和 SLA。
-
-## 后续计划（未完成，不得当作已交付）
-
-1. P1：完成 Steam Store / RAWG 真实小批量接入，检查字段质量、来源冲突、限流和预算；再扩大真实数据覆盖。
-2. P2：在 BM25 基线之上实验 Dense Retrieval、Hybrid Fusion、Reranker、多轮澄清和个性化排序。
-3. P3：建立独立查询与双人标注集，报告 Recall@K、MRR、nDCG@K、硬约束违规率、延迟和成本。
-4. P4：按真实用户授权与供应商许可完善地区价格、通知、监控、备份、账户找回和生产部署。
-
-## v0.8 历史验收摘要
-
-v0.8 的实现链路、测试范围、容量测试和未完成边界见 [validation-v08.md](validation-v08.md)。该报告明确：没有可用 Steam/IGDB 凭证，默认离线资料仍48款；10,000条合成资料和20万条词项、100,000条合成身份只用于容量冒烟，不是实际游戏覆盖、推荐召回率或生产 P95。
+1. P1.3：增加每个 Provider 的调用数、接受/拒绝原因、字段覆盖和耗时等只读质量指标。
+2. P1.4：提供安全的一批预览/试运行命令，先展示即将写入的记录和 provenance，再由操作员确认应用。
+3. P1.5：在操作者确认 Steam Store 非文档化端点风险后做小样本真实请求；RAWG 需另行配置 key 并核对许可。
+4. P2：以现有 BM25 为基线，做 Dense Retrieval、Reranker、多轮澄清和偏好排序对照实验。
+5. P3：独立标注、Recall@K/MRR/nDCG@K、硬约束违规率、延迟和成本。
+6. P4：生产部署、监控、备份恢复和地区价格能力。
 
 ---
 
