@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 import httpx
 from playmatch.config import Settings
@@ -229,7 +230,10 @@ def test_steam_rawg_provider_degrades_to_steam_if_rawg_unavailable():
 
 
 def test_migration_allows_multiple_provenance_sources_for_one_game(tmp_path):
-    db = Database("sqlite:///" + str(tmp_path / "multi-source.db"))
+    url = os.getenv("METADATA_SOURCES_TEST_DATABASE_URL")
+    if url and os.getenv("PLAYMATCH_ALLOW_DISPOSABLE_DB") != "yes":
+        raise RuntimeError("Explicit disposable database permission required")
+    db = Database(url or ("sqlite:///" + str(tmp_path / "multi-source.db")))
     try:
         db.migrate()
         with db.sessions() as session, session.begin():
