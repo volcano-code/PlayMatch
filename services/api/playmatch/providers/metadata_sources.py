@@ -265,7 +265,7 @@ def normalize_steam_app(
         }
     )
 
-    if rawg:
+    if rawg and rawg.get("_playmatch_verified_steam_appid") == appid:
         rawg_id = rawg.get("id")
         slug = rawg.get("slug")
         if (
@@ -508,6 +508,7 @@ class RAWGClient:
         detail = await self._get(f"/games/{matches[0]}", {})
         if detail.get("id") != matches[0]:
             return None
+        detail["_playmatch_verified_steam_appid"] = appid
         return detail
 
 
