@@ -52,7 +52,7 @@ def main():
     args = parser.parse_args()
     settings = Settings()
     if not settings.metadata_enrichment_enabled or not settings.metadata_configured:
-        parser.exit(2, "Metadata enrichment disabled or provider credentials missing.\\n")
+        parser.exit(2, "Metadata enrichment disabled or provider credentials missing.\n")
     try:
         asyncio.run(run(settings, args.once))
     except KeyboardInterrupt:
