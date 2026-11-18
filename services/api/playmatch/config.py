@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     llm_model: str = ""
     igdb_client_id: str = ""
     igdb_client_secret: str = Field(default="", repr=False)
+    rawg_api_key: SecretStr = SecretStr("")
+    metadata_provider: Literal["steam_rawg", "steam_store", "igdb"] = "steam_rawg"
     llm_timeout_seconds: float = Field(default=20, ge=1, le=60)
     run_workers: int = Field(default=2, ge=1, le=8)
     max_pending_runs: int = Field(default=24, ge=1, le=100)
@@ -50,7 +52,13 @@ class Settings(BaseSettings):
 
     @property
     def metadata_configured(self) -> bool:
+        if self.metadata_provider in {"steam_rawg", "steam_store"}:
+            return True
         return bool(self.igdb_client_id.strip() and self.igdb_client_secret.strip())
+
+    @property
+    def rawg_configured(self) -> bool:
+        return bool(self.rawg_api_key.get_secret_value().strip())
 
     @property
     def embedding_enabled(self) -> bool:
