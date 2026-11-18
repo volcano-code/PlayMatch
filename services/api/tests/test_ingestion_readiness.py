@@ -167,6 +167,7 @@ def test_live_acceptance_requirements_need_successful_runtime_evidence():
     assert requirements_satisfied(report, require_steam_full_sync=True)
     assert requirements_satisfied(report, require_metadata_success=True)
 
+
 def test_default_steam_rawg_provider_needs_no_igdb_or_rawg_credentials():
     settings = Settings(_env_file=None, metadata_enrichment_enabled=True)
     report = build_config_report(settings)
