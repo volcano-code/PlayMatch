@@ -160,6 +160,32 @@ def test_rawg_client_requires_exact_steam_store_link():
     assert all("fixture-secret" in request.url.params["key"] for request in requests)
 
 
+def test_rawg_client_accepts_only_exact_store_link_from_documented_endpoint():
+    calls = []
+
+    def handler(request):
+        calls.append(request.url.path)
+        if request.url.path == "/api/games":
+            return httpx.Response(200, json={"results": [{"id": 42, "name": "Dota 2"}]})
+        if request.url.path == "/api/games/42/stores":
+            return httpx.Response(
+                200,
+                json={"results": [{"url": "https://store.steampowered.com/app/570/"}]},
+            )
+        if request.url.path == "/api/games/42":
+            return httpx.Response(200, json={**rawg_payload(570), "id": 42})
+        raise AssertionError(request.url.path)
+
+    async def call():
+        async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+            rawg = RAWGClient("fixture-secret", client, spacing_seconds=0)
+            return await rawg.lookup_by_steam_id(570, "Dota 2")
+
+    result = asyncio.run(call())
+    assert result["id"] == 42
+    assert calls == ["/api/games", "/api/games/42/stores", "/api/games/42"]
+
+
 def test_rawg_detail_is_checked_again_after_search():
     calls = []
 
