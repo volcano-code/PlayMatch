@@ -179,6 +179,7 @@ def test_rawg_client_accepts_only_exact_store_link_from_documented_endpoint():
 
     result = asyncio.run(call())
     assert result["id"] == 42
+    assert result["_playmatch_verified_steam_appid"] == 570
     assert calls == ["/api/games", "/api/games/42/stores", "/api/games/42"]
 
 
