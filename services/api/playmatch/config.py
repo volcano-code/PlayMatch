@@ -46,7 +46,7 @@ class Settings(BaseSettings):
 
     metadata_enrichment_enabled: bool = False
     metadata_batch_size: int = Field(default=10, ge=1, le=10)
-    metadata_daily_requests: int = Field(default=1000, ge=6, le=10000)
+    metadata_daily_requests: int = Field(default=600, ge=6, le=10000)
     metadata_refresh_seconds: int = Field(default=604800, ge=3600, le=2592000)
     retrieval_candidate_limit: int = Field(default=256, ge=32, le=512)
 
