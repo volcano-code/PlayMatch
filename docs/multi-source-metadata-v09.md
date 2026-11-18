@@ -53,5 +53,5 @@ RAWG search result candidates and detail responses are both rechecked for the ex
 - Store categories and supported-language text are supplier statements; they are not independent QA or game-client inspection.
 - RAWG tags/genres may be incomplete and do not establish language or co-op support.
 - Developer/publisher/release-date fields are not yet added to the public Game schema in this increment.
-- RAWG request volume is higher than Steam-only mode. The worker reserves up to 21 request units per batch when RAWG is enabled; size budgets accordingly.
+- RAWG request volume is higher than Steam-only mode. The worker reserves up to 51 request units per batch when RAWG is enabled (one search plus up to three store-link lookups and one detail request per game, plus the Steam batch); size budgets accordingly. RAWG game-list summaries do not guarantee store links, so the implementation verifies identity through the documented per-game store-links endpoint.
 - No live provider credentials or network calls are used by CI. A successful fixture run does not prove current upstream availability or real catalog coverage.
