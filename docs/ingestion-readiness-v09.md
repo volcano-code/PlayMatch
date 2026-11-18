@@ -1,3 +1,5 @@
+> **v0.9 provider update:** the default Metadata provider is now `steam_rawg`. Steam Store AppDetails is the primary best-effort source and needs no IGDB/Twitch credential; RAWG is an optional exact-Steam-link supplement. `METADATA_PROVIDER=igdb` selects the legacy IGDB adapter and requires the two IGDB credentials. The readiness report includes the selected provider and RAWG-key presence without exposing secret values. See [multi-source-metadata-v09.md](multi-source-metadata-v09.md).
+
 # Steam / IGDB ingestion preflight (v0.9 P1)
 
 The v0.8 ingestion workers are opt-in and require operator-owned credentials. This preflight makes the distinction between configuration, worker/runtime status, and completed data ingestion explicit.
