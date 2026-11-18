@@ -1,11 +1,9 @@
 import asyncio
-import json
 
 import httpx
-import pytest
+from playmatch.config import Settings
 from playmatch.database import Database
 from playmatch.metadata_enrichment import MetadataEnricher
-from playmatch.config import Settings
 from playmatch.models import CatalogSource, EnrichmentJob, GameRecord, SteamDirectoryApp
 from playmatch.providers.cheapshark import ProviderRequestError
 from playmatch.providers.metadata_sources import (
