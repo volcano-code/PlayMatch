@@ -10,7 +10,7 @@ from playmatch.config import Settings
 from playmatch.database import Database
 from playmatch.metadata_enrichment import EnrichmentLeaseLost, MetadataEnricher
 from playmatch.providers.igdb import IGDBClient
-from playmatch.providers.metadata_sources import SteamRawgMetadataProvider
+from playmatch.providers.metadata_sources import IGDBMetadataProvider, SteamRawgMetadataProvider
 
 
 async def run(settings, once):
@@ -20,7 +20,8 @@ async def run(settings, once):
             async with IGDBClient(
                 client_id=settings.igdb_client_id,
                 client_secret=settings.igdb_client_secret,
-            ) as provider:
+            ) as client:
+                provider = IGDBMetadataProvider(client)
                 worker = MetadataEnricher(db, settings, provider)
                 await _run_worker(worker, once)
         else:
