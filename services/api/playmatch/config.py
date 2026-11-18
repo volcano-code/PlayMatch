@@ -58,7 +58,9 @@ class Settings(BaseSettings):
 
     @property
     def rawg_configured(self) -> bool:
-        return bool(self.rawg_api_key.get_secret_value().strip())
+        return self.metadata_provider == "steam_rawg" and bool(
+            self.rawg_api_key.get_secret_value().strip()
+        )
 
     @property
     def embedding_enabled(self) -> bool:
