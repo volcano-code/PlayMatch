@@ -238,6 +238,7 @@ flowchart TD
 - [v0.7 Steam 身份同步](docs/steam-directory-v07.md)
 - [v0.8 IGDB 自动补全（历史适配器）](docs/metadata-enrichment-v08.md)
 - [v0.9 多数据源 Metadata Engine](docs/multi-source-metadata-v09.md)
+- [v0.9 多数据源验收记录](docs/validation-v09-multi-source.md)
 - [阶段记录](docs/implementation-status.md)
 - [v0.8 验收记录](docs/validation-v08.md)
 
