@@ -4,7 +4,9 @@ import json
 import httpx
 import pytest
 from playmatch.database import Database
-from playmatch.models import CatalogSource, GameRecord
+from playmatch.metadata_enrichment import MetadataEnricher
+from playmatch.config import Settings
+from playmatch.models import CatalogSource, EnrichmentJob, GameRecord, SteamDirectoryApp
 from playmatch.providers.cheapshark import ProviderRequestError
 from playmatch.providers.metadata_sources import (
     RAWGClient,
@@ -223,5 +225,60 @@ def test_migration_allows_multiple_provenance_sources_for_one_game(tmp_path):
         with db.sessions() as session:
             rows = session.query(CatalogSource).filter_by(game_id="steam-570").all()
             assert {row.provider_id for row in rows} == {"steam-store:570", "rawg:42"}
+    finally:
+        db.close()
+
+
+
+def test_metadata_worker_persists_steam_and_rawg_provenance_atomically(tmp_path):
+    db = Database("sqlite:///" + str(tmp_path / "metadata-worker.db"))
+    try:
+        db.migrate()
+        with db.sessions() as session, session.begin():
+            session.add(
+                SteamDirectoryApp(
+                    appid=570,
+                    name="Dota 2",
+                    name_normalized="dota 2",
+                    source_modified=100,
+                    price_change_number=1,
+                    first_seen=1,
+                    last_seen=1,
+                    full_generation=1,
+                )
+            )
+
+        class ProviderFixture:
+            request_reservation = 21
+
+            async def lookup_batch(self, appids):
+                assert appids == [570]
+                value, error = normalize_steam_app(
+                    steam_payload(),
+                    570,
+                    "2026-11-18T00:00:00+00:00",
+                    rawg=rawg_payload(),
+                )
+                assert error is None
+                return {570: value}
+
+        settings = Settings(
+            _env_file=None,
+            metadata_enrichment_enabled=True,
+            metadata_provider="steam_rawg",
+        )
+        worker = MetadataEnricher(db, settings, ProviderFixture())
+        assert asyncio.run(worker.tick())
+        with db.sessions() as session:
+            game = session.get(GameRecord, "steam-570")
+            job = session.get(EnrichmentJob, 570)
+            sources = session.query(CatalogSource).filter_by(game_id="steam-570").all()
+            assert game.metadata_origin == "provider_auto"
+            assert job.status == "ready"
+            assert {source.provider_id for source in sources} == {
+                "steam-store:570",
+                "rawg:42",
+            }
+            assert "MOBA" in game.payload["genres"]
     finally:
         db.close()
