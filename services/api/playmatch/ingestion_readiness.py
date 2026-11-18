@@ -1,4 +1,4 @@
-"""Safe, read-only readiness checks for optional Steam and IGDB ingestion.
+"""Safe, read-only readiness checks for Steam identity sync and selectable metadata providers.
 
 The report contains configuration presence and allow-listed runtime fields only.
 It never prints credentials, performs ingestion, or treats configured credentials
