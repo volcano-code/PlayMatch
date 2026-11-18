@@ -9,7 +9,7 @@
 - RAWG 仅在其商店链接端点返回精确匹配当前 Steam AppID 的 HTTPS Steam Store URL 后才补充资料；不使用标题相似度确认身份。公开/商业使用前必须核对 RAWG 当前免费计划、署名及商业许可。
 - 新增 provider-neutral MetadataProvider 接口、字段级 evidence、多来源 CatalogSource provenance 和 migration 0008；人工/策展资料仍受保护。
 - 缺失的中文支持、合作模式、恐怖标签和平台事实继续保持 unknown，不推断负面结论。
-- CI 验收：Python 406 passed、Playwright 25 passed，三个 CI job（Python/PostgreSQL、Web/browser、containers）全部通过。详见 [v0.9 多数据源验收](validation-v09-multi-source.md) 和 [CI run 44321715823](https://github.com/volcano-code/PlayMatch/actions/runs/44321715823)。
+- CI 验收：Python 406 passed、Playwright 25 passed，三个 CI job（Python/PostgreSQL、Web/browser、containers）全部通过。详见 [v0.9 多数据源验收](validation-v09-multi-source.md) 和 [最终 CI run 44323099466](https://github.com/volcano-code/PlayMatch/actions/runs/44323099466)。
 - 未完成：没有执行真实 Steam Store/RAWG/IGDB 外部请求；真实目录覆盖、字段命中率、供应商可用性和生产新鲜度 SLA 均未验证。默认策展推荐目录仍48款。
 
 ## 下一步
