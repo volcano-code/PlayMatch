@@ -87,19 +87,21 @@ def _steam_id_from_url(value: object) -> int | None:
 
 
 def _rawg_store_ids(result: dict) -> set[int]:
-    stores = result.get("stores")
-    if not isinstance(stores, list):
+    """Extract Steam AppIDs from either game-list links or /games/{id}/stores rows."""
+    rows = result.get("stores")
+    if not isinstance(rows, list):
+        rows = result.get("results")
+    if not isinstance(rows, list):
         return set()
     found = set()
-    for item in stores[:30]:
+    for item in rows[:30]:
         if not isinstance(item, dict):
             continue
         store = item.get("store")
         store_name = store.get("name", "") if isinstance(store, dict) else ""
-        if str(store_name).casefold() != "steam":
-            continue
-        appid = _steam_id_from_url(item.get("url"))
-        if appid is not None:
+        url = item.get("url")
+        appid = _steam_id_from_url(url)
+        if appid is not None and (not store_name or str(store_name).casefold() == "steam"):
             found.add(appid)
     return found
 
@@ -432,17 +434,22 @@ class RAWGClient:
         rows = search.get("results")
         if not isinstance(rows, list):
             return None
-        candidates = [
-            row for row in rows[:10]
-            if isinstance(row, dict) and appid in _rawg_store_ids(row)
-        ]
-        if len(candidates) != 1:
+        matches = []
+        # The RAWG games list does not guarantee store links in its summary objects.
+        # Resolve store links through the documented /games/{id}/stores endpoint.
+        for row in rows[:3]:
+            if not isinstance(row, dict):
+                continue
+            rawg_id = row.get("id")
+            if type(rawg_id) is not int or rawg_id <= 0:
+                continue
+            stores = await self._get(f"/games/{rawg_id}/stores", {"page_size": 20})
+            if appid in _rawg_store_ids(stores):
+                matches.append(rawg_id)
+        if len(matches) != 1:
             return None
-        rawg_id = candidates[0].get("id")
-        if type(rawg_id) is not int or rawg_id <= 0:
-            return None
-        detail = await self._get(f"/games/{rawg_id}", {})
-        if appid not in _rawg_store_ids(detail):
+        detail = await self._get(f"/games/{matches[0]}", {})
+        if detail.get("id") != matches[0]:
             return None
         return detail
 
@@ -461,7 +468,7 @@ class SteamRawgMetadataProvider:
         self.rawg = rawg_client or (RAWGClient(rawg_api_key) if rawg_api_key else None)
         self._owns_steam = steam_client is None
         self._owns_rawg = rawg_client is None and self.rawg is not None
-        self.request_reservation = 1 + (20 if self.rawg and self.rawg.configured else 0)
+        self.request_reservation = 1 + (50 if self.rawg and self.rawg.configured else 0)
 
     async def __aenter__(self):
         if self._owns_steam:
