@@ -177,7 +177,6 @@ def test_default_steam_rawg_provider_needs_no_igdb_or_rawg_credentials():
     assert report["metadata"]["rawg_optional_supplement_configured"] is False
 
 
-
 def test_rawg_key_is_redacted_and_only_enabled_for_steam_rawg_mode():
     settings = Settings(
         _env_file=None,
