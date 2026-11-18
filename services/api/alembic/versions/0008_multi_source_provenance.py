@@ -28,9 +28,7 @@ def upgrade():
 def downgrade():
     bind = op.get_bind()
     duplicates = bind.execute(
-        sa.text(
-            "SELECT game_id FROM catalog_sources GROUP BY game_id HAVING COUNT(*) > 1 LIMIT 1"
-        )
+        sa.text("SELECT game_id FROM catalog_sources GROUP BY game_id HAVING COUNT(*) > 1 LIMIT 1")
     ).first()
     if duplicates:
         raise RuntimeError("Cannot downgrade multi-source provenance with duplicate game_id rows")
