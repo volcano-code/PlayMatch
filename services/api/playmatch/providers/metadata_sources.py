@@ -8,12 +8,9 @@ No title-only match is ever used to attach RAWG metadata to a Steam identity.
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import html
-import json
 import re
 import time
-from collections.abc import Iterable
 from datetime import UTC, datetime
 from html.parser import HTMLParser
 from typing import Protocol
