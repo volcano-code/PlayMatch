@@ -305,16 +305,13 @@ class MetadataEnricher:
                     else:
                         source.observed_at = entry["observed_at"]
                         source.content_hash = entry["content_hash"]
-                # The Steam/RAWG source set describes this normalized snapshot.
-                # Remove stale optional-source receipts when a provider no longer matches.
+                # Provenance rows describe the sources in this normalized snapshot.
+                # Remove old provider receipts that no longer contribute to this record.
                 stale_sources = session.scalars(
                     select(CatalogSource).where(CatalogSource.game_id == record.id)
                 )
                 for stale in stale_sources:
-                    if (
-                        stale.provider_id.startswith(("steam-store:", "rawg:"))
-                        and stale.provider_id not in active_source_ids
-                    ):
+                    if stale.provider_id not in active_source_ids:
                         session.delete(stale)
                 job.provider_updated, job.provider_hash = value["updated_at"], value["hash"]
                 job.last_success, job.status, job.last_error, job.attempts = now, "ready", None, 0
