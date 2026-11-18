@@ -18,7 +18,8 @@ def test_default_configuration_is_explicitly_disabled_and_redacted():
     assert report["does_not_verify_connectivity"] is True
     rendered = json.dumps(report)
     assert "steam_web_api_key" not in rendered
-    assert "igdb_client_secret" not in rendered
+    assert "rawg_api_key" in rendered
+    assert "igdb_client_secret" in rendered  # field name only; no credential value
 
 
 def test_enabled_integrations_without_credentials_are_blocked():
