@@ -147,9 +147,11 @@ def normalize_steam_app(
     title = raw.get("name")
     if not isinstance(title, str) or not title.strip() or len(title) > 300:
         return None, "invalid_metadata"
-    description = plain_text(raw.get("about_the_game")) or plain_text(
-        raw.get("detailed_description")
-    ) or plain_text(raw.get("short_description"))
+    description = (
+        plain_text(raw.get("about_the_game"))
+        or plain_text(raw.get("detailed_description"))
+        or plain_text(raw.get("short_description"))
+    )
     if not description:
         return None, "missing_description"
 
@@ -176,21 +178,29 @@ def normalize_steam_app(
             image_url = ""
 
     genres_raw = raw.get("genres", [])
-    genres = [
-        item["description"].strip()
-        for item in genres_raw[:30]
-        if isinstance(item, dict)
-        and isinstance(item.get("description"), str)
-        and item["description"].strip()
-    ] if isinstance(genres_raw, list) else []
+    genres = (
+        [
+            item["description"].strip()
+            for item in genres_raw[:30]
+            if isinstance(item, dict)
+            and isinstance(item.get("description"), str)
+            and item["description"].strip()
+        ]
+        if isinstance(genres_raw, list)
+        else []
+    )
     categories_raw = raw.get("categories", [])
-    categories = [
-        item["description"].strip()
-        for item in categories_raw[:60]
-        if isinstance(item, dict)
-        and isinstance(item.get("description"), str)
-        and item["description"].strip()
-    ] if isinstance(categories_raw, list) else []
+    categories = (
+        [
+            item["description"].strip()
+            for item in categories_raw[:60]
+            if isinstance(item, dict)
+            and isinstance(item.get("description"), str)
+            and item["description"].strip()
+        ]
+        if isinstance(categories_raw, list)
+        else []
+    )
 
     themes = list(dict.fromkeys([*genres, *categories]))
     evidence = [
@@ -216,14 +226,20 @@ def normalize_steam_app(
     category_set = {value.casefold() for value in categories}
     if "online co-op" in category_set:
         coop = "online"
-        evidence.append(_evidence("coop", "Steam Store 明确列出 Online Co-op", store_url, observed_at))
+        evidence.append(
+            _evidence("coop", "Steam Store 明确列出 Online Co-op", store_url, observed_at)
+        )
     elif category_set.intersection({"local co-op", "shared/split screen co-op"}):
         coop = "local"
-        evidence.append(_evidence("coop", "Steam Store 明确列出本地合作分类", store_url, observed_at))
+        evidence.append(
+            _evidence("coop", "Steam Store 明确列出本地合作分类", store_url, observed_at)
+        )
 
     horror = "yes" if any(value.casefold() == "horror" for value in genres) else "unknown"
     if horror == "yes":
-        evidence.append(_evidence("horror", "Steam Store 明确列出 Horror 类型", store_url, observed_at))
+        evidence.append(
+            _evidence("horror", "Steam Store 明确列出 Horror 类型", store_url, observed_at)
+        )
 
     sources = []
     steam_hash = digest(
@@ -248,22 +264,35 @@ def normalize_steam_app(
     if rawg:
         rawg_id = rawg.get("id")
         slug = rawg.get("slug")
-        if type(rawg_id) is int and rawg_id > 0 and isinstance(slug, str) and _RAWG_SLUG.fullmatch(slug):
+        if (
+            type(rawg_id) is int
+            and rawg_id > 0
+            and isinstance(slug, str)
+            and _RAWG_SLUG.fullmatch(slug)
+        ):
             rawg_url = f"https://rawg.io/games/{slug}"
-            rawg_genres = [
-                item["name"].strip()
-                for item in rawg.get("genres", [])[:30]
-                if isinstance(item, dict)
-                and isinstance(item.get("name"), str)
-                and item["name"].strip()
-            ] if isinstance(rawg.get("genres"), list) else []
-            rawg_tags = [
-                item["name"].strip()
-                for item in rawg.get("tags", [])[:60]
-                if isinstance(item, dict)
-                and isinstance(item.get("name"), str)
-                and item["name"].strip()
-            ] if isinstance(rawg.get("tags"), list) else []
+            rawg_genres = (
+                [
+                    item["name"].strip()
+                    for item in rawg.get("genres", [])[:30]
+                    if isinstance(item, dict)
+                    and isinstance(item.get("name"), str)
+                    and item["name"].strip()
+                ]
+                if isinstance(rawg.get("genres"), list)
+                else []
+            )
+            rawg_tags = (
+                [
+                    item["name"].strip()
+                    for item in rawg.get("tags", [])[:60]
+                    if isinstance(item, dict)
+                    and isinstance(item.get("name"), str)
+                    and item["name"].strip()
+                ]
+                if isinstance(rawg.get("tags"), list)
+                else []
+            )
             genres = list(dict.fromkeys([*genres, *rawg_genres]))
             themes = list(dict.fromkeys([*themes, *rawg_genres, *rawg_tags]))
             if horror == "unknown" and any(v.casefold() == "horror" for v in rawg_tags):
