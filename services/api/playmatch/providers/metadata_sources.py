@@ -302,12 +302,27 @@ def normalize_steam_app(
             if horror == "unknown" and any(v.casefold() == "horror" for v in rawg_tags):
                 horror = "yes"
                 evidence.append(
-                    _evidence("horror", "RAWG 精确 Steam 身份匹配记录标注 Horror 标签", rawg_url, observed_at)
+                    _evidence(
+                        "horror",
+                        "RAWG 精确 Steam 身份匹配记录标注 Horror 标签",
+                        rawg_url,
+                        observed_at,
+                    )
                 )
             evidence.extend(
                 [
-                    _evidence("themes", "RAWG 补充类型与标签；已核验 Steam 商店链接身份", rawg_url, observed_at),
-                    _evidence("metadata", "RAWG 补充游戏元数据；已核验 Steam 商店链接身份", rawg_url, observed_at),
+                    _evidence(
+                        "themes",
+                        "RAWG 补充类型与标签；已核验 Steam 商店链接身份",
+                        rawg_url,
+                        observed_at,
+                    ),
+                    _evidence(
+                        "metadata",
+                        "RAWG 补充游戏元数据；已核验 Steam 商店链接身份",
+                        rawg_url,
+                        observed_at,
+                    ),
                 ]
             )
             sources.append(
@@ -342,7 +357,9 @@ def normalize_steam_app(
     ).model_dump()
     semantic = {
         **payload,
-        "evidence": [{key: val for key, val in item.items() if key != "observed_at"} for item in evidence],
+        "evidence": [
+            {key: val for key, val in item.items() if key != "observed_at"} for item in evidence
+        ],
     }
     return {
         "payload": payload,
@@ -380,7 +397,11 @@ class SteamStoreClient:
         try:
             response = await self._client.get(
                 STEAM_APPDETAILS_URL,
-                params={"appids": ",".join(str(value) for value in appids), "l": "english", "cc": "us"},
+                params={
+                    "appids": ",".join(str(value) for value in appids),
+                    "l": "english",
+                    "cc": "us",
+                },
                 headers={"Accept": "application/json"},
                 timeout=10.0,
             )
@@ -554,7 +575,9 @@ class SteamRawgMetadataProvider:
             supplement = None
             if self.rawg and self.rawg.configured:
                 try:
-                    supplement = await self.rawg.lookup_by_steam_id(appid, str(data.get("name", "")))
+                    supplement = await self.rawg.lookup_by_steam_id(
+                        appid, str(data.get("name", ""))
+                    )
                 except ProviderRequestError:
                     # RAWG is optional: preserve a valid Steam record when the supplement is unavailable.
                     supplement = None
