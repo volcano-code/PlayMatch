@@ -3,6 +3,8 @@ import json
 
 import httpx
 import pytest
+from playmatch.database import Database
+from playmatch.models import CatalogSource, GameRecord
 from playmatch.providers.cheapshark import ProviderRequestError
 from playmatch.providers.metadata_sources import (
     RAWGClient,
@@ -186,3 +188,40 @@ def test_steam_rawg_provider_degrades_to_steam_if_rawg_unavailable():
     result = asyncio.run(provider.lookup_batch([570]))[570]
     assert result["payload"]["title"] == "Dota 2"
     assert {row["provider_id"] for row in result["sources"]} == {"steam-store:570"}
+
+
+
+def test_migration_allows_multiple_provenance_sources_for_one_game(tmp_path):
+    db = Database("sqlite:///" + str(tmp_path / "multi-source.db"))
+    try:
+        db.migrate()
+        with db.sessions() as session, session.begin():
+            session.add(
+                GameRecord(
+                    id="steam-570",
+                    title="Dota 2",
+                    payload={"id": "steam-570", "title": "Dota 2"},
+                )
+            )
+            session.flush()
+            session.add_all(
+                [
+                    CatalogSource(
+                        provider_id="steam-store:570",
+                        game_id="steam-570",
+                        observed_at="2026-11-18T00:00:00+00:00",
+                        content_hash="a" * 64,
+                    ),
+                    CatalogSource(
+                        provider_id="rawg:42",
+                        game_id="steam-570",
+                        observed_at="2026-11-18T00:00:00+00:00",
+                        content_hash="b" * 64,
+                    ),
+                ]
+            )
+        with db.sessions() as session:
+            rows = session.query(CatalogSource).filter_by(game_id="steam-570").all()
+            assert {row.provider_id for row in rows} == {"steam-store:570", "rawg:42"}
+    finally:
+        db.close()
