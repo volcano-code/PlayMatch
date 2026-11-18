@@ -83,9 +83,7 @@ def test_steam_normalizer_rejects_non_games_non_pc_and_identity_mismatch():
 
 def test_rawg_is_only_attached_when_exact_steam_store_url_matches():
     observed = "2026-11-18T00:00:00+00:00"
-    value, error = normalize_steam_app(
-        steam_payload(), 570, observed, rawg=rawg_payload()
-    )
+    value, error = normalize_steam_app(steam_payload(), 570, observed, rawg=rawg_payload())
     assert error is None
     assert "MOBA" in value["payload"]["genres"]
     assert "Strategy" in value["payload"]["themes"]
@@ -218,9 +216,7 @@ def test_steam_rawg_provider_degrades_to_steam_if_rawg_unavailable():
         async def lookup_by_steam_id(self, appid, title):
             raise ProviderRequestError("rate_limited")
 
-    provider = SteamRawgMetadataProvider(
-        steam_client=SteamFixture(), rawg_client=RawgFixture()
-    )
+    provider = SteamRawgMetadataProvider(steam_client=SteamFixture(), rawg_client=RawgFixture())
     result = asyncio.run(provider.lookup_batch([570]))[570]
     assert result["payload"]["title"] == "Dota 2"
     assert {row["provider_id"] for row in result["sources"]} == {"steam-store:570"}
