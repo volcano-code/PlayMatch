@@ -16,6 +16,7 @@ import time
 from collections.abc import Iterable
 from datetime import UTC, datetime
 from html.parser import HTMLParser
+from typing import Protocol
 from urllib.parse import urlparse
 
 import httpx
@@ -31,6 +32,28 @@ MAX_APPIDS_PER_BATCH = 10
 _STEAM_APP_PATH = re.compile(r"^/app/([1-9][0-9]*)(?:/[^?#]*)?/?$")
 _RAWG_SLUG = re.compile(r"^[a-z0-9][a-z0-9-]{0,180}$")
 _BLOCK_TAGS = {"br", "p", "div", "li", "h1", "h2", "h3", "section"}
+
+
+class MetadataProvider(Protocol):
+    """Common async lookup contract consumed by the leased metadata worker."""
+
+    request_reservation: int
+
+    async def lookup_batch(self, appids: list[int]) -> dict[int, dict]: ...
+
+
+class IGDBMetadataProvider:
+    """Adapter that keeps the legacy IGDB client behind the same provider contract."""
+
+    request_reservation = 6
+
+    def __init__(self, client):
+        self.client = client
+
+    async def lookup_batch(self, appids: list[int]) -> dict[int, dict]:
+        from playmatch.metadata_provider import lookup_batch
+
+        return await lookup_batch(self.client, appids)
 
 
 class _TextExtractor(HTMLParser):
