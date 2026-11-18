@@ -8,14 +8,14 @@ This increment replaces the default IGDB-only enrichment dependency with a provi
 
 ## Delivered
 
-- Added a common asynchronous `MetadataProvider` protocol and a provider factory used by the existing enrichment worker.
+- Added a common asynchronous `MetadataProvider` protocol and adapters consumed by the existing enrichment worker.
 - Added Steam Store AppDetails as the default best-effort primary metadata source for already-known Steam AppIDs. This endpoint is undocumented and is not described as an official Valve Web API.
 - Added optional RAWG metadata supplementation. A RAWG candidate is attached only after its per-game store-link response contains an HTTPS Steam Store URL with the exact requested AppID. Title similarity is never sufficient for identity.
 - Kept IGDB behind an optional legacy adapter selected with `METADATA_PROVIDER=igdb`; Twitch 2FA is no longer a prerequisite for the default Steam Store path.
 - Added multiple-source provenance support with Alembic migration 0008. Each source has a distinct provider ID, observation timestamp and content hash.
 - Preserved field-level evidence and conservative unknown states. Missing Chinese support, co-op, horror and other facts are not converted into negative claims.
 - Preserved curated/operator-imported metadata from automatic overwrite.
-- Added bounded request reservations. Steam-only mode does not need a metadata API key; RAWG usage is optional and separately budgeted.
+- Added bounded request reservations. The RAWG-enabled provider reserves up to 51 units per batch of 10; the default daily budget is 600 units to stay below the public free-tier monthly request ceiling. Steam-only mode does not need a metadata API key.
 - Updated Compose, environment examples, preflight reporting, README, deployment and provider documentation.
 
 ## Configuration
@@ -35,13 +35,13 @@ Steam Store AppDetails is the primary source; RAWG supplements it only when conf
 
 ## CI validation
 
-Final full CI run for commit `06c12e858c0650de4bc18678269eba00840f4c2f`:
-[GitHub Actions 44321715823](https://github.com/volcano-code/PlayMatch/actions/runs/44321715823).
+Final full CI run for commit `ac7a42f8f550062994a0349a667073f1fa4da58e`:
+[GitHub Actions 44323099466](https://github.com/volcano-code/PlayMatch/actions/runs/44323099466).
 
 - All three CI jobs passed: Python/PostgreSQL, web/browser, and container startup.
 - Ruff lint and format passed.
 - Full Python suite: **406 passed**.
-- Existing PostgreSQL regression suites passed, including the new multi-source migration/provider tests.
+- Existing PostgreSQL regression suites passed, including a dedicated PostgreSQL test that inserts both Steam Store and RAWG provenance rows for the same normalized game after migration 0008.
 - Fixed recommendation evaluation and catalog challenge checks passed.
 - Frontend typecheck, format, unit tests and production build passed.
 - Playwright browser suite: **25 passed**.
