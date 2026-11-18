@@ -25,9 +25,12 @@ async def run(settings, once):
                 worker = MetadataEnricher(db, settings, provider)
                 await _run_worker(worker, once)
         else:
-            async with SteamRawgMetadataProvider(
-                rawg_api_key=settings.rawg_api_key.get_secret_value()
-            ) as provider:
+            rawg_key = (
+                settings.rawg_api_key.get_secret_value()
+                if settings.metadata_provider == "steam_rawg"
+                else ""
+            )
+            async with SteamRawgMetadataProvider(rawg_api_key=rawg_key) as provider:
                 worker = MetadataEnricher(db, settings, provider)
                 await _run_worker(worker, once)
     finally:
