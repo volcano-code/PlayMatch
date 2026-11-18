@@ -100,6 +100,13 @@ jobs:
         run: |
           uv run python -c "import psycopg; c=psycopg.connect('postgresql://playmatch:ci-only-password@127.0.0.1:5432/playmatch_test', autocommit=True); c.execute('CREATE DATABASE metadata_test'); c.close()"
           uv run pytest services/api/tests/test_metadata_v08.py -q --junitxml=/tmp/metadata-postgres.xml
+      - name: Verify multi-source provenance on isolated PostgreSQL
+        env:
+          METADATA_SOURCES_TEST_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/metadata_sources_test
+          PLAYMATCH_ALLOW_DISPOSABLE_DB: 'yes'
+        run: |
+          uv run python -c "import psycopg; c=psycopg.connect('postgresql://playmatch:ci-only-password@127.0.0.1:5432/playmatch_test', autocommit=True); c.execute('CREATE DATABASE metadata_sources_test'); c.close()"
+          uv run pytest services/api/tests/test_metadata_sources.py::test_migration_allows_multiple_provenance_sources_for_one_game -q
       - name: Synthetic 10k metadata and bounded posting retrieval (not live coverage)
         env:
           METADATA_BENCH_DATABASE_URL: postgresql+psycopg://playmatch:ci-only-password@127.0.0.1:5432/metadata_bench_test
