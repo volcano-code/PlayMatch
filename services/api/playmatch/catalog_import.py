@@ -233,9 +233,6 @@ def import_catalog(
                 payload["id"] = record.id
                 report["unchanged" if payload == record.payload else "updated"] += 1
                 record.title, record.payload = item.title, payload
-            owner = session.scalar(select(CatalogSource).where(CatalogSource.game_id == record.id))
-            if owner and owner.provider_id != item.provider_id:
-                raise CatalogImportError("Game already has another provider identity")
             if source is None:
                 source = CatalogSource(
                     provider_id=item.provider_id,
