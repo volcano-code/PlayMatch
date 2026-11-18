@@ -1,7 +1,7 @@
 """Leased, budgeted automatic enrichment from discovered Steam identities.
 
 One batch per database, no network transaction, source fencing, and atomic
-metadata + lexical-index writes. It does not scrape Steam or call a language model.
+metadata + lexical-index writes. Provider-specific network work stays outside transactions.
 """
 
 from dataclasses import dataclass
