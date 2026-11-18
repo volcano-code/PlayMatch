@@ -27,7 +27,7 @@ RAWG_BASE_URL = "https://api.rawg.io/api"
 MAX_RESPONSE_BYTES = 8_000_000
 MAX_APPIDS_PER_BATCH = 10
 _STEAM_APP_PATH = re.compile(r"^/app/([1-9][0-9]*)(?:/[^?#]*)?/?$")
-_RAWG_SLUG = re.compile(r"^[a-z0-9][a-z0-9-]{0,180}$")
+_RAWG_SLUG = re.compile(r"^[a-zA-Z0-9][a-zA-Z0-9_-]{0,180}$")
 _BLOCK_TAGS = {"br", "p", "div", "li", "h1", "h2", "h3", "section"}
 
 
@@ -137,7 +137,11 @@ def normalize_steam_app(
     *,
     rawg: dict | None = None,
 ) -> tuple[dict | None, str | None]:
-    if not isinstance(raw, dict) or raw.get("steam_appid") != appid:
+    if (
+        not isinstance(raw, dict)
+        or type(raw.get("steam_appid")) is not int
+        or raw.get("steam_appid") != appid
+    ):
         return None, "identity_conflict"
     if str(raw.get("type", "")).casefold() != "game":
         return None, "not_verified_base_game"
@@ -404,7 +408,11 @@ class SteamStoreClient:
                 result[appid] = {"error": "unmatched"}
                 continue
             data = entry.get("data")
-            if not isinstance(data, dict) or data.get("steam_appid") != appid:
+            if (
+                not isinstance(data, dict)
+                or type(data.get("steam_appid")) is not int
+                or data.get("steam_appid") != appid
+            ):
                 result[appid] = {"error": "identity_conflict"}
                 continue
             result[appid] = {"data": data}
