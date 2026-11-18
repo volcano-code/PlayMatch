@@ -286,7 +286,7 @@ def test_metadata_worker_persists_steam_and_rawg_provenance_atomically(tmp_path)
                     steam_payload(),
                     570,
                     "2026-11-18T00:00:00+00:00",
-                    rawg=rawg_payload(),
+                    rawg={**rawg_payload(), "_playmatch_verified_steam_appid": 570},
                 )
                 assert error is None
                 return {570: value}
