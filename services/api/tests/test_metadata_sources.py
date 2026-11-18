@@ -83,7 +83,12 @@ def test_steam_normalizer_rejects_non_games_non_pc_and_identity_mismatch():
 
 def test_rawg_is_only_attached_when_exact_steam_store_url_matches():
     observed = "2026-11-18T00:00:00+00:00"
-    value, error = normalize_steam_app(steam_payload(), 570, observed, rawg={**rawg_payload(), "_playmatch_verified_steam_appid": 570})
+    value, error = normalize_steam_app(
+        steam_payload(),
+        570,
+        observed,
+        rawg={**rawg_payload(), "_playmatch_verified_steam_appid": 570},
+    )
     assert error is None
     assert "MOBA" in value["payload"]["genres"]
     assert "Strategy" in value["payload"]["themes"]
