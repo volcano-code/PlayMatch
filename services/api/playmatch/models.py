@@ -126,7 +126,7 @@ class CatalogLock(Base):
 class CatalogSource(Base):
     __tablename__ = "catalog_sources"
     provider_id: Mapped[str] = mapped_column(String(40), primary_key=True)
-    game_id: Mapped[str] = mapped_column(ForeignKey("games.id"), unique=True)
+    game_id: Mapped[str] = mapped_column(ForeignKey("games.id"))
     observed_at: Mapped[str] = mapped_column(String(40))
     content_hash: Mapped[str] = mapped_column(String(64))
 
