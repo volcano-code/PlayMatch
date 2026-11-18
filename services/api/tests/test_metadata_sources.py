@@ -221,6 +221,7 @@ def test_steam_rawg_provider_degrades_to_steam_if_rawg_unavailable():
     assert result["payload"]["title"] == "Dota 2"
     assert {row["provider_id"] for row in result["sources"]} == {"steam-store:570"}
 
+
 def test_migration_allows_multiple_provenance_sources_for_one_game(tmp_path):
     db = Database("sqlite:///" + str(tmp_path / "multi-source.db"))
     try:
@@ -255,6 +256,7 @@ def test_migration_allows_multiple_provenance_sources_for_one_game(tmp_path):
             assert {row.provider_id for row in rows} == {"steam-store:570", "rawg:42"}
     finally:
         db.close()
+
 
 def test_metadata_worker_persists_steam_and_rawg_provenance_atomically(tmp_path):
     db = Database("sqlite:///" + str(tmp_path / "metadata-worker.db"))
